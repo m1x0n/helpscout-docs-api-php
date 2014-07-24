@@ -1,0 +1,32 @@
+{
+    "name": "helpscout/docsapi",
+    "type": "library",
+    "description": "API client for the Help Scout Docs API",
+    "keywords": ["api", "api-client", "docs", "docs-api", "helpscout"],
+    "homepage": "http://www.helpscout.net",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Help Scout",
+            "email": "developer@helpscout.net",
+            "homepage": "http://developer.helpscout.net/",
+            "role": "Developer"
+        },
+        {
+            "name": "m1x0n",
+            "email": "mmorozovm@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "mmorozovm@gmail.com",
+        "source": "https://github.com/m1x0n/helpscout-docs-api-php"
+    },
+    "require": {
+        "php": ">=5.3.2",
+        "ext-curl": "*"
+    },
+    "autoload": {
+        "psr-0": { "HelpScoutDocs\\": "src/" }
+    }
+}
