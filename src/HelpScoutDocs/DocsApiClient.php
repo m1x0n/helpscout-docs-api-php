@@ -183,7 +183,7 @@ final class DocsApiClient {
      * @param  array  $accepted
      * @return null|array
      */
-    private function getParams($params=null, array $accepted=array('page', 'sort', 'order')) {
+    private function getParams($params=null, array $accepted=array('page', 'sort', 'order', 'status')) {
         if (!$params) {
             return null;
         }
@@ -215,6 +215,9 @@ final class DocsApiClient {
                     $params[$key] = $val;
                     break;
                 case 'visibility':
+                    $params[$key] = $val;
+                    break;
+                case 'status':
                     $params[$key] = $val;
                     break;
             }
