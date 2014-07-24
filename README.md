@@ -13,9 +13,7 @@ Requirements
 
 Example Usage: API
 ---------------------
-<pre><code><?php
-
-include_once "../src/HelpScoutDocs/DocsApiClient.php";
+<pre><code>include_once "../src/HelpScoutDocs/DocsApiClient.php";
 
 use HelpScoutDocs\DocsApiClient;
 
