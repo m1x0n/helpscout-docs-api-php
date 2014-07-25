@@ -26,3 +26,8 @@ $helpCategory = reset(array_filter($helpCategories->getItems(), function($item) 
 $helpCategoryArticles = $docsApiClient->getArticles($helpCategory->getId());
 
 $sites = $docsApiClient->getSites();
+
+$site = $docsApiClient->getSite('your-site-id');
+
+$articles = $docsApiClient->searchArticles();
+

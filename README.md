@@ -52,8 +52,9 @@ Docs API Client Methods
 
 ### Articles
 * getArticles($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc')
+* searchArticles($query = '*', $page = 1, $collectionId = '', $status = 'all', $visibility = 'all')
 
 ### Sites
 * getSites($page = 1)
-
+* getSite($siteId)
 

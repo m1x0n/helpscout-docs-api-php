@@ -119,12 +119,12 @@ final class DocsApiClient {
         list($statusCode, $json) = $this->callServer($url, 'GET', $params);
         $this->checkStatus($statusCode, $method);
 
-        $json = json_decode($json);
+        $json = reset(json_decode($json));
         if ($json) {
             if (isset($params['fields']) || !$model) {
-                return $json->item;
+                return $json;
             } else {
-                return new $model($json->item);
+                return new $model($json);
             }
         }
         return false;
@@ -183,7 +183,7 @@ final class DocsApiClient {
      * @param  array  $accepted
      * @return null|array
      */
-    private function getParams($params=null, array $accepted=array('page', 'sort', 'order', 'status')) {
+    private function getParams($params=null, array $accepted=array('page', 'sort', 'order', 'status', 'query')) {
         if (!$params) {
             return null;
         }
@@ -561,6 +561,44 @@ final class DocsApiClient {
             $this->getParams($params),
             'getSites',
             '\HelpScoutDocs\model\Site'
+        );
+    }
+
+    /**
+     * @param $siteId
+     * @return bool
+     */
+    public function getSite($siteId) {
+        return $this->getItem(
+            sprintf("sites/%s", $siteId),
+            array(),
+            'getSite',
+            '\HelpScoutDocs\model\Site'
+        );
+    }
+
+    /**
+     * @param string $query
+     * @param int $page
+     * @param string $collectionId
+     * @param string $status
+     * @param string $visibility
+     * @return bool|Collection
+     */
+    public function searchArticles($query = '*', $page = 1, $collectionId = '', $status = 'all', $visibility = 'all') {
+        $params = array(
+            'query'        => $query,
+            'page'         => $page,
+            'collectionId' => $collectionId,
+            'status'       => $status,
+            'visibility'   => $visibility
+        );
+
+        return $this->getCollection(
+            "search/articles",
+            $this->getParams($params),
+            'searchArticles',
+            '\HelpScoutDocs\model\ArticleSearch'
         );
     }
 }
