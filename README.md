@@ -4,11 +4,11 @@ helpscout-docs-api-php
 PHP Wrapper for the Help Scout Docs API.
 More information about Docs API: [http://developer.helpscout.net/docs-api/](http://developer.helpscout.net/docs-api/).
 
-Inspired and followed by original [https://github.com/helpscout/helpscout-api-php](helpscout/helpscout-api-php) repository.
+Inspired and followed by original [https://github.com/helpscout/helpscout-api-php](https://github.com/helpscout/helpscout-api-php) repository.
 
 Requirements
 ---------------------
-* PHP 5.3.x
+* PHP >= 5.3.x
 * curl
 
 Example Usage:
@@ -65,8 +65,14 @@ Docs API Client Methods
 ### Articles
 * getArticles($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc')
 * searchArticles($query = '*', $page = 1, $collectionId = '', $status = 'all', $visibility = 'all')
+* getRelatedArticles($articleId, $page = 1, $status = 'all', $sort = 'order', $order = 'desc')
+* getRevisions($articleId, $page = 1)
+* getArticle($articleIdOrNumber, $draft = false)
+* getRevision($revisionId)
 
 ### Sites
 * getSites($page = 1)
 * getSite($siteId)
 
+### Assets
+* Not implemented yet

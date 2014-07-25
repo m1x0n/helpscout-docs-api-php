@@ -601,4 +601,73 @@ final class DocsApiClient {
             '\HelpScoutDocs\model\ArticleSearch'
         );
     }
+
+    /**
+     * @param $articleId
+     * @param int $page
+     * @param string $status
+     * @param string $sort
+     * @param string $order
+     * @return bool|Collection
+     */
+    public function getRelatedArticles($articleId, $page = 1, $status = 'all', $sort = 'order', $order = 'desc') {
+        $params = array(
+            'page'   => $page,
+            'status' => $status,
+            'sort'   => $sort,
+            'order'  => $order
+        );
+
+        return $this->getCollection(
+            sprintf("articles/%s/related", $articleId),
+            $this->getParams($params),
+            "getRelatedArticles",
+            '\HelpScoutDocs\model\ArticleRef'
+        );
+    }
+
+    /**
+     * @param $articleId
+     * @param int $page
+     * @return bool|Collection
+     */
+    public function getRevisions($articleId, $page = 1) {
+        $params = array('page' => $page);
+
+        return $this->getCollection(
+            sprintf("articles/%s/revisions", $articleId),
+            $this->getParams($params),
+            "getRevisions",
+            '\HelpScoutDocs\model\ArticleRevisionRef'
+        );
+    }
+
+    /**
+     * @param $articleIdOrNumber
+     * @param bool $draft
+     * @return bool
+     */
+    public function getArticle($articleIdOrNumber, $draft = false) {
+        $params = array('draft' => $draft);
+
+        return $this->getItem(
+            sprintf("articles/%s", $articleIdOrNumber),
+            $this->getParams($params),
+            "getArticle",
+            '\HelpScoutDocs\model\Article'
+        );
+    }
+
+    /**
+     * @param $revisionId
+     * @return bool
+     */
+    public function getRevision($revisionId) {
+        return $this->getItem(
+            sprintf("revisions/%s", $revisionId),
+            array(),
+            "getRevision",
+            'HelpScoutDocs\model\ArticleRevision'
+        );
+    }
 }
