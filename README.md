@@ -25,23 +25,11 @@ $docsApiClient->setKey('my-api-key');
 // Get available collections
 $collections = $docsApiClient->getCollections();
 
-$collectionName = "Existing Collection Name";
-
-$helpCollection = reset(array_filter($collections->getItems(), function($item) use ($collectionName) {
-    return $item->getName() == $collectionName;
-}));
-
 // Get categories which belong to specified collection
-$helpCategories = $docsApiClient->getCategories($helpCollection->getId());
-
-$categoryName = 'Existing Category Name';
-
-$helpCategory = reset(array_filter($helpCategories->getItems(), function($item) use ($categoryName) {
-    return $item->getName() == $categoryName;
-}));
+$helpCategories = $docsApiClient->getCategories('collection-id-here');
 
 // Get articles by category
-$helpCategoryArticles = $docsApiClient->getArticles($helpCategory->getId());
+$helpCategoryArticles = $docsApiClient->getArticles('category-id-here');
 
 // Get available sites
 $sites = $docsApiClient->getSites();
