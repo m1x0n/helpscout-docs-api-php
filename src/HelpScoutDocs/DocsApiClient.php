@@ -777,4 +777,34 @@ final class DocsApiClient {
 
         return $reload ? new model\Article(reset(json_decode($response))) : true;
     }
+
+    /**
+     * @param $articleId
+     * @param int $count
+     */
+    public function updateViewCount($articleId, $count = 1) {
+        $this->doPut(sprintf("articles/%s/views", $articleId), json_encode(array('count' => $count)), 200);
+    }
+
+    /**
+     * @param $articleId
+     */
+    public function deleteArticle($articleId) {
+        $this->doDelete(sprintf("articles/%s", $articleId), 200);
+    }
+
+    /**
+     * @param $articleId
+     * @param $text
+     */
+    public function saveArticleDraft($articleId, $text) {
+        $this->doPut(sprintf("articles/%s/drafts", $articleId), json_encode(array('text' => $text)), 200);
+    }
+
+    /**
+     * @param $articleId
+     */
+    public function deleteArticleDraft($articleId) {
+        $this->doDelete(sprintf("articles/%s/drafts", $articleId), 200);
+    }
 }

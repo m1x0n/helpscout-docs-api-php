@@ -41,7 +41,7 @@ $site = $docsApiClient->getSite('your-site-id');
 $articles = $docsApiClient->searchArticles();
 ```
 
-Docs API Client Methods
+Docs API Client Endpoints Methods
 --------------------
 
 ### Collections
@@ -57,6 +57,13 @@ Docs API Client Methods
 * getRevisions($articleId, $page = 1)
 * getArticle($articleIdOrNumber, $draft = false)
 * getRevision($revisionId)
+* createArticle(model\Article $article, $reload = false)
+* updateArticle(model\Article $article, $reload = false)
+* uploadArticle($collectionId, $file, $categoryId = null, $name = null, $slug = null, $type = null, $reload = false)
+* updateViewCount($articleId, $count = 1)
+* deleteArticle($articleId)
+* saveArticleDraft($articleId, $text)
+* deleteArticleDraft($articleId)
 
 ### Sites
 * getSites($page = 1)
