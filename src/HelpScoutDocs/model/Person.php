@@ -2,7 +2,7 @@
 
 namespace HelpScoutDocs\model;
 
-class Person {
+class Person extends DocsModel {
 
     private $id;
     private $firstName;

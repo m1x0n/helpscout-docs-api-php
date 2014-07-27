@@ -2,7 +2,7 @@
 
 namespace HelpScoutDocs\model;
 
-class Collection {
+class Collection extends DocsModel {
 
     private $id;
     private $number;

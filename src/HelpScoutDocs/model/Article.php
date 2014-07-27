@@ -19,4 +19,68 @@ class Article extends ArticleRef {
             $this->related    = isset($data->related)    ? $data->related    : null;
         }
     }
+
+    /**
+     * @param null $categories
+     */
+    public function setCategories($categories)
+    {
+        $this->categories = $categories;
+    }
+
+    /**
+     * @return null
+     */
+    public function getCategories()
+    {
+        return $this->categories;
+    }
+
+    /**
+     * @param null $code
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
+    }
+
+    /**
+     * @return null
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param null $related
+     */
+    public function setRelated($related)
+    {
+        $this->related = $related;
+    }
+
+    /**
+     * @return null
+     */
+    public function getRelated()
+    {
+        return $this->related;
+    }
+
+    /**
+     * @param null $text
+     */
+    public function setText($text)
+    {
+        $this->text = $text;
+    }
+
+    /**
+     * @return null
+     */
+    public function getText()
+    {
+        return $this->text;
+    }
 }

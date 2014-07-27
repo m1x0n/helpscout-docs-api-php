@@ -2,7 +2,7 @@
 
 namespace HelpScoutDocs\model;
 
-class ArticleSearch {
+class ArticleSearch extends DocsModel {
 
     private $id;
     private $collectionId;

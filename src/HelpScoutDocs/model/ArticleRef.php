@@ -2,7 +2,7 @@
 
 namespace HelpScoutDocs\model;
 
-class ArticleRef {
+class ArticleRef extends DocsModel {
 
     private $id;
     private $number;

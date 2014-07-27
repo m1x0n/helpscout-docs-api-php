@@ -2,7 +2,7 @@
 
 namespace HelpScoutDocs\model;
 
-class Site {
+class Site extends DocsModel {
 
     private $id;
     private $status;

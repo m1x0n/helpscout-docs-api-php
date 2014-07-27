@@ -321,7 +321,7 @@ final class DocsApiClient {
         $id = false;
         if ($location) {
             $start = strrpos($location, '/') + 1;
-            $id = substr($location, $start, -5);
+            $id = substr($location, $start, strlen($location));
         }
         return $id;
     }
@@ -669,5 +669,37 @@ final class DocsApiClient {
             "getRevision",
             'HelpScoutDocs\model\ArticleRevision'
         );
+    }
+
+    /**
+     * @param model\Article $article
+     * @param bool $reload
+     * @return bool|model\Article
+     */
+    public function createArticle(model\Article $article, $reload = false) {
+        $url = "articles";
+
+        if ($reload) {
+            $url .= "?reload=true";
+        }
+
+        list($id, ) = $this->doPost($url, $article->toJson(), 200);
+        $article->setId($id);
+
+        return $reload ? $article : true;
+    }
+
+    /**
+     * @param model\Article $article
+     * @param bool $reload
+     */
+    public function updateArticle(model\Article $article, $reload = false) {
+        $url = sprintf("articles/%s", $article->getId());
+
+        if ($reload) {
+            $url .= "?reload=true";
+        }
+
+        $this->doPut($url, $article->toJson(), 200);
     }
 }
