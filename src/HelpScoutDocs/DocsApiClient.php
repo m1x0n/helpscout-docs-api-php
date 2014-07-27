@@ -229,6 +229,20 @@ final class DocsApiClient {
     }
 
     /**
+     * @param array $params
+     * @return array
+     */
+    private function prepareParams(array $params) {
+        foreach($params as $key => $value) {
+            if (empty($value)) {
+                unset($params[$key]);
+            }
+        }
+
+        return $params;
+    }
+
+    /**
      * @param  string|array $fields
      * @return string
      */
@@ -298,6 +312,33 @@ final class DocsApiClient {
         $this->checkStatus($info['http_code'], 'POST', $expectedCode);
 
         return array($this->getIdFromLocation($response, $info['header_size']), substr($response, $info['header_size']));
+    }
+
+    private function doPostFile($url, array $requestBody, $expectedCode) {
+        if ($this->apiKey === false || empty($this->apiKey)) {
+            throw new ApiException('Invalid API Key', 401);
+        }
+
+        if ($this->isDebug) {
+            $this->debug(json_encode($requestBody));
+        }
+
+        $ch = curl_init();
+        curl_setopt_array($ch, array(
+            CURLOPT_URL            => self::API_URL . $url,
+            CURLOPT_POST           => 1,
+            CURLOPT_POSTFIELDS     => $requestBody,
+            CURLOPT_RETURNTRANSFER => true,
+        ));
+
+        $response = curl_exec($ch);
+        $info = curl_getinfo($ch);
+
+        curl_close($ch);
+
+        $this->checkStatus($info['http_code'], 'POST', $expectedCode);
+
+        return $response;
     }
 
     /**
@@ -701,5 +742,39 @@ final class DocsApiClient {
         }
 
         $this->doPut($url, $article->toJson(), 200);
+    }
+
+    /**
+     * @param $collectionId
+     * @param $file
+     * @param null $categoryId
+     * @param null $name
+     * @param null $slug
+     * @param null $type
+     * @param bool $reload
+     * @return bool|model\Article
+     * @throws ApiException
+     */
+    public function uploadArticle($collectionId, $file, $categoryId = null, $name = null, $slug = null,
+        $type = null, $reload = false) {
+
+        if (!file_exists($file)) {
+            throw new ApiException("Unable to locate file: %s", $file);
+        }
+
+        $params = array(
+            'key'          => $this->apiKey,
+            'collectionId' => $collectionId,
+            'file'         => '@' . $file,
+            'name'         => empty($name) ? pathinfo($file, PATHINFO_FILENAME) : $name,
+            'categoryId'   => $categoryId,
+            'slug'         => $slug,
+            'type'         => $type,
+            'reload'       => $reload
+        );
+
+        $response = $this->doPostFile("articles/upload", $this->prepareParams($params), $reload ? 200 : 201);
+
+        return $reload ? new model\Article(reset(json_decode($response))) : true;
     }
 }
