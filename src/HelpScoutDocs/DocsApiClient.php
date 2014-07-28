@@ -92,7 +92,7 @@ final class DocsApiClient {
      * @param  string $model
      * @return \HelpScoutDocs\Collection|boolean
      */
-    private function getCollection($url, $params, $method, $model) {
+    private function getResourceCollection($url, $params, $method, $model) {
         list($statusCode, $json) = $this->callServer($url, 'GET', $params);
 
         $this->checkStatus($statusCode, $method);
@@ -536,7 +536,7 @@ final class DocsApiClient {
             'order'      => $order
         );
 
-        return $this->getCollection(
+        return $this->getResourceCollection(
             "collections",
             $this->getParams($params),
             'getCategories',
@@ -558,7 +558,7 @@ final class DocsApiClient {
             'order' => $order
         );
 
-        return $this->getCollection(
+        return $this->getResourceCollection(
             sprintf("collections/%s/categories", $collectionId),
             $this->getParams($params),
             'getCategories',
@@ -582,7 +582,7 @@ final class DocsApiClient {
             'order'  => $order
         );
 
-        return $this->getCollection(
+        return $this->getResourceCollection(
             sprintf("categories/%s/articles", $categoryId),
             $this->getParams($params),
             'getCategories',
@@ -597,7 +597,7 @@ final class DocsApiClient {
     public function getSites($page = 1) {
         $params = array('page' => $page);
 
-        return $this->getCollection(
+        return $this->getResourceCollection(
             "sites",
             $this->getParams($params),
             'getSites',
@@ -635,7 +635,7 @@ final class DocsApiClient {
             'visibility'   => $visibility
         );
 
-        return $this->getCollection(
+        return $this->getResourceCollection(
             "search/articles",
             $this->getParams($params),
             'searchArticles',
@@ -659,7 +659,7 @@ final class DocsApiClient {
             'order'  => $order
         );
 
-        return $this->getCollection(
+        return $this->getResourceCollection(
             sprintf("articles/%s/related", $articleId),
             $this->getParams($params),
             "getRelatedArticles",
@@ -675,7 +675,7 @@ final class DocsApiClient {
     public function getRevisions($articleId, $page = 1) {
         $params = array('page' => $page);
 
-        return $this->getCollection(
+        return $this->getResourceCollection(
             sprintf("articles/%s/revisions", $articleId),
             $this->getParams($params),
             "getRevisions",
@@ -891,5 +891,60 @@ final class DocsApiClient {
      */
     public function deleteCategory($categoryId) {
         $this->doDelete(sprintf("categories/%s", $categoryId), 200);
+    }
+
+    /**
+     * @param $collectionIdOrNumber
+     * @return bool
+     */
+    public function getCollection($collectionIdOrNumber) {
+        return $this->getItem(
+            sprintf("collections/%s", $collectionIdOrNumber),
+            array(),
+            "getArticle",
+            '\HelpScoutDocs\model\Collection'
+        );
+    }
+
+    /**
+     * @param model\Collection $collection
+     * @param bool $reload
+     * @return bool|model\Collection
+     * @throws ApiException
+     */
+    public function createCollection(model\Collection $collection, $reload = false) {
+        $url = "collections";
+
+        if ($reload) {
+            $url .= "?reload=true";
+        }
+
+        list($id, ) = $this->doPost($url, $collection->toJson(), $reload ? 200 : 201);
+        $collection->setId($id);
+
+        return $reload ? $collection : true;
+    }
+
+    /**
+     * @param model\Collection $collection
+     * @param bool $reload
+     * @throws ApiException
+     */
+    public function updateCollection(model\Collection $collection, $reload = false) {
+        $url = sprintf("collections/%s", $collection->getId());
+
+        if ($reload) {
+            $url .= "?reload=true";
+        }
+
+        $this->doPut($url, $collection->toJson(), 200);
+    }
+
+    /**
+     * @param $collectionId
+     * @throws ApiException
+     */
+    public function deleteCollection($collectionId) {
+        $this->doDelete(sprintf("collections/%s", $collectionId), 200);
     }
 }

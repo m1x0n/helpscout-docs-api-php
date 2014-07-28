@@ -46,6 +46,10 @@ Docs API Client Endpoints Methods
 
 ### Collections
 * getCollections($page = 1, $siteId = '', $visibility = 'all', $sort = 'order', $order = 'asc')
+* getCollection($collectionIdOrNumber)
+* createCollection(model\Collection $collection, $reload = false)
+* updateCollection(model\Collection $collection, $reload = false)
+* deleteCollection($collectionId)
 
 ### Categories
 * getCategories($collectionId, $page = 1, $sort = 'order', $order = 'asc')
