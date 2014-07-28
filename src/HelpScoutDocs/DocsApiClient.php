@@ -807,4 +807,89 @@ final class DocsApiClient {
     public function deleteArticleDraft($articleId) {
         $this->doDelete(sprintf("articles/%s/drafts", $articleId), 200);
     }
+
+    /**
+     * @param $categoryIdOrNumber
+     * @return bool
+     */
+    public function getCategory($categoryIdOrNumber) {
+        return $this->getItem(
+            sprintf("categories/%s", $categoryIdOrNumber),
+            array(),
+            "getArticle",
+            '\HelpScoutDocs\model\Category'
+        );
+    }
+
+    /**
+     * @param model\Category $category
+     * @param bool $reload
+     * @return bool
+     * @throws ApiException
+     */
+    public function createCategory(model\Category $category, $reload = false) {
+        $url = "categories";
+
+        if ($reload) {
+            $url .= "?reload=true";
+        }
+
+        list($id, ) = $this->doPost($url, $category->toJson(), $reload ? 200 : 201);
+        $category->setId($id);
+
+        return $reload ? $category : true;
+    }
+
+    /**
+     * @param model\Category $category
+     * @param bool $reload
+     * @throws ApiException
+     */
+    public function updateCategory(model\Category $category, $reload = false) {
+        $url = sprintf("categories/%s", $category->getId());
+
+        if ($reload) {
+            $url .= "?reload=true";
+        }
+
+        $this->doPut($url, $category->toJson(), 200);
+    }
+
+    /**
+     * @param $collectionId
+     * @param array $categories
+     *
+     * Categories should be an associative array:
+     *
+     * $categories = array(
+     *      'categories' => array(
+     *          array(
+     *              'id'    => 'some-id-here',
+     *              'order' => '1'
+     *          ),
+     *          array(
+     *              'id'    => 'another-id-here',
+     *              'order' => '2'
+     *          )
+     *          ...
+     *      )
+     * );
+     *
+     * @throws ApiException
+     */
+    public function updateCategoryOrder($collectionId, array $categories) {
+        $this->doPut(
+            sprintf("collections/%s/categories", $collectionId),
+            json_encode($categories),
+            200
+        );
+    }
+
+    /**
+     * @param $categoryId
+     * @throws ApiException
+     */
+    public function deleteCategory($categoryId) {
+        $this->doDelete(sprintf("categories/%s", $categoryId), 200);
+    }
 }

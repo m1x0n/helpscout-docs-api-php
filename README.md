@@ -49,6 +49,11 @@ Docs API Client Endpoints Methods
 
 ### Categories
 * getCategories($collectionId, $page = 1, $sort = 'order', $order = 'asc')
+* getCategory($categoryIdOrNumber)
+* createCategory(model\Category $category, $reload = false)
+* updateCategory(model\Category $category, $reload = false)
+* updateCategoryOrder($collectionId, array $categories)
+* deleteCategory($categoryId)
 
 ### Articles
 * getArticles($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc')
