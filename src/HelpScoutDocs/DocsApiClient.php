@@ -947,4 +947,46 @@ final class DocsApiClient {
     public function deleteCollection($collectionId) {
         $this->doDelete(sprintf("collections/%s", $collectionId), 200);
     }
+
+    /**
+     * @param model\Site $site
+     * @param bool $reload
+     * @return bool|model\Site
+     * @throws ApiException
+     */
+    public function createSite(model\Site $site, $reload = false) {
+        $url = "sites";
+
+        if ($reload) {
+            $url .= "?reload=true";
+        }
+
+        list($id, ) = $this->doPost($url, $site->toJson(), $reload ? 200 : 201);
+        $site->setId($id);
+
+        return $reload ? $site : true;
+    }
+
+    /**
+     * @param model\Site $site
+     * @param bool $reload
+     * @throws ApiException
+     */
+    public function updateSite(model\Site $site, $reload = false) {
+        $url = sprintf("sites/%s", $site->getId());
+
+        if ($reload) {
+            $url .= "?reload=true";
+        }
+
+        $this->doPut($url, $site->toJson(), 200);
+    }
+
+    /**
+     * @param $siteId
+     * @throws ApiException
+     */
+    public function deleteSite($siteId) {
+        $this->doDelete(sprintf("sites/%s", $siteId), 200);
+    }
 }

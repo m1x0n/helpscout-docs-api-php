@@ -77,6 +77,9 @@ Docs API Client Endpoints Methods
 ### Sites
 * getSites($page = 1)
 * getSite($siteId)
+* createSite(model\Site $site, $reload = false)
+* updateSite(model\Site $site, $reload = false)
+* deleteSite($siteId)
 
 ### Assets
 * Not implemented yet

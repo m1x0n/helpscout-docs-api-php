@@ -30,6 +30,8 @@ class Site extends DocsModel {
     private $createdAt;
     private $updatedAt;
 
+    private static $restricted = array('id', 'createdBy', 'updatedBy', 'createdAt', 'updatedAt', 'companyName');
+
     function __construct($data = null) {
         if ($data) {
             $this->id             = isset($data->id)             ? $data->id             : null;
@@ -458,5 +460,26 @@ class Site extends DocsModel {
     public function getUpdatedBy()
     {
         return $this->updatedBy;
+    }
+
+    public function toJson() {
+        return json_encode($this->getAvailableProperties());
+    }
+
+    private function getAvailableProperties() {
+        $reflector = new \ReflectionClass($this);
+        $properties = array_filter($reflector->getProperties(), function($p) {
+            return $p->name != 'restricted';
+        });
+
+        $vars = array();
+
+        foreach($properties as $prop) {
+            if (!in_array($prop->name, self::$restricted)) {
+                $vars[$prop->name] = $this->{"get" . ucfirst($prop->name)}();
+            }
+        }
+
+        return $vars;
     }
 }
