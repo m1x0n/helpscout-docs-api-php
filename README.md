@@ -11,34 +11,22 @@ Requirements
 * PHP >= 5.3.x
 * curl
 
+Installation
+--------------------
+TBD
+
 Example Usage:
 ---------------------
 ```php
-include_once "../src/HelpScoutDocs/DocsApiClient.php";
+require_once \__DIR__ . '/../vendor/autoload.php';
 
 use HelpScoutDocs\DocsApiClient;
 
-// Create client instance
-$docsApiClient = DocsApiClient::getInstance();
-$docsApiClient->setKey('my-api-key');
+$docsApiClient = new DocsApiClient();
+$docsApiClient->setKey('your-api-key');
 
-// Get available collections
 $collections = $docsApiClient->getCollections();
 
-// Get categories which belong to specified collection
-$helpCategories = $docsApiClient->getCategories('collection-id-here');
-
-// Get articles by category
-$helpCategoryArticles = $docsApiClient->getArticles('category-id-here');
-
-// Get available sites
-$sites = $docsApiClient->getSites();
-
-// Get certain site
-$site = $docsApiClient->getSite('your-site-id');
-
-// Get all available articles
-$articles = $docsApiClient->searchArticles();
 ```
 
 Docs API Client Endpoints Methods
@@ -47,15 +35,15 @@ Docs API Client Endpoints Methods
 ### Collections
 * getCollections($page = 1, $siteId = '', $visibility = 'all', $sort = 'order', $order = 'asc')
 * getCollection($collectionIdOrNumber)
-* createCollection(model\Collection $collection, $reload = false)
-* updateCollection(model\Collection $collection, $reload = false)
+* createCollection(Collection $collection, $reload = false)
+* updateCollection(Collection $collection, $reload = false)
 * deleteCollection($collectionId)
 
 ### Categories
 * getCategories($collectionId, $page = 1, $sort = 'order', $order = 'asc')
 * getCategory($categoryIdOrNumber)
-* createCategory(model\Category $category, $reload = false)
-* updateCategory(model\Category $category, $reload = false)
+* createCategory(Category $category, $reload = false)
+* updateCategory(Category $category, $reload = false)
 * updateCategoryOrder($collectionId, array $categories)
 * deleteCategory($categoryId)
 
@@ -66,8 +54,8 @@ Docs API Client Endpoints Methods
 * getRevisions($articleId, $page = 1)
 * getArticle($articleIdOrNumber, $draft = false)
 * getRevision($revisionId)
-* createArticle(model\Article $article, $reload = false)
-* updateArticle(model\Article $article, $reload = false)
+* createArticle(Article $article, $reload = false)
+* updateArticle(Article $article, $reload = false)
 * uploadArticle($collectionId, $file, $categoryId = null, $name = null, $slug = null, $type = null, $reload = false)
 * updateViewCount($articleId, $count = 1)
 * deleteArticle($articleId)
@@ -77,8 +65,8 @@ Docs API Client Endpoints Methods
 ### Sites
 * getSites($page = 1)
 * getSite($siteId)
-* createSite(model\Site $site, $reload = false)
-* updateSite(model\Site $site, $reload = false)
+* createSite(Site $site, $reload = false)
+* updateSite(Site $site, $reload = false)
 * deleteSite($siteId)
 
 ### Assets
