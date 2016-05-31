@@ -1,5 +1,5 @@
 {
-    "name": "helpscout/docsapi",
+    "name": "m1x0n/helpscout-docs-api-php",
     "type": "library",
     "description": "API client for the Help Scout Docs API",
     "keywords": ["api", "api-client", "docs", "docs-api", "helpscout"],
