@@ -1,8 +1,10 @@
 <?php
 
 namespace HelpScoutDocs;
-
-require_once 'ClassLoader.php';
+use HelpScoutDocs\Models\Article;
+use HelpScoutDocs\Models\Category;
+use HelpScoutDocs\Models\Site;
+use HelpScoutDocs\Models\Collection;
 
 /**
  * Class DocsApiClient
@@ -12,38 +14,16 @@ require_once 'ClassLoader.php';
  *
  * @package HelpScoutDocs
  */
-final class DocsApiClient {
+class DocsApiClient {
+    
     const USER_AGENT = 'Help Scout API/Php Client v1';
     const API_URL = 'https://docsapi.helpscout.net/v1/';
-    const NAMESPACE_SEPARATOR = '\\';
-
+    
     private $userAgent = false;
     private $apiKey    = false;
     private $isDebug   = false;
     private $debugDir  = false;
-
-    /**
-     * @var \HelpScoutDocs\DocsApiClient
-     */
-    private static $instance = false;
-
-    private function __construct() {
-        ClassLoader::register();
-    }
-
-    /**
-     * Get an instance of the DocsApiClient
-     *
-     * @return \HelpScoutDocs\DocsApiClient
-     * @static
-     */
-    public static function getInstance() {
-        if (self::$instance === false) {
-            self::$instance = new DocsApiClient();
-        }
-        return self::$instance;
-    }
-
+    
     /**
      * Put ApiClient in debug mode or note.
      *
@@ -55,7 +35,7 @@ final class DocsApiClient {
      * @param  boolean|string $dir
      * @return void
      */
-    public function setDebug($bool, $dir=false) {
+    public function setDebug($bool, $dir = false) {
         $this->isDebug = $bool;
         if ($dir && is_dir($dir)) {
             $this->debugDir = $dir;
@@ -89,20 +69,23 @@ final class DocsApiClient {
      * @param  string $url
      * @param  array  $params
      * @param  string $method
-     * @param  string $model
-     * @return \HelpScoutDocs\Collection|boolean
+     * @param  string $modelName
+     * @return \HelpScoutDocs\ResourceCollection|boolean
      */
-    private function getResourceCollection($url, $params, $method, $model) {
+    private function getResourceCollection($url, $params, $method, $modelName) {
         list($statusCode, $json) = $this->callServer($url, 'GET', $params);
 
         $this->checkStatus($statusCode, $method);
 
-        $json = reset(json_decode($json));
+        $json = json_decode($json);
+        $json = reset($json);
+        
         if ($json) {
             if (isset($params['fields'])) {
                 return $json;
             } else {
-                return new Collection($json, $model);
+                $modelClass = __NAMESPACE__ . "\\Models\\" . $modelName;
+                return new ResourceCollection($json, $modelClass);
             }
         }
         return false;
@@ -112,19 +95,21 @@ final class DocsApiClient {
      * @param  string $url
      * @param  array $params
      * @param  string $method
-     * @param  string $model
+     * @param  string $modelName
      * @return bool $model|boolean
      */
-    private function getItem($url, $params, $method, $model) {
+    private function getItem($url, $params, $method, $modelName) {
         list($statusCode, $json) = $this->callServer($url, 'GET', $params);
         $this->checkStatus($statusCode, $method);
 
-        $json = reset(json_decode($json));
+        $json = json_decode($json);
+        $json = reset($json);
         if ($json) {
-            if (isset($params['fields']) || !$model) {
+            if (isset($params['fields']) || !$modelName) {
                 return $json;
             } else {
-                return new $model($json);
+                $modelClass = __NAMESPACE__ . "\\Models\\" . $modelName;
+                return new $modelClass($json);
             }
         }
         return false;
@@ -183,7 +168,7 @@ final class DocsApiClient {
      * @param  array  $accepted
      * @return null|array
      */
-    private function getParams($params=null, array $accepted=array('page', 'sort', 'order', 'status', 'query')) {
+    private function getParams($params = null, array $accepted = array('page', 'sort', 'order', 'status', 'query')) {
         if (!$params) {
             return null;
         }
@@ -540,7 +525,7 @@ final class DocsApiClient {
             "collections",
             $this->getParams($params),
             'getCategories',
-            '\HelpScoutDocs\model\Collection'
+            'Collection'
         );
     }
 
@@ -562,7 +547,7 @@ final class DocsApiClient {
             sprintf("collections/%s/categories", $collectionId),
             $this->getParams($params),
             'getCategories',
-            '\HelpScoutDocs\model\Category'
+            'Category'
         );
     }
 
@@ -586,7 +571,7 @@ final class DocsApiClient {
             sprintf("categories/%s/articles", $categoryId),
             $this->getParams($params),
             'getCategories',
-            '\HelpScoutDocs\model\ArticleRef'
+            'ArticleRef'
         );
     }
 
@@ -601,7 +586,7 @@ final class DocsApiClient {
             "sites",
             $this->getParams($params),
             'getSites',
-            '\HelpScoutDocs\model\Site'
+            'Site'
         );
     }
 
@@ -614,7 +599,7 @@ final class DocsApiClient {
             sprintf("sites/%s", $siteId),
             array(),
             'getSite',
-            '\HelpScoutDocs\model\Site'
+            'Site'
         );
     }
 
@@ -639,7 +624,7 @@ final class DocsApiClient {
             "search/articles",
             $this->getParams($params),
             'searchArticles',
-            '\HelpScoutDocs\model\ArticleSearch'
+            'ArticleSearch'
         );
     }
 
@@ -663,7 +648,7 @@ final class DocsApiClient {
             sprintf("articles/%s/related", $articleId),
             $this->getParams($params),
             "getRelatedArticles",
-            '\HelpScoutDocs\model\ArticleRef'
+            'ArticleRef'
         );
     }
 
@@ -679,7 +664,7 @@ final class DocsApiClient {
             sprintf("articles/%s/revisions", $articleId),
             $this->getParams($params),
             "getRevisions",
-            '\HelpScoutDocs\model\ArticleRevisionRef'
+            'ArticleRevisionRef'
         );
     }
 
@@ -695,7 +680,7 @@ final class DocsApiClient {
             sprintf("articles/%s", $articleIdOrNumber),
             $this->getParams($params),
             "getArticle",
-            '\HelpScoutDocs\model\Article'
+            'Article'
         );
     }
 
@@ -708,16 +693,17 @@ final class DocsApiClient {
             sprintf("revisions/%s", $revisionId),
             array(),
             "getRevision",
-            'HelpScoutDocs\model\ArticleRevision'
+            'ArticleRevision'
         );
     }
 
     /**
-     * @param model\Article $article
+     * @param Article $article
      * @param bool $reload
-     * @return bool|model\Article
+     * @return bool|Article
+     * @throws ApiException
      */
-    public function createArticle(model\Article $article, $reload = false) {
+    public function createArticle(Article $article, $reload = false) {
         $url = "articles";
 
         if ($reload) {
@@ -731,10 +717,11 @@ final class DocsApiClient {
     }
 
     /**
-     * @param model\Article $article
+     * @param Article $article
      * @param bool $reload
+     * @throws ApiException
      */
-    public function updateArticle(model\Article $article, $reload = false) {
+    public function updateArticle(Article $article, $reload = false) {
         $url = sprintf("articles/%s", $article->getId());
 
         if ($reload) {
@@ -752,7 +739,7 @@ final class DocsApiClient {
      * @param null $slug
      * @param null $type
      * @param bool $reload
-     * @return bool|model\Article
+     * @return bool|Article
      * @throws ApiException
      */
     public function uploadArticle($collectionId, $file, $categoryId = null, $name = null, $slug = null,
@@ -775,7 +762,7 @@ final class DocsApiClient {
 
         $response = $this->doPostFile("articles/upload", $this->prepareParams($params), $reload ? 200 : 201);
 
-        return $reload ? new model\Article(reset(json_decode($response))) : true;
+        return $reload ? new Article(reset(json_decode($response))) : true;
     }
 
     /**
@@ -817,17 +804,17 @@ final class DocsApiClient {
             sprintf("categories/%s", $categoryIdOrNumber),
             array(),
             "getArticle",
-            '\HelpScoutDocs\model\Category'
+            'Category'
         );
     }
 
     /**
-     * @param model\Category $category
+     * @param Category $category
      * @param bool $reload
-     * @return bool
+     * @return bool|Category
      * @throws ApiException
      */
-    public function createCategory(model\Category $category, $reload = false) {
+    public function createCategory(Category $category, $reload = false) {
         $url = "categories";
 
         if ($reload) {
@@ -841,11 +828,11 @@ final class DocsApiClient {
     }
 
     /**
-     * @param model\Category $category
+     * @param Category $category
      * @param bool $reload
      * @throws ApiException
      */
-    public function updateCategory(model\Category $category, $reload = false) {
+    public function updateCategory(Category $category, $reload = false) {
         $url = sprintf("categories/%s", $category->getId());
 
         if ($reload) {
@@ -902,17 +889,17 @@ final class DocsApiClient {
             sprintf("collections/%s", $collectionIdOrNumber),
             array(),
             "getArticle",
-            '\HelpScoutDocs\model\Collection'
+            'Collection'
         );
     }
 
     /**
-     * @param model\Collection $collection
+     * @param Collection $collection
      * @param bool $reload
-     * @return bool|model\Collection
+     * @return bool|Collection
      * @throws ApiException
      */
-    public function createCollection(model\Collection $collection, $reload = false) {
+    public function createCollection(Collection $collection, $reload = false) {
         $url = "collections";
 
         if ($reload) {
@@ -926,11 +913,11 @@ final class DocsApiClient {
     }
 
     /**
-     * @param model\Collection $collection
+     * @param Collection $collection
      * @param bool $reload
      * @throws ApiException
      */
-    public function updateCollection(model\Collection $collection, $reload = false) {
+    public function updateCollection(Collection $collection, $reload = false) {
         $url = sprintf("collections/%s", $collection->getId());
 
         if ($reload) {
@@ -949,12 +936,12 @@ final class DocsApiClient {
     }
 
     /**
-     * @param model\Site $site
+     * @param Site $site
      * @param bool $reload
-     * @return bool|model\Site
+     * @return bool|Site
      * @throws ApiException
      */
-    public function createSite(model\Site $site, $reload = false) {
+    public function createSite(Site $site, $reload = false) {
         $url = "sites";
 
         if ($reload) {
@@ -968,11 +955,11 @@ final class DocsApiClient {
     }
 
     /**
-     * @param model\Site $site
+     * @param Site $site
      * @param bool $reload
      * @throws ApiException
      */
-    public function updateSite(model\Site $site, $reload = false) {
+    public function updateSite(Site $site, $reload = false) {
         $url = sprintf("sites/%s", $site->getId());
 
         if ($reload) {

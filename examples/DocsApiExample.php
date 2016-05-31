@@ -1,33 +1,37 @@
 <?php
 
-include_once "../src/HelpScoutDocs/DocsApiClient.php";
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use HelpScoutDocs\DocsApiClient;
 
-$docsApiClient = DocsApiClient::getInstance();
-$docsApiClient->setKey('my-api-key');
+$docsApiClient = new DocsApiClient();
+$docsApiClient->setKey('your-api-key');
 
 $collections = $docsApiClient->getCollections();
 
-$helpCollectionName = "Existing Collection Name";
+$helpCollectionName = "Your Existing Collection Name Here";
 
-$helpCollection = reset(array_filter($collections->getItems(), function($item) use ($helpCollectionName) {
+$helpCollection = array_filter($collections->getItems(), function($item) use ($helpCollectionName) {
     return $item->getName() == $helpCollectionName;
-}));
+});
+
+$helpCollection = reset($helpCollection);
 
 $helpCategories = $docsApiClient->getCategories($helpCollection->getId());
 
-$helpCategoryName = 'Existing Category Name';
+$helpCategoryName = 'Your existing category here';
 
-$helpCategory = reset(array_filter($helpCategories->getItems(), function($item) use ($helpCategoryName) {
+$helpCategory = array_filter($helpCategories->getItems(), function($item) use ($helpCategoryName) {
     return $item->getName() == $helpCategoryName;
-}));
+});
+
+$helpCategory = reset($helpCategory);
 
 $helpCategoryArticles = $docsApiClient->getArticles($helpCategory->getId());
 
 $sites = $docsApiClient->getSites();
 
-$site = $docsApiClient->getSite('your-site-id');
+$site = $docsApiClient->getSite('your-site-id-here');
 
 $articles = $docsApiClient->searchArticles();
 

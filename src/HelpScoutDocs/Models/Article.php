@@ -1,6 +1,6 @@
 <?php
 
-namespace HelpScoutDocs\model;
+namespace HelpScoutDocs\Models;
 
 class Article extends ArticleRef {
 
