@@ -13,7 +13,9 @@ Requirements
 
 Installation
 --------------------
-TBD
+```
+composer require m1x0n/helpscout-docs-api-php
+```
 
 Example Usage:
 ---------------------
