@@ -1,12 +1,17 @@
 <?php
 namespace HelpScoutDocs;
 
-class ResourceCollection {
+use ArrayAccess;
+use ArrayIterator;
+use Countable;
+use SeekableIterator;
+
+class ResourceCollection implements ArrayAccess, SeekableIterator, Countable {
     
     private $page  = 0;
     private $pages = 0;
     private $count = 0;
-    private $items = false;
+    private $items = null;
 
     public function __construct($data, $itemType) {
         if ($data) {
@@ -16,10 +21,10 @@ class ResourceCollection {
 
             $items = $data->items;
             if ($items) {
-                $this->items = array();
+                $this->items = new ArrayIterator();
 
                 foreach($items as $index => $item) {
-                    $this->items[] = new $itemType($item);
+                    $this->items->append(new $itemType($item));
                     unset($items[$index]);
                 }
             }
@@ -67,5 +72,77 @@ class ResourceCollection {
      */
     public function getCount() {
         return $this->count;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function current()
+    {
+        return $this->items->current();
+    }
+
+    public function next()
+    {
+        $this->items->next();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function key()
+    {
+        return $this->items->key();
+    }
+
+    /**
+     * @return bool
+     */
+    public function valid()
+    {
+        return $this->items->valid();
+    }
+
+    public function rewind()
+    {
+        $this->items->rewind();
+    }
+
+    /**
+     * @param mixed $offset
+     * @return bool
+     */
+    public function offsetExists($offset)
+    {
+        return $this->items->offsetExists($offset);
+    }
+
+    /**
+     * @param mixed $offset
+     * @return mixed
+     */
+    public function offsetGet($offset)
+    {
+        return $this->items->offsetGet($offset);
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        $this->items->offsetSet($offset, $value);
+    }
+
+    public function offsetUnset($offset)
+    {
+        $this->items->offsetUnset($offset);
+    }
+
+    public function count()
+    {
+        return $this->items->count();
+    }
+
+    public function seek($position)
+    {
+        $this->items->seek($position);
     }
 }
