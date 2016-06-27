@@ -9,6 +9,7 @@ use HelpScoutDocs\Models\Category;
 use HelpScoutDocs\Models\SettingsAsset;
 use HelpScoutDocs\Models\Site;
 use HelpScoutDocs\Models\Collection;
+use HelpScoutDocs\Models\UploadArticle;
 
 /**
  * Class DocsApiClient
@@ -300,34 +301,6 @@ class DocsApiClient {
         $location = $response->getHeaderLine('Location');
 
         return array(basename($location), $content);
-    }
-
-    private function doPostFile($url, array $requestBody, $expectedCode)
-    {
-        if ($this->apiKey === false || empty($this->apiKey)) {
-            throw new ApiException('Invalid API Key', 401);
-        }
-
-        if ($this->isDebug) {
-            $this->debug(json_encode($requestBody));
-        }
-
-        $ch = curl_init();
-        curl_setopt_array($ch, array(
-            CURLOPT_URL            => self::API_URL . $url,
-            CURLOPT_POST           => 1,
-            CURLOPT_POSTFIELDS     => $requestBody,
-            CURLOPT_RETURNTRANSFER => true,
-        ));
-
-        $response = curl_exec($ch);
-        $info = curl_getinfo($ch);
-
-        curl_close($ch);
-
-        $this->checkStatus($info['http_code'], 'POST', $expectedCode);
-
-        return $response;
     }
     
     /**
@@ -704,38 +677,53 @@ class DocsApiClient {
     }
 
     /**
-     * @param $collectionId
-     * @param $file
-     * @param null $categoryId
-     * @param null $name
-     * @param null $slug
-     * @param null $type
+     * @param UploadArticle $uploadArticle
      * @param bool $reload
      * @return bool|Article
      * @throws ApiException
      */
-    public function uploadArticle($collectionId, $file, $categoryId = null, $name = null, $slug = null,
-        $type = null, $reload = false)
+    public function uploadArticle(UploadArticle $uploadArticle, $reload = false)
     {
-
-        if (!file_exists($file)) {
-            throw new ApiException("Unable to locate file: %s", $file);
+        if (!file_exists($uploadArticle->getFile())) {
+            throw new ApiException("Unable to locate file: %s", $uploadArticle->getFile());
         }
 
-        $params = array(
-            'key'          => $this->apiKey,
-            'collectionId' => $collectionId,
-            'file'         => '@' . $file,
-            'name'         => empty($name) ? pathinfo($file, PATHINFO_FILENAME) : $name,
-            'categoryId'   => $categoryId,
-            'slug'         => $slug,
-            'type'         => $type,
-            'reload'       => $reload
-        );
+        $multipart = [
+            [
+                'name' => 'key',
+                'contents' => $this->apiKey
+            ],
+            [
+                'name' => 'collectionId',
+                'contents' => $uploadArticle->getCollectionId()
+            ],
+            [
+                'name' => 'file',
+                'contents' => fopen($uploadArticle->getFile(), 'r')
+            ],
+            [
+                'name' => 'categoryId',
+                'contents' => $uploadArticle->getCategoryId()
+            ],
+            [
+                'name' => 'slug',
+                'contents' => $uploadArticle->getSlug()
+            ],
+            [
+                'name' => 'type',
+                'contents' => $uploadArticle->getType()
+            ],
+            [
+                'name' => 'reload',
+                'contents' => $reload
+            ]
+        ];
 
-        $response = $this->doPostFile("articles/upload", $this->prepareParams($params), $reload ? 200 : 201);
+        $response = $this->doPostMultipart("articles/upload", $multipart, $reload ? 200 : 201);
 
-        return $reload ? new Article(reset(json_decode($response))) : true;
+        $articleData = (array)$response;
+        
+        return $reload ? new Article(reset($articleData)) : true;
     }
 
     /**

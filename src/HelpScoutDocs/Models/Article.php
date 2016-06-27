@@ -3,11 +3,6 @@
 namespace HelpScoutDocs\Models;
 
 class Article extends ArticleRef {
-
-    const ARTICLE_TYPE_HTML = 'html';
-    const ARTICLE_TYPE_TEXT = 'text';
-    const ARTICLE_TYPE_MARKDOWN = 'markdown';
-
     /**
      * @var string
      */
