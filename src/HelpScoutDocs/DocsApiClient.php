@@ -1,8 +1,12 @@
 <?php
 
 namespace HelpScoutDocs;
+
+use GuzzleHttp\Client;
 use HelpScoutDocs\Models\Article;
+use HelpScoutDocs\Models\ArticleAsset;
 use HelpScoutDocs\Models\Category;
+use HelpScoutDocs\Models\SettingsAsset;
 use HelpScoutDocs\Models\Site;
 use HelpScoutDocs\Models\Collection;
 
@@ -23,7 +27,16 @@ class DocsApiClient {
     private $apiKey    = false;
     private $isDebug   = false;
     private $debugDir  = false;
-    
+
+    /**
+     * @var Client
+     */
+    private $httpClient;
+
+    public function __construct()
+    {
+        $this->httpClient = new Client();
+    }
     /**
      * Put ApiClient in debug mode or note.
      *
@@ -975,5 +988,116 @@ class DocsApiClient {
      */
     public function deleteSite($siteId) {
         $this->doDelete(sprintf("sites/%s", $siteId), 200);
+    }
+
+    private function doPostMultipart($url, array $multipart, $expectedCode) {
+        if ($this->apiKey === false || empty($this->apiKey)) {
+            throw new ApiException('Invalid API Key', 401);
+        }
+
+        if ($this->isDebug) {
+            $this->debug(json_encode($multipart));
+        }
+
+        $response = $this->httpClient->request('POST', self::API_URL . $url, [
+            'multipart' => $multipart,
+            'auth' => [$this->apiKey, 'X']
+        ]);
+
+        $content = $response->getBody()->getContents();
+
+        $this->checkStatus($response->getStatusCode(), 'POST', $expectedCode);
+
+        return json_decode($content);
+    }
+
+    /**
+     * @param ArticleAsset $articleAsset
+     * @return ArticleAsset
+     * @throws ApiException
+     */
+    public function createArticleAsset(ArticleAsset $articleAsset)
+    {
+        if (!file_exists($articleAsset->getFile())) {
+            throw new ApiException("Unable to locate file: %s", $articleAsset->getFile());
+        }
+
+        if (empty($articleAsset->getArticleId())) {
+            throw new ApiException("articleId is empty or not provided");
+        }
+
+        if (empty($articleAsset->getAssetType())) {
+            throw new ApiException("assetType is empty or not provided");
+        }
+
+        $multipart = [
+            [
+                'name' => 'key',
+                'contents' => $this->apiKey
+            ],
+            [
+                'name' => 'articleId',
+                'contents' => $articleAsset->getArticleId()
+            ],
+            [
+                'name' => 'assetType',
+                'contents' => $articleAsset->getAssetType()
+            ],
+            [
+                'name' => 'file',
+                'contents' => fopen($articleAsset->getFile(), 'r')
+            ]
+        ];
+        
+        $uploadedAsset = $this->doPostMultipart('assets/article', $multipart, 201);
+
+        $articleAsset->setFileLink($uploadedAsset->filelink);
+
+        return $articleAsset;
+    }
+
+    /**
+     * @param SettingsAsset $settingsAsset
+     * @return SettingsAsset
+     * @throws ApiException
+     */
+    public function createSettingsAsset(SettingsAsset $settingsAsset)
+    {
+        if (!file_exists($settingsAsset->getFile())) {
+            throw new ApiException("Unable to locate file: %s", $settingsAsset->getFile());
+        }
+
+        if (empty($settingsAsset->getAssetType())) {
+            throw new ApiException("assetType is empty or not provided");
+        }
+
+        if (empty($settingsAsset->getSiteId())) {
+            throw new ApiException("siteId is empty or not provided");
+        }
+
+        $multipart = [
+            [
+                'name' => 'key',
+                'contents' => $this->apiKey
+            ],
+            [
+                'name' => 'assetType',
+                'contents' => $settingsAsset->getAssetType()
+            ],
+            [
+                'name' => 'siteId',
+                'contents' => $settingsAsset->getSiteId()
+            ],
+            [
+                'name' => 'file',
+                'contents' => fopen($settingsAsset->getFile(), 'r')
+            ]
+        ];
+
+        $uploadedAsset = $this->doPostMultipart('assets/settings', $multipart, 201);
+
+        $settingsAsset->setFileLink($uploadedAsset->filelink);
+
+        return $settingsAsset;
     }
 }
