@@ -9,8 +9,14 @@ class DocsModel {
      *
      * @return string
      */
-    public function toJson() {
+    public function toJson()
+    {
         return json_encode($this->getModelProperties());
+    }
+    
+    public function toArray()
+    {
+        return $this->getModelProperties();
     }
 
     /**
@@ -18,7 +24,8 @@ class DocsModel {
      *
      * @return array
      */
-    protected function getModelProperties() {
+    protected function getModelProperties()
+    {
         $reflector = new \ReflectionClass($this);
         $properties = array_merge($reflector->getProperties(), $reflector->getParentClass()->getProperties());
 

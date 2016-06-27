@@ -4,9 +4,25 @@ namespace HelpScoutDocs\Models;
 
 class Article extends ArticleRef {
 
+    const ARTICLE_TYPE_HTML = 'html';
+    const ARTICLE_TYPE_TEXT = 'text';
+    const ARTICLE_TYPE_MARKDOWN = 'markdown';
+
+    /**
+     * @var string
+     */
     private $text;
+
+    /**
+     * @var string
+     */
     private $code;
+
+    /**
+     * @var null|array
+     */
     private $categories;
+
     private $related;
 
     function __construct($data = null) {

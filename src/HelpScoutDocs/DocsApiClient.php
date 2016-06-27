@@ -48,7 +48,8 @@ class DocsApiClient {
      * @param  boolean|string $dir
      * @return void
      */
-    public function setDebug($bool, $dir = false) {
+    public function setDebug($bool, $dir = false)
+    {
         $this->isDebug = $bool;
         if ($dir && is_dir($dir)) {
             $this->debugDir = $dir;
@@ -60,18 +61,21 @@ class DocsApiClient {
      *
      * @param string $apiKey
      */
-    public function setKey($apiKey) {
+    public function setKey($apiKey)
+    {
         $this->apiKey = $apiKey;
     }
 
-    public function setUserAgent($userAgent) {
+    public function setUserAgent($userAgent)
+    {
         $userAgent = trim($userAgent);
         if (!empty($userAgent)) {
             $this->userAgent = $userAgent;
         }
     }
 
-    private function getUserAgent() {
+    private function getUserAgent()
+    {
         if ($this->userAgent) {
             return $this->userAgent;
         }
@@ -85,8 +89,9 @@ class DocsApiClient {
      * @param  string $modelName
      * @return \HelpScoutDocs\ResourceCollection|boolean
      */
-    private function getResourceCollection($url, $params, $method, $modelName) {
-        list($statusCode, $json) = $this->callServer($url, 'GET', $params);
+    private function getResourceCollection($url, $params, $method, $modelName)
+    {
+        list($statusCode, $json) = $this->doGet($url, $params);
 
         $this->checkStatus($statusCode, $method);
 
@@ -111,8 +116,9 @@ class DocsApiClient {
      * @param  string $modelName
      * @return bool $model|boolean
      */
-    private function getItem($url, $params, $method, $modelName) {
-        list($statusCode, $json) = $this->callServer($url, 'GET', $params);
+    private function getItem($url, $params, $method, $modelName)
+    {
+        list($statusCode, $json) = $this->doGet($url, $params);
         $this->checkStatus($statusCode, $method);
 
         $json = json_decode($json);
@@ -135,7 +141,8 @@ class DocsApiClient {
      * @return void
      * @throws \HelpScoutDocs\ApiException If the expected $statusCode isn't returned
      */
-    private function checkStatus($statusCode, $type, $expected = 200) {
+    private function checkStatus($statusCode, $type, $expected = 200)
+    {
         if (!is_array($expected)) {
             $expected = array($expected);
         }
@@ -177,13 +184,14 @@ class DocsApiClient {
     }
 
     /**
-     * @param  array  $params
-     * @param  array  $accepted
-     * @return null|array
+     * @param array $params
+     * @param array $accepted
+     * @return array
      */
-    private function getParams($params = null, array $accepted = array('page', 'sort', 'order', 'status', 'query')) {
+    private function getParams(array $params = [], array $accepted = ['page', 'sort', 'order', 'status', 'query'])
+    {
         if (!$params) {
-            return null;
+            return array();
         }
         foreach($params as $key => $val) {
             $key = trim($key);
@@ -223,14 +231,15 @@ class DocsApiClient {
         if ($params) {
             return $params;
         }
-        return null;
+        return array();
     }
 
     /**
      * @param array $params
      * @return array
      */
-    private function prepareParams(array $params) {
+    private function prepareParams(array $params)
+    {
         foreach($params as $key => $value) {
             if (empty($value)) {
                 unset($params[$key]);
@@ -244,7 +253,8 @@ class DocsApiClient {
      * @param  string|array $fields
      * @return string
      */
-    private function validateFieldSelectors($fields) {
+    private function validateFieldSelectors($fields)
+    {
         if (is_string($fields)) {
             $fields = explode(',', $fields);
         }
@@ -261,58 +271,39 @@ class DocsApiClient {
     }
 
     /**
-     * @param  string   $url
-     * @param  boolean  $requestBody
-     * @param  integer  $expectedCode
+     * @param $url
+     * @param array $requestBody
+     * @param $expectedCode
      * @return array
-     * @throws \HelpScoutDocs\ApiException If no API key is provided
+     * @throws ApiException
      */
-    private function doPost($url, $requestBody=false, $expectedCode) {
+    private function doPost($url, array $requestBody, $expectedCode)
+    {
         if ($this->apiKey === false || empty($this->apiKey)) {
             throw new ApiException('Invalid API Key', 401);
         }
 
         if ($this->isDebug) {
-            $this->debug($requestBody);
+            $this->debug(json_encode($requestBody));
         }
 
-        $httpHeaders = array();
-        if ($requestBody !== false) {
-            $httpHeaders[] = 'Accept: application/json';
-            $httpHeaders[] = 'Content-Type: application/json';
-            $httpHeaders[] = 'Content-Length: ' . strlen($requestBody);
-        }
+        $response = $this->httpClient->request('POST', self::API_URL . $url, [
+            'json' => $requestBody,
+            'auth' => [$this->apiKey, 'X']
+        ]);
 
-        $ch = curl_init();
-        curl_setopt_array($ch, array(
-                CURLOPT_URL            => self::API_URL . $url,
-                CURLOPT_CUSTOMREQUEST  => 'POST',
-                CURLOPT_HTTPHEADER     => $httpHeaders,
-                CURLOPT_POSTFIELDS     => $requestBody,
-                CURLOPT_HTTPAUTH       => CURLAUTH_BASIC,
-                CURLOPT_USERPWD        => $this->apiKey . ':X',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT        => 30,
-                CURLOPT_CONNECTTIMEOUT => 30,
-                CURLOPT_FAILONERROR    => true,
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_SSL_VERIFYHOST => 2,
-                CURLOPT_HEADER         => true,
-                CURLOPT_ENCODING       => 'gzip,deflate',
-                CURLOPT_USERAGENT      => $this->getUserAgent()
-            ));
+        $content = $response->getBody()->getContents();
+        $statusCode = $response->getStatusCode();
 
-        $response = curl_exec($ch);
-        $info = curl_getinfo($ch);
+        $this->checkStatus($statusCode, 'POST', $expectedCode);
 
-        curl_close($ch);
+        $location = $response->getHeaderLine('Location');
 
-        $this->checkStatus($info['http_code'], 'POST', $expectedCode);
-
-        return array($this->getIdFromLocation($response, $info['header_size']), substr($response, $info['header_size']));
+        return array(basename($location), $content);
     }
 
-    private function doPostFile($url, array $requestBody, $expectedCode) {
+    private function doPostFile($url, array $requestBody, $expectedCode)
+    {
         if ($this->apiKey === false || empty($this->apiKey)) {
             throw new ApiException('Invalid API Key', 401);
         }
@@ -338,33 +329,7 @@ class DocsApiClient {
 
         return $response;
     }
-
-    /**
-     * @param  string  $response
-     * @param  integer $headerSize
-     * @return boolean|string
-     */
-    private function getIdFromLocation($response, $headerSize) {
-        $location = false;
-        $headerText = substr($response, 0, $headerSize);
-        $headerLines = explode("\r\n", $headerText);
-
-        foreach($headerLines as $line) {
-            $parts = explode(': ',$line);
-            if (strtolower($parts[0]) == 'location') {
-                $location = chop($parts[1]);
-                break;
-            }
-        }
-
-        $id = false;
-        if ($location) {
-            $start = strrpos($location, '/') + 1;
-            $id = substr($location, $start, strlen($location));
-        }
-        return $id;
-    }
-
+    
     /**
      * @param  string $url
      * @param  string $requestBody
@@ -372,7 +337,8 @@ class DocsApiClient {
      * @throws ApiException
      * @return void
      */
-    private function doPut($url, $requestBody, $expectedCode) {
+    private function doPut($url, $requestBody, $expectedCode)
+    {
         if ($this->apiKey === false || empty($this->apiKey)) {
             throw new ApiException('Invalid API Key', 401);
         }
@@ -419,7 +385,8 @@ class DocsApiClient {
      * @throws ApiException
      * @return void
      */
-    private function doDelete($url, $expectedCode) {
+    private function doDelete($url, $expectedCode)
+    {
         if ($this->apiKey === false || empty($this->apiKey)) {
             throw new ApiException('Invalid API Key', 401);
         }
@@ -455,60 +422,38 @@ class DocsApiClient {
     }
 
     /**
-     * @param  string $url
-     * @param  string $method
-     * @param  array $params
-     * @throws ApiException
+     * @param $url
+     * @param array $params
      * @return array
+     * @throws ApiException
      */
-    private function callServer($url, $method='GET', $params=null) {
+    public function doGet($url, array $params)
+    {
         if ($this->apiKey === false || empty($this->apiKey)) {
             throw new ApiException('Invalid API Key', 401);
         }
 
-        $ch = curl_init();
-        $opts = array(
-            CURLOPT_URL            => self::API_URL . $url,
-            CURLOPT_CUSTOMREQUEST  => $method,
-            CURLOPT_HTTPHEADER     => array(
-                'Accept: application/json',
-                'Content-Type: application/json'
-            ),
-            CURLOPT_HTTPAUTH       => CURLAUTH_BASIC,
-            CURLOPT_USERPWD        => $this->apiKey . ':X',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => 30,
-            CURLOPT_CONNECTTIMEOUT => 30,
-            CURLOPT_FAILONERROR    => true,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_HEADER         => false,
-            CURLOPT_ENCODING       => 'gzip,deflate',
-            CURLOPT_USERAGENT      => $this->getUserAgent()
-        );
-        if ($params) {
-            if ($method=='GET') {
-                $opts[CURLOPT_URL] = self::API_URL . $url . '?' . http_build_query($params);
-            } else {
-                $opts[CURLOPT_POSTFIELDS] = $params;
-            }
-        }
-        curl_setopt_array($ch, $opts);
+        $response = $this->httpClient->request('GET', self::API_URL . $url, [
+            'query' => $params,
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ],
+            'auth' => [$this->apiKey, 'X']
+        ]);
 
-        $response   = curl_exec($ch);
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $content = $response->getBody()->getContents();
+        $statusCode = $response->getStatusCode();
 
-        curl_close($ch);
-
-        return array($statusCode, $response);
+        return array($statusCode, $content);
     }
 
     /**
-     * @param  string $mesg
-     * @return void
+     * @param $message
      */
-    private function debug($mesg) {
-        $text = strftime('%b %d %H:%M:%S') . ': ' . $mesg . PHP_EOL;
+    private function debug($message)
+    {
+        $text = strftime('%b %d %H:%M:%S') . ': ' . $message . PHP_EOL;
 
         if ($this->debugDir) {
             file_put_contents($this->debugDir . DIRECTORY_SEPARATOR . 'apiclient.log', $text, FILE_APPEND);
@@ -525,7 +470,8 @@ class DocsApiClient {
      * @param string $order
      * @return bool|Collection
      */
-    public function getCollections($page = 1, $siteId = '', $visibility = 'all', $sort = 'order', $order = 'asc') {
+    public function getCollections($page = 1, $siteId = '', $visibility = 'all', $sort = 'order', $order = 'asc')
+    {
         $params = array(
             'page'       => $page,
             'siteId'     => $siteId,
@@ -549,7 +495,8 @@ class DocsApiClient {
      * @param string $order
      * @return bool|Collection
      */
-    public function getCategories($collectionId, $page = 1, $sort = 'order', $order = 'asc') {
+    public function getCategories($collectionId, $page = 1, $sort = 'order', $order = 'asc')
+    {
         $params = array(
             'page'  => $page,
             'sort'  => $sort,
@@ -572,7 +519,8 @@ class DocsApiClient {
      * @param string $order
      * @return bool|Collection
      */
-    public function getArticles($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc') {
+    public function getArticles($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc')
+    {
         $params = array(
             'page'   => $page,
             'status' => $status,
@@ -592,7 +540,8 @@ class DocsApiClient {
      * @param int $page
      * @return bool|Collection
      */
-    public function getSites($page = 1) {
+    public function getSites($page = 1)
+    {
         $params = array('page' => $page);
 
         return $this->getResourceCollection(
@@ -607,7 +556,8 @@ class DocsApiClient {
      * @param $siteId
      * @return bool
      */
-    public function getSite($siteId) {
+    public function getSite($siteId)
+    {
         return $this->getItem(
             sprintf("sites/%s", $siteId),
             array(),
@@ -624,7 +574,8 @@ class DocsApiClient {
      * @param string $visibility
      * @return bool|Collection
      */
-    public function searchArticles($query = '*', $page = 1, $collectionId = '', $status = 'all', $visibility = 'all') {
+    public function searchArticles($query = '*', $page = 1, $collectionId = '', $status = 'all', $visibility = 'all')
+    {
         $params = array(
             'query'        => $query,
             'page'         => $page,
@@ -649,7 +600,8 @@ class DocsApiClient {
      * @param string $order
      * @return bool|Collection
      */
-    public function getRelatedArticles($articleId, $page = 1, $status = 'all', $sort = 'order', $order = 'desc') {
+    public function getRelatedArticles($articleId, $page = 1, $status = 'all', $sort = 'order', $order = 'desc')
+    {
         $params = array(
             'page'   => $page,
             'status' => $status,
@@ -670,7 +622,8 @@ class DocsApiClient {
      * @param int $page
      * @return bool|Collection
      */
-    public function getRevisions($articleId, $page = 1) {
+    public function getRevisions($articleId, $page = 1)
+    {
         $params = array('page' => $page);
 
         return $this->getResourceCollection(
@@ -686,7 +639,8 @@ class DocsApiClient {
      * @param bool $draft
      * @return bool
      */
-    public function getArticle($articleIdOrNumber, $draft = false) {
+    public function getArticle($articleIdOrNumber, $draft = false)
+    {
         $params = array('draft' => $draft);
 
         return $this->getItem(
@@ -701,7 +655,8 @@ class DocsApiClient {
      * @param $revisionId
      * @return bool
      */
-    public function getRevision($revisionId) {
+    public function getRevision($revisionId)
+    {
         return $this->getItem(
             sprintf("revisions/%s", $revisionId),
             array(),
@@ -716,14 +671,17 @@ class DocsApiClient {
      * @return bool|Article
      * @throws ApiException
      */
-    public function createArticle(Article $article, $reload = false) {
+    public function createArticle(Article $article, $reload = false)
+    {
         $url = "articles";
 
+        $requestBody = $article->toArray();
+
         if ($reload) {
-            $url .= "?reload=true";
+            $requestBody['reload'] = true;
         }
 
-        list($id, ) = $this->doPost($url, $article->toJson(), 200);
+        list($id, ) = $this->doPost($url, $requestBody, 200);
         $article->setId($id);
 
         return $reload ? $article : true;
@@ -734,7 +692,8 @@ class DocsApiClient {
      * @param bool $reload
      * @throws ApiException
      */
-    public function updateArticle(Article $article, $reload = false) {
+    public function updateArticle(Article $article, $reload = false)
+    {
         $url = sprintf("articles/%s", $article->getId());
 
         if ($reload) {
@@ -756,7 +715,8 @@ class DocsApiClient {
      * @throws ApiException
      */
     public function uploadArticle($collectionId, $file, $categoryId = null, $name = null, $slug = null,
-        $type = null, $reload = false) {
+        $type = null, $reload = false)
+    {
 
         if (!file_exists($file)) {
             throw new ApiException("Unable to locate file: %s", $file);
@@ -782,14 +742,16 @@ class DocsApiClient {
      * @param $articleId
      * @param int $count
      */
-    public function updateViewCount($articleId, $count = 1) {
+    public function updateViewCount($articleId, $count = 1)
+    {
         $this->doPut(sprintf("articles/%s/views", $articleId), json_encode(array('count' => $count)), 200);
     }
 
     /**
      * @param $articleId
      */
-    public function deleteArticle($articleId) {
+    public function deleteArticle($articleId)
+    {
         $this->doDelete(sprintf("articles/%s", $articleId), 200);
     }
 
@@ -797,14 +759,16 @@ class DocsApiClient {
      * @param $articleId
      * @param $text
      */
-    public function saveArticleDraft($articleId, $text) {
+    public function saveArticleDraft($articleId, $text)
+    {
         $this->doPut(sprintf("articles/%s/drafts", $articleId), json_encode(array('text' => $text)), 200);
     }
 
     /**
      * @param $articleId
      */
-    public function deleteArticleDraft($articleId) {
+    public function deleteArticleDraft($articleId)
+    {
         $this->doDelete(sprintf("articles/%s/drafts", $articleId), 200);
     }
 
@@ -812,7 +776,8 @@ class DocsApiClient {
      * @param $categoryIdOrNumber
      * @return bool
      */
-    public function getCategory($categoryIdOrNumber) {
+    public function getCategory($categoryIdOrNumber)
+    {
         return $this->getItem(
             sprintf("categories/%s", $categoryIdOrNumber),
             array(),
@@ -827,14 +792,17 @@ class DocsApiClient {
      * @return bool|Category
      * @throws ApiException
      */
-    public function createCategory(Category $category, $reload = false) {
+    public function createCategory(Category $category, $reload = false)
+    {
         $url = "categories";
 
+        $requestBody = $category->toArray();
+
         if ($reload) {
-            $url .= "?reload=true";
+            $requestBody['reload'] = true;
         }
 
-        list($id, ) = $this->doPost($url, $category->toJson(), $reload ? 200 : 201);
+        list($id, ) = $this->doPost($url, $requestBody, $reload ? 200 : 201);
         $category->setId($id);
 
         return $reload ? $category : true;
@@ -845,7 +813,8 @@ class DocsApiClient {
      * @param bool $reload
      * @throws ApiException
      */
-    public function updateCategory(Category $category, $reload = false) {
+    public function updateCategory(Category $category, $reload = false)
+    {
         $url = sprintf("categories/%s", $category->getId());
 
         if ($reload) {
@@ -877,7 +846,8 @@ class DocsApiClient {
      *
      * @throws ApiException
      */
-    public function updateCategoryOrder($collectionId, array $categories) {
+    public function updateCategoryOrder($collectionId, array $categories)
+    {
         $this->doPut(
             sprintf("collections/%s/categories", $collectionId),
             json_encode($categories),
@@ -889,7 +859,8 @@ class DocsApiClient {
      * @param $categoryId
      * @throws ApiException
      */
-    public function deleteCategory($categoryId) {
+    public function deleteCategory($categoryId)
+    {
         $this->doDelete(sprintf("categories/%s", $categoryId), 200);
     }
 
@@ -897,7 +868,8 @@ class DocsApiClient {
      * @param $collectionIdOrNumber
      * @return bool
      */
-    public function getCollection($collectionIdOrNumber) {
+    public function getCollection($collectionIdOrNumber)
+    {
         return $this->getItem(
             sprintf("collections/%s", $collectionIdOrNumber),
             array(),
@@ -912,14 +884,17 @@ class DocsApiClient {
      * @return bool|Collection
      * @throws ApiException
      */
-    public function createCollection(Collection $collection, $reload = false) {
+    public function createCollection(Collection $collection, $reload = false)
+    {
         $url = "collections";
 
+        $requestBody = $collection->toArray();
+
         if ($reload) {
-            $url .= "?reload=true";
+            $requestBody['reload'] = true;
         }
 
-        list($id, ) = $this->doPost($url, $collection->toJson(), $reload ? 200 : 201);
+        list($id, ) = $this->doPost($url, $requestBody, $reload ? 200 : 201);
         $collection->setId($id);
 
         return $reload ? $collection : true;
@@ -930,7 +905,8 @@ class DocsApiClient {
      * @param bool $reload
      * @throws ApiException
      */
-    public function updateCollection(Collection $collection, $reload = false) {
+    public function updateCollection(Collection $collection, $reload = false)
+    {
         $url = sprintf("collections/%s", $collection->getId());
 
         if ($reload) {
@@ -944,7 +920,8 @@ class DocsApiClient {
      * @param $collectionId
      * @throws ApiException
      */
-    public function deleteCollection($collectionId) {
+    public function deleteCollection($collectionId)
+    {
         $this->doDelete(sprintf("collections/%s", $collectionId), 200);
     }
 
@@ -954,14 +931,17 @@ class DocsApiClient {
      * @return bool|Site
      * @throws ApiException
      */
-    public function createSite(Site $site, $reload = false) {
+    public function createSite(Site $site, $reload = false)
+    {
         $url = "sites";
 
+        $requestBody = $site->toArray();
+
         if ($reload) {
-            $url .= "?reload=true";
+            $requestBody['reload'] = true;
         }
 
-        list($id, ) = $this->doPost($url, $site->toJson(), $reload ? 200 : 201);
+        list($id, ) = $this->doPost($url, $requestBody, $reload ? 200 : 201);
         $site->setId($id);
 
         return $reload ? $site : true;
@@ -972,7 +952,8 @@ class DocsApiClient {
      * @param bool $reload
      * @throws ApiException
      */
-    public function updateSite(Site $site, $reload = false) {
+    public function updateSite(Site $site, $reload = false)
+    {
         $url = sprintf("sites/%s", $site->getId());
 
         if ($reload) {
@@ -986,11 +967,20 @@ class DocsApiClient {
      * @param $siteId
      * @throws ApiException
      */
-    public function deleteSite($siteId) {
+    public function deleteSite($siteId)
+    {
         $this->doDelete(sprintf("sites/%s", $siteId), 200);
     }
 
-    private function doPostMultipart($url, array $multipart, $expectedCode) {
+    /**
+     * @param $url
+     * @param array $multipart
+     * @param $expectedCode
+     * @return mixed
+     * @throws ApiException
+     */
+    private function doPostMultipart($url, array $multipart, $expectedCode)
+    {
         if ($this->apiKey === false || empty($this->apiKey)) {
             throw new ApiException('Invalid API Key', 401);
         }
