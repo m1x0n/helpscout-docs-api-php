@@ -9,7 +9,6 @@ Inspired and followed by original [https://github.com/helpscout/helpscout-api-ph
 Requirements
 ---------------------
 * PHP >= 5.5.0
-* curl
 
 Installation
 --------------------
