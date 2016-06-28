@@ -5,6 +5,10 @@ namespace HelpScoutDocs;
 use GuzzleHttp\Client;
 use HelpScoutDocs\Models\Article;
 use HelpScoutDocs\Models\ArticleAsset;
+use HelpScoutDocs\Models\ArticleRef;
+use HelpScoutDocs\Models\ArticleRevision;
+use HelpScoutDocs\Models\ArticleRevisionRef;
+use HelpScoutDocs\Models\ArticleSearch;
 use HelpScoutDocs\Models\Category;
 use HelpScoutDocs\Models\SettingsAsset;
 use HelpScoutDocs\Models\Site;
@@ -84,17 +88,17 @@ class DocsApiClient {
     }
 
     /**
-     * @param  string $url
-     * @param  array  $params
-     * @param  string $method
-     * @param  string $modelName
-     * @return \HelpScoutDocs\ResourceCollection|boolean
+     * @param string $url
+     * @param string $params
+     * @param string $modelClass
+     * @return ResourceCollection|mixed
+     * @throws ApiException
      */
-    private function getResourceCollection($url, $params, $method, $modelName)
+    private function getResourceCollection($url, $params, $modelClass)
     {
         list($statusCode, $json) = $this->doGet($url, $params);
 
-        $this->checkStatus($statusCode, $method);
+        $this->checkStatus($statusCode, 'GET');
 
         $json = json_decode($json);
         $json = reset($json);
@@ -103,7 +107,6 @@ class DocsApiClient {
             if (isset($params['fields'])) {
                 return $json;
             } else {
-                $modelClass = __NAMESPACE__ . "\\Models\\" . $modelName;
                 return new ResourceCollection($json, $modelClass);
             }
         }
@@ -111,24 +114,23 @@ class DocsApiClient {
     }
 
     /**
-     * @param  string $url
-     * @param  array $params
-     * @param  string $method
-     * @param  string $modelName
-     * @return bool $model|boolean
+     * @param $url
+     * @param $params
+     * @param $modelClass
+     * @return bool|mixed
+     * @throws ApiException
      */
-    private function getItem($url, $params, $method, $modelName)
+    private function getItem($url, $params, $modelClass)
     {
         list($statusCode, $json) = $this->doGet($url, $params);
-        $this->checkStatus($statusCode, $method);
+        $this->checkStatus($statusCode, 'GET');
 
         $json = json_decode($json);
         $json = reset($json);
         if ($json) {
-            if (isset($params['fields']) || !$modelName) {
+            if (isset($params['fields']) || !$modelClass) {
                 return $json;
             } else {
-                $modelClass = __NAMESPACE__ . "\\Models\\" . $modelName;
                 return new $modelClass($json);
             }
         }
@@ -425,8 +427,7 @@ class DocsApiClient {
         return $this->getResourceCollection(
             "collections",
             $this->getParams($params),
-            'getCategories',
-            'Collection'
+            Collection::class
         );
     }
 
@@ -448,8 +449,7 @@ class DocsApiClient {
         return $this->getResourceCollection(
             sprintf("collections/%s/categories", $collectionId),
             $this->getParams($params),
-            'getCategories',
-            'Category'
+            Category::class
         );
     }
 
@@ -473,8 +473,7 @@ class DocsApiClient {
         return $this->getResourceCollection(
             sprintf("categories/%s/articles", $categoryId),
             $this->getParams($params),
-            'getCategories',
-            'ArticleRef'
+            ArticleRef::class
         );
     }
 
@@ -489,8 +488,7 @@ class DocsApiClient {
         return $this->getResourceCollection(
             "sites",
             $this->getParams($params),
-            'getSites',
-            'Site'
+            Site::class
         );
     }
 
@@ -503,8 +501,7 @@ class DocsApiClient {
         return $this->getItem(
             sprintf("sites/%s", $siteId),
             array(),
-            'getSite',
-            'Site'
+            Site::class
         );
     }
 
@@ -529,8 +526,7 @@ class DocsApiClient {
         return $this->getResourceCollection(
             "search/articles",
             $this->getParams($params),
-            'searchArticles',
-            'ArticleSearch'
+            ArticleSearch::class
         );
     }
 
@@ -554,8 +550,7 @@ class DocsApiClient {
         return $this->getResourceCollection(
             sprintf("articles/%s/related", $articleId),
             $this->getParams($params),
-            "getRelatedArticles",
-            'ArticleRef'
+            ArticleRef::class
         );
     }
 
@@ -571,8 +566,7 @@ class DocsApiClient {
         return $this->getResourceCollection(
             sprintf("articles/%s/revisions", $articleId),
             $this->getParams($params),
-            "getRevisions",
-            'ArticleRevisionRef'
+            ArticleRevisionRef::class
         );
     }
 
@@ -588,8 +582,7 @@ class DocsApiClient {
         return $this->getItem(
             sprintf("articles/%s", $articleIdOrNumber),
             $this->getParams($params),
-            "getArticle",
-            'Article'
+            Article::class
         );
     }
 
@@ -602,8 +595,7 @@ class DocsApiClient {
         return $this->getItem(
             sprintf("revisions/%s", $revisionId),
             array(),
-            "getRevision",
-            'ArticleRevision'
+            ArticleRevision::class
         );
     }
 
@@ -763,8 +755,7 @@ class DocsApiClient {
         return $this->getItem(
             sprintf("categories/%s", $categoryIdOrNumber),
             array(),
-            "getArticle",
-            'Category'
+            Category::class
         );
     }
 
@@ -872,8 +863,7 @@ class DocsApiClient {
         return $this->getItem(
             sprintf("collections/%s", $collectionIdOrNumber),
             array(),
-            "getArticle",
-            'Collection'
+            Collection::class
         );
     }
 
