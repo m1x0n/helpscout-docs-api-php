@@ -14,7 +14,7 @@ use HelpScoutDocs\Models\UploadArticle;
 /**
  * Class DocsApiClient
  *
- * This class is mostly replicated from ApiClient
+ * This class is partially replicated from ApiClient
  * https://github.com/helpscout/helpscout-api-php
  *
  * @package HelpScoutDocs
@@ -272,9 +272,9 @@ class DocsApiClient {
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @param array $requestBody
-     * @param $expectedCode
+     * @param integer $expectedCode
      * @return array
      * @throws ApiException
      */
@@ -302,59 +302,40 @@ class DocsApiClient {
 
         return array(basename($location), $content);
     }
-    
+
     /**
-     * @param  string $url
-     * @param  string $requestBody
-     * @param  integer $expectedCode
+     * @param string $url
+     * @param array $requestBody
+     * @param integer $expectedCode
+     * @return mixed
      * @throws ApiException
-     * @return void
      */
-    private function doPut($url, $requestBody, $expectedCode)
+    private function doPut($url, array $requestBody, $expectedCode)
     {
         if ($this->apiKey === false || empty($this->apiKey)) {
             throw new ApiException('Invalid API Key', 401);
         }
+        
         if ($this->isDebug) {
-            $this->debug($requestBody);
+            $this->debug(json_encode($requestBody));
         }
 
-        $ch = curl_init();
+        $response = $this->httpClient->request('PUT', self::API_URL . $url, [
+            'json' => $requestBody,
+            'auth' => [$this->apiKey, 'X']
+        ]);
 
-        curl_setopt_array($ch, array(
-                CURLOPT_URL            => self::API_URL . $url,
-                CURLOPT_CUSTOMREQUEST  => 'PUT',
-                CURLOPT_HTTPHEADER     => array(
-                    'Accept: application/json',
-                    'Content-Type: application/json',
-                    'Content-Length: ' . strlen($requestBody)
-                ),
-                CURLOPT_POSTFIELDS     => $requestBody,
-                CURLOPT_HTTPAUTH       => CURLAUTH_BASIC,
-                CURLOPT_USERPWD        => $this->apiKey . ':X',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT        => 30,
-                CURLOPT_CONNECTTIMEOUT => 30,
-                CURLOPT_FAILONERROR    => true,
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_SSL_VERIFYHOST => 2,
-                CURLOPT_HEADER         => true,
-                CURLOPT_ENCODING       => 'gzip,deflate',
-                CURLOPT_USERAGENT      => $this->getUserAgent()
-            ));
-
-        /** @noinspection PhpUnusedLocalVariableInspection */
-        $response = curl_exec($ch);
-        $info = curl_getinfo($ch);
-
-        curl_close($ch);
-
-        $this->checkStatus($info['http_code'], 'PUT', $expectedCode);
+        $content = $response->getBody()->getContents();
+        $statusCode = $response->getStatusCode();
+        
+        $this->checkStatus($statusCode, 'PUT', $expectedCode);
+        
+        return json_decode($content);
     }
 
     /**
-     * @param  string $url [description]
-     * @param  integer $expectedCode [description]
+     * @param  string $url
+     * @param  integer $expectedCode
      * @throws ApiException
      * @return void
      */
@@ -367,31 +348,14 @@ class DocsApiClient {
         if ($this->isDebug) {
             $this->debug($url);
         }
-        $ch = curl_init();
 
-        curl_setopt_array($ch, array(
-                CURLOPT_URL            => self::API_URL . $url,
-                CURLOPT_CUSTOMREQUEST  => 'DELETE',
-                CURLOPT_HTTPAUTH       => CURLAUTH_BASIC,
-                CURLOPT_USERPWD        => $this->apiKey . ':X',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT        => 30,
-                CURLOPT_CONNECTTIMEOUT => 30,
-                CURLOPT_FAILONERROR    => true,
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_SSL_VERIFYHOST => 2,
-                CURLOPT_HEADER         => true,
-                CURLOPT_ENCODING       => 'gzip,deflate',
-                CURLOPT_USERAGENT      => $this->getUserAgent()
-            ));
+        $response = $this->httpClient->request('DELETE', self::API_URL . $url, [
+            'auth' => [$this->apiKey, 'X']
+        ]);
+        
+        $statusCode = $response->getStatusCode();
 
-        /** @noinspection PhpUnusedLocalVariableInspection */
-        $response = curl_exec($ch);
-        $info = curl_getinfo($ch);
-
-        curl_close($ch);
-
-        $this->checkStatus($info['http_code'], 'DELETE', $expectedCode);
+        $this->checkStatus($statusCode, 'DELETE', $expectedCode);
     }
 
     /**
@@ -669,11 +633,13 @@ class DocsApiClient {
     {
         $url = sprintf("articles/%s", $article->getId());
 
+        $requestBody = $article->toArray();
+        
         if ($reload) {
-            $url .= "?reload=true";
+            $requestBody['reload'] = true;
         }
 
-        $this->doPut($url, $article->toJson(), 200);
+        $this->doPut($url, $requestBody, 200);
     }
 
     /**
@@ -732,7 +698,11 @@ class DocsApiClient {
      */
     public function updateViewCount($articleId, $count = 1)
     {
-        $this->doPut(sprintf("articles/%s/views", $articleId), json_encode(array('count' => $count)), 200);
+        $this->doPut(
+            sprintf("articles/%s/views", $articleId),
+            ['count' => $count],
+            200
+        );
     }
 
     /**
@@ -749,7 +719,11 @@ class DocsApiClient {
      */
     public function saveArticleDraft($articleId, $text)
     {
-        $this->doPut(sprintf("articles/%s/drafts", $articleId), json_encode(array('text' => $text)), 200);
+        $this->doPut(
+            sprintf("articles/%s/drafts", $articleId),
+            ['text' => $text],
+            200
+        );
     }
 
     /**
@@ -805,11 +779,13 @@ class DocsApiClient {
     {
         $url = sprintf("categories/%s", $category->getId());
 
+        $requestBody = $category->toArray();
+        
         if ($reload) {
-            $url .= "?reload=true";
+            $requestBody['reload'] = true;
         }
 
-        $this->doPut($url, $category->toJson(), 200);
+        $this->doPut($url, $requestBody, 200);
     }
 
     /**
@@ -838,7 +814,7 @@ class DocsApiClient {
     {
         $this->doPut(
             sprintf("collections/%s/categories", $collectionId),
-            json_encode($categories),
+            $categories,
             200
         );
     }
@@ -897,11 +873,13 @@ class DocsApiClient {
     {
         $url = sprintf("collections/%s", $collection->getId());
 
+        $requestBody = $collection->toArray();
+        
         if ($reload) {
-            $url .= "?reload=true";
+            $requestBody['reload'] = true;
         }
 
-        $this->doPut($url, $collection->toJson(), 200);
+        $this->doPut($url, $requestBody, 200);
     }
 
     /**
@@ -944,11 +922,13 @@ class DocsApiClient {
     {
         $url = sprintf("sites/%s", $site->getId());
 
+        $requestBody = $site->toArray();
+        
         if ($reload) {
-            $url .= "?reload=true";
+            $requestBody['reload'] = true;
         }
 
-        $this->doPut($url, $site->toJson(), 200);
+        $this->doPut($url, $requestBody, 200);
     }
 
     /**
