@@ -178,7 +178,12 @@ class DocsApiClient {
                     throw new ApiException('Service Temporarily Unavailable', 503);
                     break;
                 default:
-                    throw new ApiException(sprintf('Method %s returned status code %d but we expected code(s) %s', $type, $statusCode, implode(',', $expected)));
+                    throw new ApiException(sprintf(
+                        'Method %s returned status code %d but we expected code(s) %s',
+                        $type,
+                        $statusCode,
+                        implode(',', $expected)
+                    ));
                     break;
             }
         }
@@ -300,7 +305,7 @@ class DocsApiClient {
 
         $location = $response->getHeaderLine('Location');
 
-        return array(basename($location), $content);
+        return array(basename($location), json_decode($content));
     }
 
     /**
@@ -364,7 +369,7 @@ class DocsApiClient {
      * @return array
      * @throws ApiException
      */
-    public function doGet($url, array $params)
+    private function doGet($url, array $params)
     {
         if ($this->apiKey === false || empty($this->apiKey)) {
             throw new ApiException('Invalid API Key', 401);
@@ -618,15 +623,22 @@ class DocsApiClient {
             $requestBody['reload'] = true;
         }
 
-        list($id, ) = $this->doPost($url, $requestBody, 200);
-        $article->setId($id);
-
-        return $reload ? $article : true;
+        list($id, $response) = $this->doPost($url, $requestBody, 200);
+        
+        if ($reload) {
+            $articleData = (array)$response;
+            $articleData = reset($articleData);
+            return new Article($articleData);
+        } else {
+            $article->setId($id);
+            return $article;
+        }
     }
 
     /**
      * @param Article $article
      * @param bool $reload
+     * @return Article
      * @throws ApiException
      */
     public function updateArticle(Article $article, $reload = false)
@@ -639,7 +651,15 @@ class DocsApiClient {
             $requestBody['reload'] = true;
         }
 
-        $this->doPut($url, $requestBody, 200);
+        $response = $this->doPut($url, $requestBody, 200);
+
+        if ($reload) {
+            $articleData = (array)$response;
+            $articleData = reset($articleData);
+            return new Article($articleData);
+        } else {
+            return $article;
+        }
     }
 
     /**
@@ -764,15 +784,22 @@ class DocsApiClient {
             $requestBody['reload'] = true;
         }
 
-        list($id, ) = $this->doPost($url, $requestBody, $reload ? 200 : 201);
-        $category->setId($id);
+        list($id, $response) = $this->doPost($url, $requestBody, $reload ? 200 : 201);
 
-        return $reload ? $category : true;
+        if ($reload) {
+            $categoryData = (array)$response;
+            $categoryData = reset($categoryData);
+            return new Category($categoryData);
+        } else {
+            $category->setId($id);
+            return $category;
+        }
     }
 
     /**
      * @param Category $category
      * @param bool $reload
+     * @return Category
      * @throws ApiException
      */
     public function updateCategory(Category $category, $reload = false)
@@ -785,7 +812,15 @@ class DocsApiClient {
             $requestBody['reload'] = true;
         }
 
-        $this->doPut($url, $requestBody, 200);
+        $response = $this->doPut($url, $requestBody, 200);
+
+        if ($reload) {
+            $categoryData = (array)$response;
+            $categoryData = reset($categoryData);
+            return new Category($categoryData);
+        } else {
+            return $category;
+        }
     }
 
     /**
@@ -858,15 +893,22 @@ class DocsApiClient {
             $requestBody['reload'] = true;
         }
 
-        list($id, ) = $this->doPost($url, $requestBody, $reload ? 200 : 201);
-        $collection->setId($id);
+        list($id, $response) = $this->doPost($url, $requestBody, $reload ? 200 : 201);
 
-        return $reload ? $collection : true;
+        if ($reload) {
+            $collectionData = (array)$response;
+            $collectionData = reset($collectionData);
+            return new Collection($collectionData);
+        } else {
+            $collection->setId($id);
+            return $collection;
+        }
     }
 
     /**
      * @param Collection $collection
      * @param bool $reload
+     * @return Collection
      * @throws ApiException
      */
     public function updateCollection(Collection $collection, $reload = false)
@@ -879,7 +921,15 @@ class DocsApiClient {
             $requestBody['reload'] = true;
         }
 
-        $this->doPut($url, $requestBody, 200);
+        $response = $this->doPut($url, $requestBody, 200);
+
+        if ($reload) {
+            $collectionData = (array)$response;
+            $collectionData = reset($collectionData);
+            return new Collection($collectionData);
+        } else {
+            return $collection;
+        }
     }
 
     /**
@@ -907,15 +957,22 @@ class DocsApiClient {
             $requestBody['reload'] = true;
         }
 
-        list($id, ) = $this->doPost($url, $requestBody, $reload ? 200 : 201);
-        $site->setId($id);
+        list($id, $response) = $this->doPost($url, $requestBody, $reload ? 200 : 201);
 
-        return $reload ? $site : true;
+        if ($reload) {
+            $siteData = (array)$response;
+            $siteData = reset($siteData);
+            return new Site($siteData);
+        } else {
+            $site->setId($id);
+            return $site;
+        }
     }
 
     /**
      * @param Site $site
      * @param bool $reload
+     * @return Site
      * @throws ApiException
      */
     public function updateSite(Site $site, $reload = false)
@@ -928,7 +985,15 @@ class DocsApiClient {
             $requestBody['reload'] = true;
         }
 
-        $this->doPut($url, $requestBody, 200);
+        $response = $this->doPut($url, $requestBody, 200);
+
+        if ($reload) {
+            $siteData = (array)$response;
+            $siteData = reset($siteData);
+            return new Site($siteData);
+        } else {
+            return $site;
+        }
     }
 
     /**
