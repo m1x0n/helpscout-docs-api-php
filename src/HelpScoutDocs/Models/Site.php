@@ -4,6 +4,9 @@ namespace HelpScoutDocs\Models;
 
 class Site extends DocsModel {
 
+    const SITE_STATUS_ACTIVE = 'active';
+    const SITE_STATUS_INACTIVE = 'inactive';
+
     private $id;
     private $status;
     private $subDomain;

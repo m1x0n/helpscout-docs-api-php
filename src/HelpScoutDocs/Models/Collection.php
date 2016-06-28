@@ -4,6 +4,9 @@ namespace HelpScoutDocs\Models;
 
 class Collection extends DocsModel {
 
+    const COLLECTION_VISIBILITY_PUBLIC = 'public';
+    const COLLECTION_VISIBILITY_PRIVATE = 'private';
+    
     private $id;
     private $number;
     private $siteId;

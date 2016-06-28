@@ -3,6 +3,9 @@
 namespace HelpScoutDocs\Models;
 
 class Article extends ArticleRef {
+    const ARTICLE_STATUS_PUBLISHED = 'published';
+    const ARTICLE_STATUS_NOT_PUBLISHED = 'notpublished';
+
     /**
      * @var string
      */
