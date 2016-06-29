@@ -29,7 +29,8 @@
     },
     "autoload": {
         "psr-4": {
-            "HelpScoutDocs\\": "src/HelpScoutDocs/"
+            "HelpScoutDocs\\": "src/HelpScoutDocs/",
+            "HelpScoutDocs\\Tests\\": "tests/HelpScoutDocs/"
         }
     },
     "require-dev": {
