@@ -32,10 +32,6 @@ class DocsApiClient {
     private $apiKey    = false;
     private $isDebug   = false;
     private $debugDir  = false;
-
-    /**
-     * @var Client
-     */
     private $httpClient;
 
     public function __construct()
@@ -85,6 +81,11 @@ class DocsApiClient {
             return $this->userAgent;
         }
         return self::USER_AGENT;
+    }
+
+    public function setHttpClient($client)
+    {
+        $this->httpClient = $client;
     }
 
     /**

@@ -29,11 +29,15 @@
     },
     "autoload": {
         "psr-4": {
-            "HelpScoutDocs\\": "src/HelpScoutDocs/",
-            "HelpScoutDocs\\Tests\\": "tests/HelpScoutDocs/"
+            "HelpScoutDocs\\": "src/HelpScoutDocs/"
         }
     },
     "require-dev": {
         "phpunit/phpunit": "^5.4"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "HelpScoutDocs\\Tests\\": "tests/HelpScoutDocs/"
+        }
     }
 }

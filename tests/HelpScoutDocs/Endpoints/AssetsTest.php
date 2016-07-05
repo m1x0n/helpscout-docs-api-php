@@ -1,10 +1,10 @@
 <?php
 
-namespace HelpScoutDocs\Tests;
+namespace HelpScoutDocs\Tests\Endpoints;
 
-use PHPUnit\Framework\TestCase;
+use HelpScoutDocs\Tests\TestCase;
 
-class SimpleTest extends TestCase
+class AssetsTest extends TestCase
 {
     /**
      * @test
