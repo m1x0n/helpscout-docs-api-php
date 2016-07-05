@@ -1,0 +1,26 @@
+{
+    "collections": {
+        "page": 1,
+        "pages": 1,
+        "count": 1,
+        "items": [
+            {
+                "id": "1111111111111111",
+                "siteId": "22222222222222222",
+                "number": 1,
+                "slug": "test-collection",
+                "visibility": "public",
+                "order": 1,
+                "name": "Test collection",
+                "description": null,
+                "publicUrl": "http://example.com",
+                "articleCount": 11,
+                "publishedArticleCount": 2,
+                "createdBy": 1,
+                "updatedBy": 1,
+                "createdAt": "2016-01-01T00:00:00Z",
+                "updatedAt": "2016-01-01T00:00:00Z"
+            }
+        ]
+    }
+}
