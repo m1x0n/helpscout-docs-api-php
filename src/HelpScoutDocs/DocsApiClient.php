@@ -698,7 +698,7 @@ class DocsApiClient {
             ]
         ];
 
-        $response = $this->doPostMultipart("articles/upload", $multipart, $reload ? 200 : 201);
+        $response = $this->doPostMultipart("articles/upload", $multipart, 201);
 
         $articleData = (array)$response;
         

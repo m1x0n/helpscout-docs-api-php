@@ -5,7 +5,6 @@ namespace HelpScoutDocs\Tests;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\Stream;
 use HelpScoutDocs\DocsApiClient;
 
 class TestCase extends \PHPUnit_Framework_TestCase
