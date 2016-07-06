@@ -608,7 +608,7 @@ class DocsApiClient {
     public function uploadArticle(UploadArticle $uploadArticle, $reload = false)
     {
         if (!file_exists($uploadArticle->getFile())) {
-            throw new ApiException("Unable to locate file: %s", $uploadArticle->getFile());
+            throw new ApiException(sprintf("Unable to locate file: %s", $uploadArticle->getFile()));
         }
 
         $multipart = [
@@ -978,7 +978,7 @@ class DocsApiClient {
     public function createArticleAsset(ArticleAsset $articleAsset)
     {
         if (!file_exists($articleAsset->getFile())) {
-            throw new ApiException("Unable to locate file: %s", $articleAsset->getFile());
+            throw new ApiException(sprintf("Unable to locate file: %s", $articleAsset->getFile()));
         }
 
         if (empty($articleAsset->getArticleId())) {
@@ -1023,7 +1023,7 @@ class DocsApiClient {
     public function createSettingsAsset(SettingsAsset $settingsAsset)
     {
         if (!file_exists($settingsAsset->getFile())) {
-            throw new ApiException("Unable to locate file: %s", $settingsAsset->getFile());
+            throw new ApiException(sprintf("Unable to locate file: %s", $settingsAsset->getFile()));
         }
 
         if (empty($settingsAsset->getAssetType())) {
