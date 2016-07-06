@@ -3,7 +3,9 @@
 namespace HelpScoutDocs\Tests;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use HelpScoutDocs\DocsApiClient;
 
@@ -30,14 +32,21 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function createResponseMock($expectedCode, $fixtureFile = null)
     {
-        $response = new Response();
-        $response = $response->withStatus($expectedCode);
-        
-        if (!empty($fixtureFile)) {
-            $fixture = file_get_contents($fixtureFile);
-            $response = $response->withBody(\GuzzleHttp\Psr7\stream_for($fixture));
+        if ($expectedCode >= 400 || $expectedCode >= 500) {
+            $response = new Response();
+            $response = $response->withStatus($expectedCode);
+            $request = new Request('GET', '/');
+            $responseMock = new RequestException("", $request, $response);
+        } else {
+            $responseMock = new Response();
+            $responseMock = $responseMock->withStatus($expectedCode);
+
+            if (!empty($fixtureFile)) {
+                $fixture = file_get_contents($fixtureFile);
+                $responseMock = $responseMock->withBody(\GuzzleHttp\Psr7\stream_for($fixture));
+            }
         }
-        
-        return new MockHandler([$response]);
+
+        return new MockHandler([$responseMock]);
     }
 }

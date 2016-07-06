@@ -1,0 +1,27 @@
+{
+    "article": {
+        "id": "5215163545667acd25394b5c",
+        "number": 121,
+        "slug": "my-article",
+        "status": "published",
+        "hasDraft": false,
+        "name": "My Article",
+        "text": "Text of the article goes here.",
+        "code": "<script>alert(1);</script>",
+        "collectionId": "5214c77c45667acd25394b51",
+        "categories": [
+            "5214c77d45667acd25394b52"
+        ],
+        "related": [
+            "521509f145667acd25394b5b",
+            "521509f145667acd25394b5d"
+        ],
+        "publicUrl": "http://docs.helpscout.net/article/100-my-article",
+        "popularity": 4.3,
+        "viewCount": 236,
+        "createdBy": 73423,
+        "updatedBy": null,
+        "createdAt": "2013-08-21T19:34:13Z",
+        "updatedAt": null
+    }
+}

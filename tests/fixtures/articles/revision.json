@@ -1,0 +1,13 @@
+{
+    "revision": {
+        "id": "5230deaa456636123f6363d0",
+        "articleId": "522f918d1ef00a6bca026ca0",
+        "text": "This is the text of the article.",
+        "createdBy": {
+            "id": 73423,
+            "firstName": "John",
+            "lastName": "Appleseed"
+        },
+        "createdAt": "2013-09-11T21:20:42Z"
+    }
+}
