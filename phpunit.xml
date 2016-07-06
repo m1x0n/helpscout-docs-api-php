@@ -14,9 +14,13 @@
             <directory>./tests/HelpScoutDocs/</directory>
         </testsuite>
     </testsuites>
-    <!--<filter>
+    <filter>
         <whitelist>
             <directory suffix=".php">src/HelpScoutDocs/</directory>
+            <exclude>
+                <directory suffix=".php">src/HelpScoutDocs/Models/</directory>
+                <file>src/HelpScoutDocs/ResourceCollection.php</file>
+            </exclude>
         </whitelist>
-    </filter>-->
+    </filter>
 </phpunit>
