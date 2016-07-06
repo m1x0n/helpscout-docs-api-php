@@ -303,7 +303,7 @@ class DocsApiClient {
                 'auth' => [$this->apiKey, 'X']
             ]);
         } catch (ClientException $e) {
-            throw new ApiException($e->getMessage(), $e->getCode());
+            throw $this->apiException($e);
         }
 
         $content = $response->getBody()->getContents();
@@ -339,7 +339,7 @@ class DocsApiClient {
                 'auth' => [$this->apiKey, 'X']
             ]);
         } catch (ClientException $e) {
-            throw new ApiException($e->getMessage(), $e->getCode());
+            throw $this->apiException($e);
         }
 
         $content = $response->getBody()->getContents();
@@ -371,7 +371,7 @@ class DocsApiClient {
                 'auth' => [$this->apiKey, 'X']
             ]);
         } catch (ClientException $e) {
-            throw new ApiException($e->getMessage(), $e->getCode());
+            throw $this->apiException($e);
         }
 
         $statusCode = $response->getStatusCode();
@@ -401,7 +401,7 @@ class DocsApiClient {
                 'auth' => [$this->apiKey, 'X']
             ]);
         } catch(ClientException $e) {
-            throw new ApiException($e->getMessage(), $e->getCode());
+            throw $this->apiException($e);
         }
 
         $content = $response->getBody()->getContents();
@@ -1036,7 +1036,7 @@ class DocsApiClient {
                 'auth' => [$this->apiKey, 'X']
             ]);
         } catch(ClientException $e) {
-            throw new ApiException($e->getMessage(), $e->getCode());
+            throw $this->apiException($e);
         }
 
         $content = $response->getBody()->getContents();
@@ -1134,5 +1134,17 @@ class DocsApiClient {
         $settingsAsset->setFileLink($uploadedAsset->filelink);
 
         return $settingsAsset;
+    }
+
+    /**
+     * @param ClientException $e
+     * @return ApiException
+     */
+    private function apiException(ClientException $e)
+    {
+        $message = $e->getResponse()->getBody()->getContents();
+        $code = $e->getResponse()->getStatusCode();
+
+        return new ApiException($message, $code);
     }
 }

@@ -20,6 +20,7 @@
             <exclude>
                 <directory suffix=".php">src/HelpScoutDocs/Models/</directory>
                 <file>src/HelpScoutDocs/ResourceCollection.php</file>
+                <file>src/HelpScoutDocs/ApiException.php</file>
             </exclude>
         </whitelist>
     </filter>
