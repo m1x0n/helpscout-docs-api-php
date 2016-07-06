@@ -3,6 +3,7 @@
 namespace HelpScoutDocs;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use HelpScoutDocs\Models\Article;
 use HelpScoutDocs\Models\ArticleAsset;
 use HelpScoutDocs\Models\ArticleRef;
@@ -296,10 +297,14 @@ class DocsApiClient {
             $this->debug(json_encode($requestBody));
         }
 
-        $response = $this->httpClient->request('POST', self::API_URL . $url, [
-            'json' => $requestBody,
-            'auth' => [$this->apiKey, 'X']
-        ]);
+        try {
+            $response = $this->httpClient->request('POST', self::API_URL . $url, [
+                'json' => $requestBody,
+                'auth' => [$this->apiKey, 'X']
+            ]);
+        } catch (ClientException $e) {
+            throw new ApiException($e->getMessage(), $e->getCode());
+        }
 
         $content = $response->getBody()->getContents();
         $statusCode = $response->getStatusCode();
@@ -328,10 +333,14 @@ class DocsApiClient {
             $this->debug(json_encode($requestBody));
         }
 
-        $response = $this->httpClient->request('PUT', self::API_URL . $url, [
-            'json' => $requestBody,
-            'auth' => [$this->apiKey, 'X']
-        ]);
+        try {
+            $response = $this->httpClient->request('PUT', self::API_URL . $url, [
+                'json' => $requestBody,
+                'auth' => [$this->apiKey, 'X']
+            ]);
+        } catch (ClientException $e) {
+            throw new ApiException($e->getMessage(), $e->getCode());
+        }
 
         $content = $response->getBody()->getContents();
         $statusCode = $response->getStatusCode();
@@ -357,10 +366,14 @@ class DocsApiClient {
             $this->debug($url);
         }
 
-        $response = $this->httpClient->request('DELETE', self::API_URL . $url, [
-            'auth' => [$this->apiKey, 'X']
-        ]);
-        
+        try {
+            $response = $this->httpClient->request('DELETE', self::API_URL . $url, [
+                'auth' => [$this->apiKey, 'X']
+            ]);
+        } catch (ClientException $e) {
+            throw new ApiException($e->getMessage(), $e->getCode());
+        }
+
         $statusCode = $response->getStatusCode();
 
         $this->checkStatus($statusCode, 'DELETE', $expectedCode);
@@ -378,14 +391,18 @@ class DocsApiClient {
             throw new ApiException('Invalid API Key', 401);
         }
 
-        $response = $this->httpClient->request('GET', self::API_URL . $url, [
-            'query' => $params,
-            'headers' => [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ],
-            'auth' => [$this->apiKey, 'X']
-        ]);
+        try {
+            $response = $this->httpClient->request('GET', self::API_URL . $url, [
+                'query' => $params,
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ],
+                'auth' => [$this->apiKey, 'X']
+            ]);
+        } catch(ClientException $e) {
+            throw new ApiException($e->getMessage(), $e->getCode());
+        }
 
         $content = $response->getBody()->getContents();
         $statusCode = $response->getStatusCode();
@@ -698,7 +715,7 @@ class DocsApiClient {
             ]
         ];
 
-        $response = $this->doPostMultipart("articles/upload", $multipart, 201);
+        $response = $this->doPostMultipart("articles/upload", $multipart, $reload ? 200 : 201);
 
         $articleData = (array)$response;
         
@@ -1013,10 +1030,14 @@ class DocsApiClient {
             $this->debug(json_encode($multipart));
         }
 
-        $response = $this->httpClient->request('POST', self::API_URL . $url, [
-            'multipart' => $multipart,
-            'auth' => [$this->apiKey, 'X']
-        ]);
+        try {
+            $response = $this->httpClient->request('POST', self::API_URL . $url, [
+                'multipart' => $multipart,
+                'auth' => [$this->apiKey, 'X']
+            ]);
+        } catch(ClientException $e) {
+            throw new ApiException($e->getMessage(), $e->getCode());
+        }
 
         $content = $response->getBody()->getContents();
 

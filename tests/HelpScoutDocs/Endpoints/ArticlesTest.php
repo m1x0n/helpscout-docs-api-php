@@ -58,7 +58,7 @@ class ArticlesTest extends TestCase
      */
     public function should_upload_an_article_and_respond_with_article_instance()
     {
-        $responseMock = $this->createResponseMock(201, __DIR__ . '/../../fixtures/articles/uploaded.json');
+        $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/articles/uploaded.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
         $article = new UploadArticle();
