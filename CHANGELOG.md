@@ -1,4 +1,7 @@
-#### 1.0.0
+#### 1.0.1
+* Fixed exception on no connection
+
+#### 1.0
 * **Breaking change**: Now package requires **php 5.5+**
 * Implemented Assets endpoint
 * Set Guzzle as default Http client instead of cURL calls
