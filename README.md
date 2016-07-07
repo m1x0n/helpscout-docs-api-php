@@ -30,6 +30,11 @@ $collections = $docsApiClient->getCollections();
 
 ```
 
+[More examples](https://github.com/m1x0n/helpscout-docs-api-php/tree/master/examples)
+--------------------
+[Changelog](https://github.com/m1x0n/helpscout-docs-api-php/tree/master/CHANGELOG.md)
+--------------------
+
 Docs API Client Endpoints Methods
 --------------------
 
