@@ -1017,8 +1017,13 @@ class DocsApiClient {
      */
     private function apiException(RequestException $e)
     {
-        $message = $e->getResponse()->getBody()->getContents();
-        $code = $e->getResponse()->getStatusCode();
+        $message = $e->hasResponse()
+            ? $e->getResponse()->getBody()->getContents()
+            : $e->getMessage();
+
+        $code = $e->hasResponse()
+            ? $e->getResponse()->getStatusCode()
+            : null;
 
         return new ApiException($message, $code);
     }
