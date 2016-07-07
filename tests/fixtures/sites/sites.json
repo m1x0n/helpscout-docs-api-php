@@ -1,0 +1,43 @@
+{
+    "sites": {
+        "page": 1,
+        "pages": 1,
+        "count": 1,
+        "items": [
+            {
+                "id": "1111111111111111111111",
+                "subDomain": "test-api",
+                "cname": null,
+                "hasPublicSite": true,
+                "companyName": "Test API",
+                "homePageContent": "Articles",
+                "title": "Title",
+                "description": "Description",
+                "logoUrl": null,
+                "logoWidth": null,
+                "logoHeight": null,
+                "favIconUrl": null,
+                "touchIconUrl": null,
+                "homeUrl": null,
+                "homeLinkText": null,
+                "pageBgColor": null,
+                "headerBgColor": null,
+                "navTextColor": null,
+                "navActiveColor": null,
+                "linkColor": null,
+                "articleTextColor": null,
+                "hasContactForm": false,
+                "mailboxId": null,
+                "contactEmail": null,
+                "styleSheetUrl": null,
+                "headerCode": null,
+                "metaDescription": "Meta description",
+                "createdBy": 4,
+                "updatedBy": 4,
+                "createdAt": "2016-01-01T00:00:00Z",
+                "updatedAt": "2016-01-01T00:00:00Z",
+                "includeMetadata": false
+            }
+        ]
+    }
+}

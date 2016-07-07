@@ -1,0 +1,16 @@
+{
+    "category": {
+        "id": "5214c83d45667acd25394b54",
+        "number": 133,
+        "slug": "my-category",
+        "collectionId": "5214c83d45667acd25394b53",
+        "order": 1,
+        "defaultSort": "name",
+        "name": "My Category",
+        "articleCount": 21,
+        "createdBy": 73423,
+        "updatedBy": null,
+        "createdAt": "2013-08-21T14:01:33Z",
+        "updatedAt": null
+    }
+}

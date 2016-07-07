@@ -4,6 +4,9 @@ namespace HelpScoutDocs\Models;
 
 class Site extends DocsModel {
 
+    const SITE_STATUS_ACTIVE = 'active';
+    const SITE_STATUS_INACTIVE = 'inactive';
+
     private $id;
     private $status;
     private $subDomain;
@@ -462,11 +465,18 @@ class Site extends DocsModel {
         return $this->updatedBy;
     }
 
-    public function toJson() {
+    public function toJson()
+    {
         return json_encode($this->getAvailableProperties());
     }
+    
+    public function toArray()
+    {
+        return $this->getAvailableProperties();
+    }
 
-    private function getAvailableProperties() {
+    private function getAvailableProperties()
+    {
         $reflector = new \ReflectionClass($this);
         $properties = array_filter($reflector->getProperties(), function($p) {
             return $p->name != 'restricted';

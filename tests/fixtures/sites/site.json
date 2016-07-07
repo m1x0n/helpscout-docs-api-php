@@ -1,0 +1,29 @@
+{
+    "site": {
+        "id": 23478,
+        "status": "active",
+        "subDomain": "helpscout",
+        "cname": "docs.helpscout.net",
+        "hasPublicSite": true,
+        "companyName": "Help Scout",
+        "title": "Help Scout Support",
+        "logoUrl": "http://helpscout.net/logo.png",
+        "logoWidth": 174,
+        "logoHeight": 40,
+        "favIconUrl": "http://helpscout.net/favicon.png",
+        "touchIconUrl": "http://helpscout.net/touchicon.png",
+        "homeUrl": "http://helpscout.net",
+        "homeLinkText": "Home",
+        "bgColor": "#444444",
+        "description": "Frequently asked questions and support for Help Scout",
+        "hasContactForm": true,
+        "mailboxId": 968,
+        "contactEmail": null,
+        "styleSheetUrl": "http://helpscout.net/docs-style.css",
+        "headerCode": null,
+        "createdBy": 29456,
+        "updatedBy": 29456,
+        "createdAt": "2013-12-10T15:09:52Z",
+        "updatedAt": "2013-12-10T15:09:52Z"
+    }
+}

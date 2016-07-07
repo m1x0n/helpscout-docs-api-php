@@ -1,0 +1,15 @@
+{
+    "collection": {
+        "id": "5214c83d45667acd25394b53",
+        "number": 33,
+        "siteId": "52404efc4566740003092640",
+        "slug": "my-collection",
+        "visibility": "public",
+        "order": 1,
+        "name": "My Collection",
+        "createdBy": 73423,
+        "updatedBy": null,
+        "createdAt": "2013-08-21T14:01:33Z",
+        "updatedAt": null
+    }
+}

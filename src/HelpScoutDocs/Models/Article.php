@@ -3,10 +3,24 @@
 namespace HelpScoutDocs\Models;
 
 class Article extends ArticleRef {
+    const ARTICLE_STATUS_PUBLISHED = 'published';
+    const ARTICLE_STATUS_NOT_PUBLISHED = 'notpublished';
 
+    /**
+     * @var string
+     */
     private $text;
+
+    /**
+     * @var string
+     */
     private $code;
+
+    /**
+     * @var null|array
+     */
     private $categories;
+
     private $related;
 
     function __construct($data = null) {

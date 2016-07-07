@@ -1,0 +1,25 @@
+{
+    "articles": {
+        "page": 1,
+        "pages": 1,
+        "count": 1,
+        "items": [
+            {
+                "id": "5215163545667acd25394b5c",
+                "number": 121,
+                "collectionId": "5214c77c45667acd25394b51",
+                "status": "published",
+                "hasDraft": false,
+                "name": "My Article",
+                "publicUrl": "http://docs.helpscout.net/article/100-my-article",
+                "popularity": 4.3,
+                "viewCount": 237,
+                "createdBy": 73423,
+                "updatedBy": null,
+                "createdAt": "2013-08-21T19:34:13Z",
+                "updatedAt": null,
+                "lastPublishedAt": "2013-08-21T19:34:13Z"
+            }
+        ]
+    }
+}

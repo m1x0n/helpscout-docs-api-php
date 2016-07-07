@@ -8,8 +8,7 @@ Inspired and followed by original [https://github.com/helpscout/helpscout-api-ph
 
 Requirements
 ---------------------
-* PHP >= 5.3.x
-* curl
+* PHP >= 5.5.0
 
 Installation
 --------------------
@@ -58,7 +57,7 @@ Docs API Client Endpoints Methods
 * getRevision($revisionId)
 * createArticle(Article $article, $reload = false)
 * updateArticle(Article $article, $reload = false)
-* uploadArticle($collectionId, $file, $categoryId = null, $name = null, $slug = null, $type = null, $reload = false)
+* uploadArticle(UploadArticle $uploadArticle, $reload = false)
 * updateViewCount($articleId, $count = 1)
 * deleteArticle($articleId)
 * saveArticleDraft($articleId, $text)
@@ -72,4 +71,5 @@ Docs API Client Endpoints Methods
 * deleteSite($siteId)
 
 ### Assets
-* Not implemented yet
+* createArticleAsset(ArticleAsset $articleAsset)
+* createSettingsAsset(SettingsAsset $settingsAsset)
