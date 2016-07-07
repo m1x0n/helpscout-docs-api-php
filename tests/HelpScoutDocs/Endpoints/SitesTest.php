@@ -40,6 +40,24 @@ class SitesTest extends TestCase
 
     /**
      * @test
+     */
+    public function should_create_site_and_assign_id()
+    {
+        $responseMock = $this->createResponseMock(200, null);
+        $apiClient = $this->createTestApiClient($responseMock);
+
+        $site = new Site();
+        $site->setSubDomain(uniqid("Subdomain" ));
+        $site->setTitle(uniqid("Site Title "));
+
+        $created = $apiClient->createSite($site, false);
+
+        $this->assertInstanceOf(Site::class, $created);
+        $this->assertNotEmpty($created->getId());
+    }
+
+    /**
+     * @test
      * @expectedException \HelpScoutDocs\ApiException
      */
     public function should_throw_an_exception_if_malformed_site_provided()
@@ -92,6 +110,24 @@ class SitesTest extends TestCase
         $updated = $apiClient->updateSite($site, true);
 
         $this->assertInstanceOf(Site::class, $updated);
+    }
+
+    /**
+     * @test
+     */
+    public function should_update_existing_site_and_respond_without_instance()
+    {
+        $responseMock = $this->createResponseMock(200, null);
+        $apiClient = $this->createTestApiClient($responseMock);
+
+        $site = new Site();
+        $site->setId(uniqid());
+        $site->setTitle(uniqid("New Site Title "));
+
+        $updated = $apiClient->updateSite($site, false);
+
+        $this->assertInstanceOf(Site::class, $updated);
+        $this->assertSame($site, $updated);
     }
 
     /**

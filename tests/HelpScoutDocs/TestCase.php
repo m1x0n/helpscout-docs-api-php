@@ -40,6 +40,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
         } else {
             $responseMock = new Response();
             $responseMock = $responseMock->withStatus($expectedCode);
+            $responseMock = $responseMock->withHeader('Location', uniqid());
 
             if (!empty($fixtureFile)) {
                 $fixture = file_get_contents($fixtureFile);

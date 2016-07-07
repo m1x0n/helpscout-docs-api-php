@@ -65,6 +65,24 @@ class CategoriesTest extends TestCase
 
     /**
      * @test
+     */
+    public function should_create_category_and_assign_id()
+    {
+        $responseMock = $this->createResponseMock(200, null);
+        $apiClient = $this->createTestApiClient($responseMock);
+
+        $category = new Category();
+        $category->setCollectionId(uniqid());
+        $category->setName(uniqid("Category name "));
+
+        $created = $apiClient->createCategory($category, false);
+
+        $this->assertInstanceOf(Category::class, $created);
+        $this->assertNotEmpty($created->getId());
+    }
+
+    /**
+     * @test
      * @expectedException \HelpScoutDocs\ApiException
      * @expectedExceptionCode 400
      */
@@ -93,6 +111,25 @@ class CategoriesTest extends TestCase
         $updated = $apiClient->updateCategory($category, true);
 
         $this->assertInstanceOf(Category::class, $updated);
+    }
+
+    /**
+     * @test
+     */
+    public function should_update_category_and_respond_without_new_instance()
+    {
+        $responseMock = $this->createResponseMock(200, null);
+        $apiClient = $this->createTestApiClient($responseMock);
+
+        $category = new Category();
+        $category->setCollectionId(uniqid());
+        $category->setId(uniqid());
+        $category->setName(uniqid("New Category name "));
+
+        $updated = $apiClient->updateCategory($category, false);
+
+        $this->assertInstanceOf(Category::class, $updated);
+        $this->assertSame($updated, $category);
     }
 
     /**

@@ -184,6 +184,25 @@ class ArticlesTest extends TestCase
 
     /**
      * @test
+     */
+    public function should_create_article_and_assign_id()
+    {
+        $responseMock = $this->createResponseMock(200, null);
+        $apiClient = $this->createTestApiClient($responseMock);
+
+        $article = new Article();
+        $article->setCollectionId(uniqid());
+        $article->setName(uniqid("Article Name "));
+        $article->setText("Article text");
+
+        $created = $apiClient->createArticle($article, false);
+
+        $this->assertInstanceOf(Article::class, $created);
+        $this->assertNotEmpty($created->getId());
+    }
+
+    /**
+     * @test
      * @expectedException \HelpScoutDocs\ApiException
      * @expectedExceptionCode 400
      */
@@ -214,6 +233,25 @@ class ArticlesTest extends TestCase
         $updated = $apiClient->updateArticle($article, true);
 
         $this->assertInstanceOf(Article::class, $updated);
+    }
+
+    /**
+     * @test
+     */
+    public function should_update_existing_article_and_respond_without_instance()
+    {
+        $responseMock = $this->createResponseMock(200, null);
+        $apiClient = $this->createTestApiClient($responseMock);
+
+        $article = new Article();
+        $article->setId(uniqid());
+        $article->setCollectionId(uniqid());
+        $article->setName(uniqid("New Article Name "));
+        $article->setText("New Article text");
+
+        $updated = $apiClient->updateArticle($article, false);
+
+        $this->assertSame($article, $updated);
     }
 
     /**

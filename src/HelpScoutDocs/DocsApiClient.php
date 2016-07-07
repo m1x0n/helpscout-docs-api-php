@@ -98,19 +98,12 @@ class DocsApiClient {
      */
     private function getResourceCollection($url, $params, $modelClass)
     {
-        list(, $json) = $this->doGet($url, $params);
+        $response = $this->doGet($url, $params);
 
-        $json = json_decode($json);
+        $json = json_decode($response);
         $json = reset($json);
-        
-        if ($json) {
-            if (isset($params['fields'])) {
-                return $json;
-            } else {
-                return new ResourceCollection($json, $modelClass);
-            }
-        }
-        return false;
+
+        return new ResourceCollection($json, $modelClass);
     }
 
     /**
@@ -122,18 +115,12 @@ class DocsApiClient {
      */
     private function getItem($url, $params, $modelClass)
     {
-        list(, $json) = $this->doGet($url, $params);
+        $response = $this->doGet($url, $params);
 
-        $json = json_decode($json);
+        $json = json_decode($response);
         $json = reset($json);
-        if ($json) {
-            if (isset($params['fields']) || !$modelClass) {
-                return $json;
-            } else {
-                return new $modelClass($json);
-            }
-        }
-        return false;
+
+        return new $modelClass($json);
     }
 
     /**
@@ -154,14 +141,6 @@ class DocsApiClient {
                 continue;
             }
             switch($key) {
-                case 'fields':
-                    $val = $this->validateFieldSelectors($val);
-                    if (empty($val)) {
-                        unset($params[$key]);
-                    } else {
-                        $params[$key] = $val;
-                    }
-                    break;
                 case 'page':
                     $val = intval($val);
                     if ($val < 1) {
@@ -169,14 +148,8 @@ class DocsApiClient {
                     }
                     break;
                 case 'sort':
-                    $params[$key] = $val;
-                    break;
                 case 'order':
-                    $params[$key] = $val;
-                    break;
                 case 'visibility':
-                    $params[$key] = $val;
-                    break;
                 case 'status':
                     $params[$key] = $val;
                     break;
@@ -186,27 +159,6 @@ class DocsApiClient {
             return $params;
         }
         return array();
-    }
-
-    /**
-     * @param  string|array $fields
-     * @return string
-     */
-    private function validateFieldSelectors($fields)
-    {
-        if (is_string($fields)) {
-            $fields = explode(',', $fields);
-        }
-        if (is_array($fields) && count($fields) > 0) {
-            array_walk($fields, create_function('&$val', '$val = trim($val);'));
-
-            $fields = array_filter($fields);
-        }
-
-        if ($fields) {
-            return implode(',', $fields);
-        }
-        return $fields;
     }
 
     /**
@@ -292,7 +244,7 @@ class DocsApiClient {
         }
 
         try {
-            $response = $this->httpClient->request('DELETE', self::API_URL . $url, [
+            $this->httpClient->request('DELETE', self::API_URL . $url, [
                 'auth' => [$this->apiKey, 'X'],
                 'headers' => [
                     'User-Agent' => $this->getUserAgent()
@@ -332,9 +284,8 @@ class DocsApiClient {
         }
 
         $content = $response->getBody()->getContents();
-        $statusCode = $response->getStatusCode();
 
-        return array($statusCode, $content);
+        return $content;
     }
 
     /**
@@ -686,7 +637,7 @@ class DocsApiClient {
      */
     public function deleteArticleDraft($articleId)
     {
-        $this->doDelete(sprintf("articles/%s/drafts", $articleId), 200);
+        $this->doDelete(sprintf("articles/%s/drafts", $articleId));
     }
 
     /**

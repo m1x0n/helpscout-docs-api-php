@@ -130,11 +130,47 @@ class AssetsTest extends TestCase
     {
         $settingsAsset = new SettingsAsset();
         $settingsAsset->setFile(__DIR__ . '/../../fixtures/assets/octocat.png');
-        $settingsAsset->setSiteId(uniqid());
+        $settingsAsset->setAssetType(SettingsAsset::SETTINGS_ASSET_LOGO);
 
         $responseMock = $this->createResponseMock(201, null);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $apiClient->createSettingsAsset($settingsAsset);
+    }
+
+    /**
+     * @test
+     * @expectedException \HelpScoutDocs\ApiException
+     * @expectedExceptionCode 400
+     */
+    public function should_throw_an_exception_if_malformed_asset_provided()
+    {
+        $articleAsset = new ArticleAsset();
+        $articleAsset->setArticleId(uniqid());
+        $articleAsset->setAssetType(ArticleAsset::ARTICLE_ASSET_IMAGE);
+        $articleAsset->setFile(__DIR__ . '/../../fixtures/assets/octocat.png');
+
+        $responseMock = $this->createResponseMock(400, null);
+        $apiClient = $this->createTestApiClient($responseMock);
+
+        $apiClient->createArticleAsset($articleAsset);
+    }
+
+    /**
+     * @tests
+     * @expectedException \HelpScoutDocs\ApiException
+     */
+    public function should_throw_an_exception_if_api_key_is_invalid()
+    {
+        $articleAsset = new ArticleAsset();
+        $articleAsset->setArticleId(uniqid());
+        $articleAsset->setAssetType(ArticleAsset::ARTICLE_ASSET_IMAGE);
+        $articleAsset->setFile(__DIR__ . '/../../fixtures/assets/octocat.png');
+
+        $responseMock = $this->createResponseMock(201, __DIR__ . '/../../fixtures/assets/assets.json');
+        $apiClient = $this->createTestApiClient($responseMock);
+        $apiClient->setKey('');
+        
+        $apiClient->createArticleAsset($articleAsset);
     }
 }

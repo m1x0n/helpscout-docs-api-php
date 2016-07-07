@@ -67,6 +67,25 @@ class CollectionsTest extends TestCase
     /**
      * @test
      */
+    public function should_create_collection_and_assign_id()
+    {
+        $responseMock = $this->createResponseMock(200, null);
+        $apiClient = $this->createTestApiClient($responseMock);
+
+        $collection = new Collection();
+        $collection->setSiteId(uniqid());
+        $collection->setName(uniqid("Test collection "));
+        $collection->setVisibility(Collection::COLLECTION_VISIBILITY_PUBLIC);
+
+        $created = $apiClient->createCollection($collection, false);
+
+        $this->assertInstanceOf(Collection::class, $created);
+        $this->assertNotEmpty($created->getId());
+    }
+
+    /**
+     * @test
+     */
     public function should_update_collection_and_respond_with_entity()
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/collections/collection.json');
@@ -78,6 +97,23 @@ class CollectionsTest extends TestCase
         $updated = $apiClient->updateCollection($collection, true);
 
         $this->assertInstanceOf(Collection::class, $updated);
+    }
+
+    /**
+     * @test
+     */
+    public function should_update_collection_and_respond_without_entity()
+    {
+        $responseMock = $this->createResponseMock(200, null);
+        $apiClient = $this->createTestApiClient($responseMock);
+
+        $collection = new Collection();
+        $collection->setName(uniqid("Updated collection "));
+
+        $updated = $apiClient->updateCollection($collection, false);
+
+        $this->assertInstanceOf(Collection::class, $updated);
+        $this->assertSame($collection, $updated);
     }
 
     /**
