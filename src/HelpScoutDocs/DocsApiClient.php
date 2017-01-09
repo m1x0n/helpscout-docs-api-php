@@ -129,7 +129,7 @@ class DocsApiClient {
      */
     private function getParams(array $params = [])
     {
-        $accepted = ['page', 'sort', 'order', 'status', 'query'];
+        $accepted = ['page', 'sort', 'order', 'status', 'query', 'visibility'];
 
         if (!$params) {
             return array();
