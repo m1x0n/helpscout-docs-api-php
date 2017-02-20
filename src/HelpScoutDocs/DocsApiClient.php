@@ -25,20 +25,30 @@ use HelpScoutDocs\Models\UploadArticle;
  * @package HelpScoutDocs
  */
 class DocsApiClient {
-    
+
     const USER_AGENT = 'Help Scout API/Php Client v1';
     const API_URL = 'https://docsapi.helpscout.net/v1/';
-    
+
     private $userAgent = false;
     private $apiKey    = false;
     private $isDebug   = false;
     private $debugDir  = false;
     private $httpClient;
+    private $lastRawResponse = null;
 
     public function __construct()
     {
         $this->httpClient = new Client();
     }
+    /**
+    * Get the last raw response
+    *
+    * @return mixed
+    */
+    public function getLastRawResponse() {
+      return $this->lastRawResponse;
+    }
+
     /**
      * Put ApiClient in debug mode or note.
      *
@@ -189,6 +199,8 @@ class DocsApiClient {
             throw $this->apiException($e);
         }
 
+        $this->lastRawResponse = $response;
+
         $content = $response->getBody()->getContents();
         $location = $response->getHeaderLine('Location');
 
@@ -206,7 +218,7 @@ class DocsApiClient {
         if ($this->apiKey === false || empty($this->apiKey)) {
             throw new ApiException('Invalid API Key', 401);
         }
-        
+
         if ($this->isDebug) {
             $this->debug(json_encode($requestBody));
         }
@@ -223,6 +235,7 @@ class DocsApiClient {
             throw $this->apiException($e);
         }
 
+        $this->lastRawResponse = $response;
         $content = $response->getBody()->getContents();
 
         return json_decode($content);
@@ -244,7 +257,7 @@ class DocsApiClient {
         }
 
         try {
-            $this->httpClient->request('DELETE', self::API_URL . $url, [
+            $response = $this->httpClient->request('DELETE', self::API_URL . $url, [
                 'auth' => [$this->apiKey, 'X'],
                 'headers' => [
                     'User-Agent' => $this->getUserAgent()
@@ -253,6 +266,8 @@ class DocsApiClient {
         } catch (RequestException $e) {
             throw $this->apiException($e);
         }
+
+        $this->lastRawResponse = $response;
 
         return true;
     }
@@ -283,6 +298,7 @@ class DocsApiClient {
             throw $this->apiException($e);
         }
 
+        $this->lastRawResponse = $response;
         $content = $response->getBody()->getContents();
 
         return $content;
@@ -512,7 +528,7 @@ class DocsApiClient {
         }
 
         list($id, $response) = $this->doPost($url, $requestBody);
-        
+
         if ($reload) {
             $articleData = (array)$response;
             $articleData = reset($articleData);
@@ -534,7 +550,7 @@ class DocsApiClient {
         $url = sprintf("articles/%s", $article->getId());
 
         $requestBody = $article->toArray();
-        
+
         if ($reload) {
             $requestBody['reload'] = true;
         }
@@ -596,7 +612,7 @@ class DocsApiClient {
         $response = $this->doPostMultipart("articles/upload", $multipart);
 
         $articleData = (array)$response;
-        
+
         return $reload ? new Article(reset($articleData)) : true;
     }
 
@@ -692,7 +708,7 @@ class DocsApiClient {
         $url = sprintf("categories/%s", $category->getId());
 
         $requestBody = $category->toArray();
-        
+
         if ($reload) {
             $requestBody['reload'] = true;
         }
@@ -799,7 +815,7 @@ class DocsApiClient {
         $url = sprintf("collections/%s", $collection->getId());
 
         $requestBody = $collection->toArray();
-        
+
         if ($reload) {
             $requestBody['reload'] = true;
         }
@@ -863,7 +879,7 @@ class DocsApiClient {
         $url = sprintf("sites/%s", $site->getId());
 
         $requestBody = $site->toArray();
-        
+
         if ($reload) {
             $requestBody['reload'] = true;
         }
@@ -958,7 +974,7 @@ class DocsApiClient {
                 'contents' => fopen($articleAsset->getFile(), 'r')
             ]
         ];
-        
+
         $uploadedAsset = $this->doPostMultipart('assets/article', $multipart);
 
         $articleAsset->setFileLink($uploadedAsset->filelink);
