@@ -5,6 +5,9 @@
     "keywords": ["api", "api-client", "docs", "docs-api", "helpscout"],
     "homepage": "http://www.helpscout.net",
     "license": "MIT",
+    "scripts": {
+        "test": "phpunit"
+    },
     "authors": [
         {
             "name": "Help Scout",
