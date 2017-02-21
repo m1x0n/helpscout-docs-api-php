@@ -78,3 +78,11 @@ Docs API Client Endpoints Methods
 ### Assets
 * createArticleAsset(ArticleAsset $articleAsset)
 * createSettingsAsset(SettingsAsset $settingsAsset)
+
+### Redirects
+* getRedirects($siteId)
+* getRedirect($redirectId)
+* findRedirect($url, $siteId)
+* createRedirect(Redirect $redirect, $reload = false)
+* updateRedirect(Redirect $redirect, $reload = false)
+* deleteRedirect($redirectId)
