@@ -34,7 +34,7 @@ class DocsApiClient {
     private $isDebug   = false;
     private $debugDir  = false;
     private $httpClient;
-    private $lastRawResponse = null;
+    private $lastResponse = null;
 
     public function __construct()
     {
@@ -45,8 +45,8 @@ class DocsApiClient {
     *
     * @return mixed
     */
-    public function getLastRawResponse() {
-      return $this->lastRawResponse;
+    public function getLastResponse() {
+      return $this->lastResponse;
     }
 
     /**
@@ -199,7 +199,7 @@ class DocsApiClient {
             throw $this->apiException($e);
         }
 
-        $this->lastRawResponse = $response;
+        $this->lastResponse = $response;
 
         $content = $response->getBody()->getContents();
         $location = $response->getHeaderLine('Location');
@@ -235,7 +235,7 @@ class DocsApiClient {
             throw $this->apiException($e);
         }
 
-        $this->lastRawResponse = $response;
+        $this->lastResponse = $response;
         $content = $response->getBody()->getContents();
 
         return json_decode($content);
@@ -267,7 +267,7 @@ class DocsApiClient {
             throw $this->apiException($e);
         }
 
-        $this->lastRawResponse = $response;
+        $this->lastResponse = $response;
 
         return true;
     }
@@ -298,7 +298,7 @@ class DocsApiClient {
             throw $this->apiException($e);
         }
 
-        $this->lastRawResponse = $response;
+        $this->lastResponse = $response;
         $content = $response->getBody()->getContents();
 
         return $content;
