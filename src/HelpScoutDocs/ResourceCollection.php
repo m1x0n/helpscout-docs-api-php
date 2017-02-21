@@ -13,7 +13,8 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable {
     private $count = 0;
     private $items = null;
 
-    public function __construct($data, $itemType) {
+    public function __construct($data, $itemType)
+    {
         if ($data) {
             $this->page  = $data->page;
             $this->pages = $data->pages;
@@ -35,42 +36,48 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable {
     /**
      * @return boolean
      */
-    public function hasNextPage() {
+    public function hasNextPage()
+    {
         return $this->page < $this->pages;
     }
 
     /**
      * @return boolean
      */
-    public function hasPrevPage() {
+    public function hasPrevPage()
+    {
         return $this->page > 1;
     }
 
     /**
      * @return array
      */
-    public function getItems() {
+    public function getItems()
+    {
         return $this->items;
     }
 
     /**
      * @return int
      */
-    public function getPage() {
+    public function getPage()
+    {
         return $this->page;
     }
 
     /**
      * @return int
      */
-    public function getPages() {
+    public function getPages()
+    {
         return $this->pages;
     }
 
     /**
      * @return int
      */
-    public function getCount() {
+    public function getCount()
+    {
         return $this->count;
     }
 

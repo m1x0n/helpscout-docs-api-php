@@ -1,0 +1,22 @@
+{
+    "redirects": {
+        "page": 1,
+        "pages": 1,
+        "count": 1,
+        "items": [
+            {
+                "id": "573dfa41951c0e2ad08ab695",
+                "siteId": "5244acc53e3e9bd67a3dc68c",
+                "urlMapping": "/old/path/1234",
+                "documentId": "525217bae4b0cb13e565bb9d",
+                "type": "article",
+                "redirect": "http://docs.helpscout.net/article/488-transfer-account",
+                "anchor": null,
+                "createdBy": 4577,
+                "modifiedBy": 4577,
+                "createdAt": "2016-05-19T17:26:25Z",
+                "modifiedAt": "2016-05-19T17:26:25Z"
+            }
+        ]
+    }
+}

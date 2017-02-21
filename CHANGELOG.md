@@ -1,3 +1,14 @@
+### 1.1
+* Implemented Redirects endpoint
+
+### 1.0.3
+* Added lastResponse to the client.
+* Added composer script for phpunit.
+
+### 1.0.2
+* Added 'visibility' to accepted options list.
+* PHP 7.1 in TravisCI
+
 #### 1.0.1
 * Fixed exception on no connection
 

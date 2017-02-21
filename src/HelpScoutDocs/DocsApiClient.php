@@ -11,6 +11,8 @@ use HelpScoutDocs\Models\ArticleRevision;
 use HelpScoutDocs\Models\ArticleRevisionRef;
 use HelpScoutDocs\Models\ArticleSearch;
 use HelpScoutDocs\Models\Category;
+use HelpScoutDocs\Models\Redirect;
+use HelpScoutDocs\Models\RedirectedUrl;
 use HelpScoutDocs\Models\SettingsAsset;
 use HelpScoutDocs\Models\Site;
 use HelpScoutDocs\Models\Collection;
@@ -40,13 +42,15 @@ class DocsApiClient {
     {
         $this->httpClient = new Client();
     }
+
     /**
-    * Get the last raw response
+    * Get the last response
     *
     * @return mixed
     */
-    public function getLastResponse() {
-      return $this->lastResponse;
+    public function getLastResponse()
+    {
+        return $this->lastResponse;
     }
 
     /**
@@ -1042,5 +1046,111 @@ class DocsApiClient {
             : null;
 
         return new ApiException($message, $code);
+    }
+
+    /**
+     * @param $siteId
+     * @param int $page
+     * @return ResourceCollection|mixed
+     */
+    public function getRedirects($siteId, $page = 1)
+    {
+        $params = array('page' => $page);
+
+        return $this->getResourceCollection(
+            sprintf("redirects/site/%s", $siteId),
+            $this->getParams($params),
+            Redirect::class
+        );
+    }
+
+    /**
+     * @param $redirectId
+     * @return bool|Redirect
+     */
+    public function getRedirect($redirectId)
+    {
+        return $this->getItem(
+            sprintf("redirects/%s", $redirectId),
+            array(),
+            Redirect::class
+        );
+    }
+
+    /**
+     * @param $url
+     * @param $siteId
+     * @return bool|RedirectedUrl
+     */
+    public function findRedirect($url, $siteId)
+    {
+        $params = ['url' => $url, 'siteId' => $siteId];
+
+        return $this->getItem(
+            "redirects",
+            $this->getParams($params),
+            RedirectedUrl::class
+        );
+    }
+
+    /**
+     * @param Redirect $redirect
+     * @param bool $reload
+     * @return Redirect
+     */
+    public function createRedirect(Redirect $redirect, $reload = false)
+    {
+        $url = "redirects";
+
+        $requestBody = $redirect->toArray();
+
+        if ($reload) {
+            $requestBody['reload'] = true;
+        }
+
+        list($id, $response) = $this->doPost($url, $requestBody);
+
+        if ($reload) {
+            $redirectData = (array)$response;
+            $redirectData = reset($redirectData);
+            return new Redirect($redirectData);
+        } else {
+            $redirect->setId($id);
+            return $redirect;
+        }
+    }
+
+    /**
+     * @param Redirect $redirect
+     * @param bool $reload
+     * @return Redirect
+     */
+    public function updateRedirect(Redirect $redirect, $reload = false)
+    {
+        $url = sprintf("redirect/%s", $redirect->getId());
+
+        $requestBody = $redirect->toArray();
+
+        if ($reload) {
+            $requestBody['reload'] = true;
+        }
+
+        $response = $this->doPut($url, $requestBody);
+
+        if ($reload) {
+            $redirectData = (array)$response;
+            $redirectData = reset($redirectData);
+            return new Redirect($redirectData);
+        } else {
+            return $redirect;
+        }
+    }
+
+    /**
+     * @param $redirectId
+     */
+    public function deleteRedirect($redirectId)
+    {
+        $this->doDelete(sprintf("redirects/%s", $redirectId));
     }
 }
