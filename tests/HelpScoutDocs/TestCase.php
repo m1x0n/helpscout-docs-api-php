@@ -19,7 +19,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     {
         $httpClientMock = new Client(['handler' => $mockHandler]);
         $apiClient = new DocsApiClient();
-        $apiClient->setKey('X');
+        $apiClient->setApiKey('X');
         $apiClient->setHttpClient($httpClientMock);
 
         return $apiClient;

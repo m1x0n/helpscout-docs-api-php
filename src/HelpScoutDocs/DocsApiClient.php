@@ -2,21 +2,10 @@
 
 namespace HelpScoutDocs;
 
+use BadMethodCallException;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-use HelpScoutDocs\Models\Article;
-use HelpScoutDocs\Models\ArticleAsset;
-use HelpScoutDocs\Models\ArticleRef;
-use HelpScoutDocs\Models\ArticleRevision;
-use HelpScoutDocs\Models\ArticleRevisionRef;
-use HelpScoutDocs\Models\ArticleSearch;
-use HelpScoutDocs\Models\Category;
-use HelpScoutDocs\Models\Redirect;
-use HelpScoutDocs\Models\RedirectedUrl;
-use HelpScoutDocs\Models\SettingsAsset;
-use HelpScoutDocs\Models\Site;
-use HelpScoutDocs\Models\Collection;
-use HelpScoutDocs\Models\UploadArticle;
+use InvalidArgumentException;
+use HelpScoutDocs\Models;
 
 /**
  * Class DocsApiClient
@@ -25,6 +14,13 @@ use HelpScoutDocs\Models\UploadArticle;
  * https://github.com/helpscout/helpscout-api-php
  *
  * @package HelpScoutDocs
+ *
+ * @method Api\Article    articles()
+ * @method Api\Collection collections()
+ * @method Api\Category   categories()
+ * @method Api\Site       sites()
+ * @method Api\Asset      assets()
+ * @method Api\Redirect   redirects()
  */
 class DocsApiClient {
 
@@ -38,9 +34,19 @@ class DocsApiClient {
     private $httpClient;
     private $lastResponse = null;
 
-    public function __construct()
+    private $services = [
+        'articles' => Api\Article::class,
+        'collections' => Api\Collection::class,
+        'categories' => Api\Category::class,
+        'sites' => Api\Site::class,
+        'assets' => Api\Asset::class,
+        'redirects' => Api\Redirect::class
+    ];
+
+    public function __construct($apiKey = null)
     {
         $this->httpClient = new Client();
+        $this->apiKey = $apiKey;
     }
 
     /**
@@ -51,6 +57,12 @@ class DocsApiClient {
     public function getLastResponse()
     {
         return $this->lastResponse;
+    }
+
+    public function setLastResponse($response)
+    {
+        $this->lastResponse = $response;
+        return $this;
     }
 
     /**
@@ -72,14 +84,29 @@ class DocsApiClient {
         }
     }
 
+    public function isDebug()
+    {
+        return $this->isDebug;
+    }
+
+    public function getDebugDir()
+    {
+        return $this->debugDir;
+    }
+
     /**
      * Set the API Key to use with this request
      *
      * @param string $apiKey
      */
-    public function setKey($apiKey)
+    public function setApiKey($apiKey)
     {
         $this->apiKey = $apiKey;
+    }
+
+    public function getApiKey()
+    {
+        return $this->apiKey;
     }
 
     public function setUserAgent($userAgent)
@@ -90,7 +117,7 @@ class DocsApiClient {
         }
     }
 
-    private function getUserAgent()
+    public function getUserAgent()
     {
         if ($this->userAgent) {
             return $this->userAgent;
@@ -103,270 +130,27 @@ class DocsApiClient {
         $this->httpClient = $client;
     }
 
-    /**
-     * @param string $url
-     * @param string $params
-     * @param string $modelClass
-     * @return ResourceCollection|mixed
-     * @throws ApiException
-     */
-    private function getResourceCollection($url, $params, $modelClass)
+    public function getHttpClient()
     {
-        $response = $this->doGet($url, $params);
-
-        $json = json_decode($response);
-        $json = reset($json);
-
-        return new ResourceCollection($json, $modelClass);
+        return $this->httpClient;
     }
 
-    /**
-     * @param $url
-     * @param $params
-     * @param $modelClass
-     * @return bool|mixed
-     * @throws ApiException
-     */
-    private function getItem($url, $params, $modelClass)
+    private function api($name)
     {
-        $response = $this->doGet($url, $params);
+        if (!isset($this->services[$name])) {
+            throw new \Exception("Invalid service {$name}");
+        }
 
-        $json = json_decode($response);
-        $json = reset($json);
-
-        return new $modelClass($json);
+        return new $this->services[$name]($this);
     }
 
-    /**
-     * @param array $params
-     * @return array
-     */
-    private function getParams(array $params = [])
+    public function __call($name, $arguments)
     {
-        $accepted = ['page', 'sort', 'order', 'status', 'query', 'visibility'];
-
-        if (!$params) {
-            return array();
-        }
-        foreach($params as $key => $val) {
-            $key = trim($key);
-            if (!in_array($key, $accepted) || empty($params[$key])) {
-                unset($params[$key]);
-                continue;
-            }
-            switch($key) {
-                case 'page':
-                    $val = intval($val);
-                    if ($val < 1) {
-                        unset($params[$key]);
-                    }
-                    break;
-                case 'sort':
-                case 'order':
-                case 'visibility':
-                case 'status':
-                    $params[$key] = $val;
-                    break;
-            }
-        }
-        if ($params) {
-            return $params;
-        }
-        return array();
-    }
-
-    /**
-     * @param string $url
-     * @param array $requestBody
-     * @return array
-     * @throws ApiException
-     */
-    private function doPost($url, array $requestBody)
-    {
-        if ($this->apiKey === false || empty($this->apiKey)) {
-            throw new ApiException('Invalid API Key', 401);
-        }
-
-        if ($this->isDebug) {
-            $this->debug(json_encode($requestBody));
-        }
-
         try {
-            $response = $this->httpClient->request('POST', self::API_URL . $url, [
-                'json' => $requestBody,
-                'auth' => [$this->apiKey, 'X'],
-                'headers' => [
-                    'User-Agent' => $this->getUserAgent()
-                ]
-            ]);
-        } catch (RequestException $e) {
-            throw $this->apiException($e);
+            return $this->api($name);
+        } catch (InvalidArgumentException $e) {
+            throw new BadMethodCallException(sprintf('Undefined method called: "%s"', $name));
         }
-
-        $this->lastResponse = $response;
-
-        $content = $response->getBody()->getContents();
-        $location = $response->getHeaderLine('Location');
-
-        return array(basename($location), json_decode($content));
-    }
-
-    /**
-     * @param $url
-     * @param array $requestBody
-     * @return mixed
-     * @throws ApiException
-     */
-    private function doPut($url, array $requestBody)
-    {
-        if ($this->apiKey === false || empty($this->apiKey)) {
-            throw new ApiException('Invalid API Key', 401);
-        }
-
-        if ($this->isDebug) {
-            $this->debug(json_encode($requestBody));
-        }
-
-        try {
-            $response = $this->httpClient->request('PUT', self::API_URL . $url, [
-                'json' => $requestBody,
-                'auth' => [$this->apiKey, 'X'],
-                'headers' => [
-                    'User-Agent' => $this->getUserAgent()
-                ]
-            ]);
-        } catch (RequestException $e) {
-            throw $this->apiException($e);
-        }
-
-        $this->lastResponse = $response;
-        $content = $response->getBody()->getContents();
-
-        return json_decode($content);
-    }
-
-    /**
-     * @param $url
-     * @return bool
-     * @throws ApiException
-     */
-    private function doDelete($url)
-    {
-        if ($this->apiKey === false || empty($this->apiKey)) {
-            throw new ApiException('Invalid API Key', 401);
-        }
-
-        if ($this->isDebug) {
-            $this->debug($url);
-        }
-
-        try {
-            $response = $this->httpClient->request('DELETE', self::API_URL . $url, [
-                'auth' => [$this->apiKey, 'X'],
-                'headers' => [
-                    'User-Agent' => $this->getUserAgent()
-                ]
-            ]);
-        } catch (RequestException $e) {
-            throw $this->apiException($e);
-        }
-
-        $this->lastResponse = $response;
-
-        return true;
-    }
-
-    /**
-     * @param $url
-     * @param array $params
-     * @return array
-     * @throws ApiException
-     */
-    private function doGet($url, array $params)
-    {
-        if ($this->apiKey === false || empty($this->apiKey)) {
-            throw new ApiException('Invalid API Key', 401);
-        }
-
-        try {
-            $response = $this->httpClient->request('GET', self::API_URL . $url, [
-                'query' => $params,
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => $this->getUserAgent()
-                ],
-                'auth' => [$this->apiKey, 'X']
-            ]);
-        } catch(RequestException $e) {
-            throw $this->apiException($e);
-        }
-
-        $this->lastResponse = $response;
-        $content = $response->getBody()->getContents();
-
-        return $content;
-    }
-
-    /**
-     * @param $message
-     */
-    private function debug($message)
-    {
-        $text = strftime('%b %d %H:%M:%S') . ': ' . $message . PHP_EOL;
-
-        if ($this->debugDir) {
-            file_put_contents($this->debugDir . DIRECTORY_SEPARATOR . 'apiclient.log', $text, FILE_APPEND);
-        } else {
-            echo $text;
-        }
-    }
-
-    /**
-     * @param int $page
-     * @param string $siteId
-     * @param string $visibility
-     * @param string $sort
-     * @param string $order
-     * @return bool|ResourceCollection
-     */
-    public function getCollections($page = 1, $siteId = '', $visibility = 'all', $sort = 'order', $order = 'asc')
-    {
-        $params = array(
-            'page'       => $page,
-            'siteId'     => $siteId,
-            'visibility' => $visibility,
-            'sort'       => $sort,
-            'order'      => $order
-        );
-
-        return $this->getResourceCollection(
-            "collections",
-            $this->getParams($params),
-            Collection::class
-        );
-    }
-
-    /**
-     * @param $collectionId
-     * @param int $page
-     * @param string $sort
-     * @param string $order
-     * @return bool|ResourceCollection
-     */
-    public function getCategories($collectionId, $page = 1, $sort = 'order', $order = 'asc')
-    {
-        $params = array(
-            'page'  => $page,
-            'sort'  => $sort,
-            'order' => $order
-        );
-
-        return $this->getResourceCollection(
-            sprintf("collections/%s/categories", $collectionId),
-            $this->getParams($params),
-            Category::class
-        );
     }
 
     /**
@@ -379,46 +163,7 @@ class DocsApiClient {
      */
     public function getArticles($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc')
     {
-        $params = array(
-            'page'   => $page,
-            'status' => $status,
-            'sort'   => $sort,
-            'order'  => $order
-        );
-
-        return $this->getResourceCollection(
-            sprintf("categories/%s/articles", $categoryId),
-            $this->getParams($params),
-            ArticleRef::class
-        );
-    }
-
-    /**
-     * @param int $page
-     * @return bool|ResourceCollection
-     */
-    public function getSites($page = 1)
-    {
-        $params = array('page' => $page);
-
-        return $this->getResourceCollection(
-            "sites",
-            $this->getParams($params),
-            Site::class
-        );
-    }
-
-    /**
-     * @param $siteId
-     * @return bool|Site
-     */
-    public function getSite($siteId)
-    {
-        return $this->getItem(
-            sprintf("sites/%s", $siteId),
-            array(),
-            Site::class
-        );
+        return $this->articles()->all($categoryId, $page, $status, $sort, $order);
     }
 
     /**
@@ -431,19 +176,7 @@ class DocsApiClient {
      */
     public function searchArticles($query = '*', $page = 1, $collectionId = '', $status = 'all', $visibility = 'all')
     {
-        $params = array(
-            'query'        => $query,
-            'page'         => $page,
-            'collectionId' => $collectionId,
-            'status'       => $status,
-            'visibility'   => $visibility
-        );
-
-        return $this->getResourceCollection(
-            "search/articles",
-            $this->getParams($params),
-            ArticleSearch::class
-        );
+        return $this->articles()->search($query, $page, $collectionId, $status, $visibility);
     }
 
     /**
@@ -456,18 +189,7 @@ class DocsApiClient {
      */
     public function getRelatedArticles($articleId, $page = 1, $status = 'all', $sort = 'order', $order = 'desc')
     {
-        $params = array(
-            'page'   => $page,
-            'status' => $status,
-            'sort'   => $sort,
-            'order'  => $order
-        );
-
-        return $this->getResourceCollection(
-            sprintf("articles/%s/related", $articleId),
-            $this->getParams($params),
-            ArticleRef::class
-        );
+        return $this->articles()->relatedArticles($articleId, $page, $status, $order, $sort);
     }
 
     /**
@@ -477,147 +199,59 @@ class DocsApiClient {
      */
     public function getRevisions($articleId, $page = 1)
     {
-        $params = array('page' => $page);
-
-        return $this->getResourceCollection(
-            sprintf("articles/%s/revisions", $articleId),
-            $this->getParams($params),
-            ArticleRevisionRef::class
-        );
+        return $this->articles()->revisions($articleId, $page);
     }
 
     /**
      * @param $articleIdOrNumber
      * @param bool $draft
-     * @return bool|Article
+     * @return bool|Models\Article
      */
     public function getArticle($articleIdOrNumber, $draft = false)
     {
-        $params = array('draft' => $draft);
-
-        return $this->getItem(
-            sprintf("articles/%s", $articleIdOrNumber),
-            $this->getParams($params),
-            Article::class
-        );
+        return $this->articles()->show($articleIdOrNumber, $draft);
     }
 
     /**
      * @param $revisionId
-     * @return bool|ArticleRevision
+     * @return bool|Models\ArticleRevision
      */
     public function getRevision($revisionId)
     {
-        return $this->getItem(
-            sprintf("revisions/%s", $revisionId),
-            array(),
-            ArticleRevision::class
-        );
+        return $this->articles()->revision($revisionId);
     }
 
     /**
-     * @param Article $article
+     * @param Models\Article $article
      * @param bool $reload
-     * @return bool|Article
+     * @return bool|Models\Article
      * @throws ApiException
      */
-    public function createArticle(Article $article, $reload = false)
+    public function createArticle(Models\Article $article, $reload = false)
     {
-        $url = "articles";
-
-        $requestBody = $article->toArray();
-
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
-
-        list($id, $response) = $this->doPost($url, $requestBody);
-
-        if ($reload) {
-            $articleData = (array)$response;
-            $articleData = reset($articleData);
-            return new Article($articleData);
-        } else {
-            $article->setId($id);
-            return $article;
-        }
+        return $this->articles()->create($article, $reload);
     }
 
     /**
-     * @param Article $article
+     * @param Models\Article $article
      * @param bool $reload
-     * @return Article
+     * @return Models\Article
      * @throws ApiException
      */
-    public function updateArticle(Article $article, $reload = false)
+    public function updateArticle(Models\Article $article, $reload = false)
     {
-        $url = sprintf("articles/%s", $article->getId());
-
-        $requestBody = $article->toArray();
-
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
-
-        $response = $this->doPut($url, $requestBody);
-
-        if ($reload) {
-            $articleData = (array)$response;
-            $articleData = reset($articleData);
-            return new Article($articleData);
-        } else {
-            return $article;
-        }
+        return $this->articles()->update($article, $reload);
     }
 
     /**
-     * @param UploadArticle $uploadArticle
+     * @param Models\UploadArticle $uploadArticle
      * @param bool $reload
-     * @return bool|Article
+     * @return bool|Models\Article
      * @throws ApiException
      */
-    public function uploadArticle(UploadArticle $uploadArticle, $reload = false)
+    public function uploadArticle(Models\UploadArticle $uploadArticle, $reload = false)
     {
-        if (!file_exists($uploadArticle->getFile())) {
-            throw new ApiException(sprintf("Unable to locate file: %s", $uploadArticle->getFile()));
-        }
-
-        $multipart = [
-            [
-                'name' => 'key',
-                'contents' => $this->apiKey
-            ],
-            [
-                'name' => 'collectionId',
-                'contents' => $uploadArticle->getCollectionId()
-            ],
-            [
-                'name' => 'file',
-                'contents' => fopen($uploadArticle->getFile(), 'r')
-            ],
-            [
-                'name' => 'categoryId',
-                'contents' => $uploadArticle->getCategoryId()
-            ],
-            [
-                'name' => 'slug',
-                'contents' => $uploadArticle->getSlug()
-            ],
-            [
-                'name' => 'type',
-                'contents' => $uploadArticle->getType()
-            ],
-            [
-                'name' => 'reload',
-                'contents' => $reload
-            ]
-        ];
-
-        $response = $this->doPostMultipart("articles/upload", $multipart);
-
-        $articleData = (array)$response;
-
-        return $reload ? new Article(reset($articleData)) : true;
+        return $this->articles()->upload($uploadArticle, $reload);
     }
 
     /**
@@ -626,10 +260,7 @@ class DocsApiClient {
      */
     public function updateViewCount($articleId, $count = 1)
     {
-        $this->doPut(
-            sprintf("articles/%s/views", $articleId),
-            ['count' => $count]
-        );
+        return $this->articles()->updateViewCount($articleId, $count);
     }
 
     /**
@@ -637,7 +268,7 @@ class DocsApiClient {
      */
     public function deleteArticle($articleId)
     {
-        $this->doDelete(sprintf("articles/%s", $articleId));
+        return $this->articles()->remove($articleId);
     }
 
     /**
@@ -646,10 +277,7 @@ class DocsApiClient {
      */
     public function saveArticleDraft($articleId, $text)
     {
-        $this->doPut(
-            sprintf("articles/%s/drafts", $articleId),
-            ['text' => $text]
-        );
+        $this->articles()->saveDraft($articleId, $text);
     }
 
     /**
@@ -657,75 +285,50 @@ class DocsApiClient {
      */
     public function deleteArticleDraft($articleId)
     {
-        $this->doDelete(sprintf("articles/%s/drafts", $articleId));
+        $this->articles()->removeDraft($articleId);
+    }
+
+    /**
+     * @param $collectionId
+     * @param int $page
+     * @param string $sort
+     * @param string $order
+     * @return bool|ResourceCollection
+     */
+    public function getCategories($collectionId, $page = 1, $sort = 'order', $order = 'asc')
+    {
+        return $this->categories()->all($collectionId, $page, $sort, $order);
     }
 
     /**
      * @param $categoryIdOrNumber
-     * @return bool|Category
+     * @return bool|Models\Category
      */
     public function getCategory($categoryIdOrNumber)
     {
-        return $this->getItem(
-            sprintf("categories/%s", $categoryIdOrNumber),
-            array(),
-            Category::class
-        );
+        return $this->categories()->show($categoryIdOrNumber);
     }
 
     /**
-     * @param Category $category
+     * @param Models\Category $category
      * @param bool $reload
-     * @return bool|Category
+     * @return bool|Models\Category
      * @throws ApiException
      */
-    public function createCategory(Category $category, $reload = false)
+    public function createCategory(Models\Category $category, $reload = false)
     {
-        $url = "categories";
-
-        $requestBody = $category->toArray();
-
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
-
-        list($id, $response) = $this->doPost($url, $requestBody);
-
-        if ($reload) {
-            $categoryData = (array)$response;
-            $categoryData = reset($categoryData);
-            return new Category($categoryData);
-        } else {
-            $category->setId($id);
-            return $category;
-        }
+        return $this->categories()->create($category, $reload);
     }
 
     /**
-     * @param Category $category
+     * @param Models\Category $category
      * @param bool $reload
-     * @return Category
+     * @return Models\Category
      * @throws ApiException
      */
-    public function updateCategory(Category $category, $reload = false)
+    public function updateCategory(Models\Category $category, $reload = false)
     {
-        $url = sprintf("categories/%s", $category->getId());
-
-        $requestBody = $category->toArray();
-
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
-
-        $response = $this->doPut($url, $requestBody);
-
-        if ($reload) {
-            $categoryData = (array)$response;
-            $categoryData = reset($categoryData);
-            return new Category($categoryData);
-        } else {
-            return $category;
-        }
+        return $this->categories()->update($category, $reload);
     }
 
     /**
@@ -752,10 +355,7 @@ class DocsApiClient {
      */
     public function updateCategoryOrder($collectionId, array $categories)
     {
-        $this->doPut(
-            sprintf("collections/%s/categories", $collectionId),
-            $categories
-        );
+        $this->categories()->updateOrder($collectionId, $categories);
     }
 
     /**
@@ -764,75 +364,51 @@ class DocsApiClient {
      */
     public function deleteCategory($categoryId)
     {
-        $this->doDelete(sprintf("categories/%s", $categoryId));
+        $this->categories()->remove($categoryId);
+    }
+
+    /**
+     * @param int $page
+     * @param string $siteId
+     * @param string $visibility
+     * @param string $sort
+     * @param string $order
+     * @return bool|ResourceCollection
+     */
+    public function getCollections($page = 1, $siteId = '', $visibility = 'all', $sort = 'order', $order = 'asc')
+    {
+        return $this->collections()->all($page, $siteId, $visibility, $sort, $order);
     }
 
     /**
      * @param $collectionIdOrNumber
-     * @return bool
+     * @return bool|Models\Collection
      */
     public function getCollection($collectionIdOrNumber)
     {
-        return $this->getItem(
-            sprintf("collections/%s", $collectionIdOrNumber),
-            array(),
-            Collection::class
-        );
+        return $this->collections()->show($collectionIdOrNumber);
     }
 
     /**
-     * @param Collection $collection
+     * @param Models\Collection $collection
      * @param bool $reload
-     * @return bool|Collection
+     * @return bool|Models\Collection
      * @throws ApiException
      */
-    public function createCollection(Collection $collection, $reload = false)
+    public function createCollection(Models\Collection $collection, $reload = false)
     {
-        $url = "collections";
-
-        $requestBody = $collection->toArray();
-
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
-
-        list($id, $response) = $this->doPost($url, $requestBody);
-
-        if ($reload) {
-            $collectionData = (array)$response;
-            $collectionData = reset($collectionData);
-            return new Collection($collectionData);
-        } else {
-            $collection->setId($id);
-            return $collection;
-        }
+        return $this->collections()->create($collection, $reload);
     }
 
     /**
-     * @param Collection $collection
+     * @param Models\Collection $collection
      * @param bool $reload
-     * @return Collection
+     * @return Models\Collection
      * @throws ApiException
      */
-    public function updateCollection(Collection $collection, $reload = false)
+    public function updateCollection(Models\Collection $collection, $reload = false)
     {
-        $url = sprintf("collections/%s", $collection->getId());
-
-        $requestBody = $collection->toArray();
-
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
-
-        $response = $this->doPut($url, $requestBody);
-
-        if ($reload) {
-            $collectionData = (array)$response;
-            $collectionData = reset($collectionData);
-            return new Collection($collectionData);
-        } else {
-            return $collection;
-        }
+        return $this->collections()->update($collection, $reload);
     }
 
     /**
@@ -841,62 +417,47 @@ class DocsApiClient {
      */
     public function deleteCollection($collectionId)
     {
-        $this->doDelete(sprintf("collections/%s", $collectionId));
+        $this->collections()->remove($collectionId);
     }
 
     /**
-     * @param Site $site
-     * @param bool $reload
-     * @return bool|Site
-     * @throws ApiException
+     * @param int $page
+     * @return bool|ResourceCollection
      */
-    public function createSite(Site $site, $reload = false)
+    public function getSites($page = 1)
     {
-        $url = "sites";
-
-        $requestBody = $site->toArray();
-
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
-
-        list($id, $response) = $this->doPost($url, $requestBody);
-
-        if ($reload) {
-            $siteData = (array)$response;
-            $siteData = reset($siteData);
-            return new Site($siteData);
-        } else {
-            $site->setId($id);
-            return $site;
-        }
+        return $this->sites()->all($page);
     }
 
     /**
-     * @param Site $site
+     * @param $siteId
+     * @return bool|Models\Site
+     */
+    public function getSite($siteId)
+    {
+        return $this->sites()->show($siteId);
+    }
+
+    /**
+     * @param Models\Site $site
      * @param bool $reload
-     * @return Site
+     * @return bool|Models\Site
      * @throws ApiException
      */
-    public function updateSite(Site $site, $reload = false)
+    public function createSite(Models\Site $site, $reload = false)
     {
-        $url = sprintf("sites/%s", $site->getId());
+        return $this->sites()->create($site, $reload);
+    }
 
-        $requestBody = $site->toArray();
-
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
-
-        $response = $this->doPut($url, $requestBody);
-
-        if ($reload) {
-            $siteData = (array)$response;
-            $siteData = reset($siteData);
-            return new Site($siteData);
-        } else {
-            return $site;
-        }
+    /**
+     * @param Models\Site $site
+     * @param bool $reload
+     * @return Models\Site
+     * @throws ApiException
+     */
+    public function updateSite(Models\Site $site, $reload = false)
+    {
+        return $this->sites()->update($site, $reload);
     }
 
     /**
@@ -905,147 +466,27 @@ class DocsApiClient {
      */
     public function deleteSite($siteId)
     {
-        $this->doDelete(sprintf("sites/%s", $siteId));
+        $this->sites()->remove($siteId);
     }
 
     /**
-     * @param $url
-     * @param array $multipart
-     * @return mixed
+     * @param Models\ArticleAsset $articleAsset
+     * @return Models\ArticleAsset
      * @throws ApiException
      */
-    private function doPostMultipart($url, array $multipart)
+    public function createArticleAsset(Models\ArticleAsset $articleAsset)
     {
-        if ($this->apiKey === false || empty($this->apiKey)) {
-            throw new ApiException('Invalid API Key', 401);
-        }
-
-        if ($this->isDebug) {
-            $this->debug(json_encode($multipart));
-        }
-
-        try {
-            $response = $this->httpClient->request('POST', self::API_URL . $url, [
-                'multipart' => $multipart,
-                'auth' => [$this->apiKey, 'X'],
-                'headers' => [
-                    'User-Agent' => $this->getUserAgent()
-                ]
-            ]);
-        } catch(RequestException $e) {
-            throw $this->apiException($e);
-        }
-
-        $content = $response->getBody()->getContents();
-
-        return json_decode($content);
+        return $this->assets()->createArticleAsset($articleAsset);
     }
 
     /**
-     * @param ArticleAsset $articleAsset
-     * @return ArticleAsset
+     * @param Models\SettingsAsset $settingsAsset
+     * @return Models\SettingsAsset
      * @throws ApiException
      */
-    public function createArticleAsset(ArticleAsset $articleAsset)
+    public function createSettingsAsset(Models\SettingsAsset $settingsAsset)
     {
-        if (!file_exists($articleAsset->getFile())) {
-            throw new ApiException(sprintf("Unable to locate file: %s", $articleAsset->getFile()));
-        }
-
-        if (empty($articleAsset->getArticleId())) {
-            throw new ApiException("articleId is empty or not provided");
-        }
-
-        if (empty($articleAsset->getAssetType())) {
-            throw new ApiException("assetType is empty or not provided");
-        }
-
-        $multipart = [
-            [
-                'name' => 'key',
-                'contents' => $this->apiKey
-            ],
-            [
-                'name' => 'articleId',
-                'contents' => $articleAsset->getArticleId()
-            ],
-            [
-                'name' => 'assetType',
-                'contents' => $articleAsset->getAssetType()
-            ],
-            [
-                'name' => 'file',
-                'contents' => fopen($articleAsset->getFile(), 'r')
-            ]
-        ];
-
-        $uploadedAsset = $this->doPostMultipart('assets/article', $multipart);
-
-        $articleAsset->setFileLink($uploadedAsset->filelink);
-
-        return $articleAsset;
-    }
-
-    /**
-     * @param SettingsAsset $settingsAsset
-     * @return SettingsAsset
-     * @throws ApiException
-     */
-    public function createSettingsAsset(SettingsAsset $settingsAsset)
-    {
-        if (!file_exists($settingsAsset->getFile())) {
-            throw new ApiException(sprintf("Unable to locate file: %s", $settingsAsset->getFile()));
-        }
-
-        if (empty($settingsAsset->getAssetType())) {
-            throw new ApiException("assetType is empty or not provided");
-        }
-
-        if (empty($settingsAsset->getSiteId())) {
-            throw new ApiException("siteId is empty or not provided");
-        }
-
-        $multipart = [
-            [
-                'name' => 'key',
-                'contents' => $this->apiKey
-            ],
-            [
-                'name' => 'assetType',
-                'contents' => $settingsAsset->getAssetType()
-            ],
-            [
-                'name' => 'siteId',
-                'contents' => $settingsAsset->getSiteId()
-            ],
-            [
-                'name' => 'file',
-                'contents' => fopen($settingsAsset->getFile(), 'r')
-            ]
-        ];
-
-        $uploadedAsset = $this->doPostMultipart('assets/settings', $multipart);
-
-        $settingsAsset->setFileLink($uploadedAsset->filelink);
-
-        return $settingsAsset;
-    }
-
-    /**
-     * @param RequestException $e
-     * @return ApiException
-     */
-    private function apiException(RequestException $e)
-    {
-        $message = $e->hasResponse()
-            ? $e->getResponse()->getBody()->getContents()
-            : $e->getMessage();
-
-        $code = $e->hasResponse()
-            ? $e->getResponse()->getStatusCode()
-            : null;
-
-        return new ApiException($message, $code);
+        return $this->assets()->createSettingsAsset($settingsAsset);
     }
 
     /**
@@ -1055,95 +496,46 @@ class DocsApiClient {
      */
     public function getRedirects($siteId, $page = 1)
     {
-        $params = array('page' => $page);
-
-        return $this->getResourceCollection(
-            sprintf("redirects/site/%s", $siteId),
-            $this->getParams($params),
-            Redirect::class
-        );
+        return $this->redirects()->all($siteId, $page);
     }
 
     /**
      * @param $redirectId
-     * @return bool|Redirect
+     * @return bool|Models\Redirect
      */
     public function getRedirect($redirectId)
     {
-        return $this->getItem(
-            sprintf("redirects/%s", $redirectId),
-            array(),
-            Redirect::class
-        );
+        return $this->redirects()->show($redirectId);
     }
 
     /**
      * @param $url
      * @param $siteId
-     * @return bool|RedirectedUrl
+     * @return bool|Models\RedirectedUrl
      */
     public function findRedirect($url, $siteId)
     {
-        $params = ['url' => $url, 'siteId' => $siteId];
-
-        return $this->getItem(
-            "redirects",
-            $this->getParams($params),
-            RedirectedUrl::class
-        );
+        return $this->redirects()->find($url, $siteId);
     }
 
     /**
-     * @param Redirect $redirect
+     * @param Models\Redirect $redirect
      * @param bool $reload
-     * @return Redirect
+     * @return Models\Redirect
      */
-    public function createRedirect(Redirect $redirect, $reload = false)
+    public function createRedirect(Models\Redirect $redirect, $reload = false)
     {
-        $url = "redirects";
-
-        $requestBody = $redirect->toArray();
-
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
-
-        list($id, $response) = $this->doPost($url, $requestBody);
-
-        if ($reload) {
-            $redirectData = (array)$response;
-            $redirectData = reset($redirectData);
-            return new Redirect($redirectData);
-        } else {
-            $redirect->setId($id);
-            return $redirect;
-        }
+        return $this->redirects()->create($redirect, $reload);
     }
 
     /**
-     * @param Redirect $redirect
+     * @param Models\Redirect $redirect
      * @param bool $reload
-     * @return Redirect
+     * @return Models\Redirect
      */
-    public function updateRedirect(Redirect $redirect, $reload = false)
+    public function updateRedirect(Models\Redirect $redirect, $reload = false)
     {
-        $url = sprintf("redirect/%s", $redirect->getId());
-
-        $requestBody = $redirect->toArray();
-
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
-
-        $response = $this->doPut($url, $requestBody);
-
-        if ($reload) {
-            $redirectData = (array)$response;
-            $redirectData = reset($redirectData);
-            return new Redirect($redirectData);
-        } else {
-            return $redirect;
-        }
+        return $this->redirects()->update($redirect, $reload);
     }
 
     /**
@@ -1151,6 +543,6 @@ class DocsApiClient {
      */
     public function deleteRedirect($redirectId)
     {
-        $this->doDelete(sprintf("redirects/%s", $redirectId));
+        $this->redirects()->remove($redirectId);
     }
 }

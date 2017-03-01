@@ -169,7 +169,7 @@ class AssetsTest extends TestCase
 
         $responseMock = $this->createResponseMock(201, __DIR__ . '/../../fixtures/assets/assets.json');
         $apiClient = $this->createTestApiClient($responseMock);
-        $apiClient->setKey('');
+        $apiClient->setApiKey('');
         
         $apiClient->createArticleAsset($articleAsset);
     }
