@@ -6,7 +6,7 @@ use HelpScoutDocs\Models\UploadArticle;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $docsClient = new DocsApiClient();
-$docsClient->setKey('API_KEY');
+$docsClient->setApiKey('API_KEY');
 
 $upload = new UploadArticle();
 $upload->setCollectionId('COLLECTION_ID');

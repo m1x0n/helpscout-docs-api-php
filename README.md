@@ -24,7 +24,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use HelpScoutDocs\DocsApiClient;
 
 $docsApiClient = new DocsApiClient();
-$docsApiClient->setKey('your-api-key');
+$docsApiClient->setApiKey('your-api-key');
 
 $collections = $docsApiClient->getCollections();
 

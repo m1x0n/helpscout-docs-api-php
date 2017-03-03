@@ -6,7 +6,7 @@ use HelpScoutDocs\DocsApiClient;
 
 // Initialize client
 $docsApiClient = new DocsApiClient();
-$docsApiClient->setKey('your-api-key');
+$docsApiClient->setApiKey('your-api-key');
 
 // Get all collections
 $collections = $docsApiClient->getCollections();
