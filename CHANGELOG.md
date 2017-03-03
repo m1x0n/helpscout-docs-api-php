@@ -1,3 +1,6 @@
+### 1.2
+* Code restructuring
+
 ### 1.1
 * Implemented Redirects endpoint
 
