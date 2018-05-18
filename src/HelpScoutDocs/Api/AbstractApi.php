@@ -212,7 +212,7 @@ abstract class AbstractApi
      */
     protected function getParams(array $params = [])
     {
-        $accepted = ['page', 'sort', 'order', 'status', 'query', 'visibility'];
+        $accepted = ['page', 'sort', 'order', 'status', 'query', 'visibility', 'collectionId'];
 
         if (!$params) {
             return [];
