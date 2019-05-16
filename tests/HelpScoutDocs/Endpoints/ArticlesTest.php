@@ -297,4 +297,30 @@ class ArticlesTest extends TestCase
 
         $apiClient->deleteArticleDraft(uniqid());
     }
+
+    /**
+     * @test
+     */
+    public function should_return_articles_for_category()
+    {
+        $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/articles/articles.json');
+        $apiClient = $this->createTestApiClient($responseMock);
+
+        $articles = $apiClient->getArticlesForCategory(uniqid());
+
+        $this->assertInstanceOf(ResourceCollection::class, $articles);
+    }
+
+    /**
+     * @test
+     */
+    public function should_return_articles_for_collection()
+    {
+        $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/articles/articles.json');
+        $apiClient = $this->createTestApiClient($responseMock);
+
+        $articles = $apiClient->getArticlesForCollection(uniqid());
+
+        $this->assertInstanceOf(ResourceCollection::class, $articles);
+    }
 }
