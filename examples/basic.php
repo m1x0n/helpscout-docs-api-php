@@ -15,7 +15,7 @@ $collections = $docsApiClient->getCollections();
 $helpCategories = $docsApiClient->getCategories('COLLECTION_ID');
 
 // Get all articles by category ID
-$helpCategoryArticles = $docsApiClient->getArticles('CATEGORY_ID');
+$helpCategoryArticles = $docsApiClient->getArticlesForCategory('CATEGORY_ID');
 
 // Get all sites
 $sites = $docsApiClient->getSites();

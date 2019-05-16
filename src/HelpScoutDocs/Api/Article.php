@@ -19,6 +19,8 @@ class Article extends AbstractApi
      * @param int $pageSize
      * @return bool|ResourceCollection
      * @throws ApiException
+     *
+     * @deprecated
      */
     public function all(
         $categoryId,
@@ -28,16 +30,83 @@ class Article extends AbstractApi
         $order = 'asc',
         $pageSize = self::DEFAULT_PAGE_SIZE
     ) {
+        return $this->allForCategory(
+            $categoryId,
+            $page,
+            $status,
+            $sort,
+            $order,
+            $pageSize
+        );
+    }
+
+    /**
+     * @param $categoryId
+     * @param int $page
+     * @param string $status
+     * @param string $sort
+     * @param string $order
+     * @param int $pageSize
+     * @return ResourceCollection|mixed
+     * @throws ApiException
+     */
+    public function allForCategory(
+        $categoryId,
+        $page = 1,
+        $status = 'all',
+        $sort = 'order',
+        $order = 'asc',
+        $pageSize = self::DEFAULT_PAGE_SIZE
+    ) {
         $params = [
             'page'   => $page,
-            'status' => $status,
             'sort'   => $sort,
             'order'  => $order,
             'pageSize' => $pageSize
         ];
 
+        if ($status !== 'all') {
+            $params['status'] = $status;
+        }
+
         return $this->getResourceCollection(
             sprintf("categories/%s/articles", $categoryId),
+            $this->getParams($params),
+            Models\ArticleRef::class
+        );
+    }
+
+    /**
+     * @param $collectionId
+     * @param int $page
+     * @param string $status
+     * @param string $sort
+     * @param string $order
+     * @param int $pageSize
+     * @return ResourceCollection|mixed
+     * @throws ApiException
+     */
+    public function allForCollection(
+        $collectionId,
+        $page = 1,
+        $status = 'all',
+        $sort = 'order',
+        $order = 'asc',
+        $pageSize = self::DEFAULT_PAGE_SIZE
+    ) {
+        $params = [
+            'page'   => $page,
+            'sort'   => $sort,
+            'order'  => $order,
+            'pageSize' => $pageSize
+        ];
+
+        if ($status !== 'all') {
+            $params['status'] = $status;
+        }
+
+        return $this->getResourceCollection(
+            sprintf("collections/%s/articles", $collectionId),
             $this->getParams($params),
             Models\ArticleRef::class
         );
@@ -57,9 +126,12 @@ class Article extends AbstractApi
             'query'        => $query,
             'page'         => $page,
             'collectionId' => $collectionId,
-            'status'       => $status,
             'visibility'   => $visibility
         ];
+
+        if ($status !== 'all') {
+            $params['status'] = $status;
+        }
 
         return $this->getResourceCollection(
             "search/articles",
@@ -80,10 +152,13 @@ class Article extends AbstractApi
     {
         $params = [
             'page'   => $page,
-            'status' => $status,
             'sort'   => $sort,
             'order'  => $order
         ];
+
+        if ($status !== 'all') {
+            $params['status'] = $status;
+        }
 
         return $this->getResourceCollection(
             sprintf("articles/%s/related", $articleId),

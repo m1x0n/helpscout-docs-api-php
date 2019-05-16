@@ -163,10 +163,42 @@ class DocsApiClient {
      * @param int $pageSize
      * @return bool|ResourceCollection
      * @throws ApiException
+     *
+     * @deprecated
      */
     public function getArticles($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc', $pageSize = Article::DEFAULT_PAGE_SIZE)
     {
         return $this->articles()->all($categoryId, $page, $status, $sort, $order, $pageSize);
+    }
+
+    /**
+     * @param $categoryId
+     * @param int $page
+     * @param string $status
+     * @param string $sort
+     * @param string $order
+     * @param int $pageSize
+     * @return ResourceCollection|mixed
+     * @throws ApiException
+     */
+    public function getArticlesForCategory($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc', $pageSize = Article::DEFAULT_PAGE_SIZE)
+    {
+        return $this->articles()->allForCategory($categoryId, $page, $status, $sort, $order, $pageSize);
+    }
+
+    /**
+     * @param $collectionId
+     * @param int $page
+     * @param string $status
+     * @param string $sort
+     * @param string $order
+     * @param int $pageSize
+     * @return ResourceCollection|mixed
+     * @throws ApiException
+     */
+    public function getArticlesForCollection($collectionId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc', $pageSize = Article::DEFAULT_PAGE_SIZE)
+    {
+        return $this->articles()->allForCollection($collectionId, $page, $status, $sort, $order, $pageSize);
     }
 
     /**
