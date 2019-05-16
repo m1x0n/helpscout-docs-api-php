@@ -8,21 +8,32 @@ use HelpScoutDocs\ResourceCollection;
 
 class Article extends AbstractApi
 {
+    const DEFAULT_PAGE_SIZE = 50;
+
     /**
      * @param $categoryId
      * @param int $page
      * @param string $status
      * @param string $sort
      * @param string $order
+     * @param int $pageSize
      * @return bool|ResourceCollection
+     * @throws ApiException
      */
-    public function all($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc')
-    {
+    public function all(
+        $categoryId,
+        $page = 1,
+        $status = 'all',
+        $sort = 'order',
+        $order = 'asc',
+        $pageSize = self::DEFAULT_PAGE_SIZE
+    ) {
         $params = [
             'page'   => $page,
             'status' => $status,
             'sort'   => $sort,
-            'order'  => $order
+            'order'  => $order,
+            'pageSize' => $pageSize
         ];
 
         return $this->getResourceCollection(

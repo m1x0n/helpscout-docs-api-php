@@ -4,6 +4,7 @@ namespace HelpScoutDocs;
 
 use BadMethodCallException;
 use GuzzleHttp\Client;
+use HelpScoutDocs\Api\Article;
 use InvalidArgumentException;
 use HelpScoutDocs\Models;
 
@@ -159,11 +160,13 @@ class DocsApiClient {
      * @param string $status
      * @param string $sort
      * @param string $order
+     * @param int $pageSize
      * @return bool|ResourceCollection
+     * @throws ApiException
      */
-    public function getArticles($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc')
+    public function getArticles($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc', $pageSize = Article::DEFAULT_PAGE_SIZE)
     {
-        return $this->articles()->all($categoryId, $page, $status, $sort, $order);
+        return $this->articles()->all($categoryId, $page, $status, $sort, $order, $pageSize);
     }
 
     /**

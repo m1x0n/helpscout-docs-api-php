@@ -54,7 +54,7 @@ Docs API Client Endpoints Methods
 * deleteCategory($categoryId)
 
 ### Articles
-* getArticles($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc')
+* getArticles($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc', $pageSize = 50)
 * searchArticles($query = '*', $page = 1, $collectionId = '', $status = 'all', $visibility = 'all')
 * getRelatedArticles($articleId, $page = 1, $status = 'all', $sort = 'order', $order = 'desc')
 * getRevisions($articleId, $page = 1)

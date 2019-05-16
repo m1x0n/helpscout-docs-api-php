@@ -22,7 +22,7 @@ abstract class AbstractApi
     /**
      * @param $url
      * @param array $params
-     * @return array
+     * @return string
      * @throws ApiException
      */
     protected function get($url, array $params)
@@ -50,9 +50,8 @@ abstract class AbstractApi
         }
 
         $this->client->setLastResponse($response);
-        $content = $response->getBody()->getContents();
 
-        return $content;
+        return $response->getBody()->getContents();
     }
 
     /**
@@ -212,20 +211,31 @@ abstract class AbstractApi
      */
     protected function getParams(array $params = [])
     {
-        $accepted = ['page', 'sort', 'order', 'status', 'query', 'visibility', 'collectionId'];
+        //TODO: Move to const array after PHP 5.5 support drop
+        $accepted = [
+            'page',
+            'sort',
+            'order',
+            'status',
+            'query',
+            'visibility',
+            'collectionId',
+            'pageSize'
+        ];
 
         if (!$params) {
             return [];
         }
         foreach($params as $key => $val) {
             $key = trim($key);
-            if (!in_array($key, $accepted) || empty($params[$key])) {
+            if (empty($params[$key]) || !in_array($key, $accepted, true)) {
                 unset($params[$key]);
                 continue;
             }
             switch($key) {
                 case 'page':
-                    $val = intval($val);
+                case 'pageSize':
+                    $val = (int)$val;
                     if ($val < 1) {
                         unset($params[$key]);
                     }
@@ -263,7 +273,7 @@ abstract class AbstractApi
 
     /**
      * @param string $url
-     * @param string $params
+     * @param array $params
      * @param string $modelClass
      * @return ResourceCollection|mixed
      * @throws ApiException
