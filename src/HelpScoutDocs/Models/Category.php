@@ -10,6 +10,7 @@ class Category extends DocsModel {
     private $collectionId;
     private $order;
     private $name;
+    private $description;
     private $createdBy;
     private $updatedBy;
     private $createdAt;
@@ -23,6 +24,7 @@ class Category extends DocsModel {
             $this->collectionId = isset($data->collectionId) ? $data->collectionId : null;
             $this->order        = isset($data->order)        ? $data->order        : null;
             $this->name         = isset($data->name)         ? $data->name         : null;
+            $this->description  = isset($data->description)  ? $data->description  : null;
             $this->createdBy    = isset($data->createdBy)    ? $data->createdBy    : null;
             $this->updatedBy    = isset($data->updatedBy)    ? $data->updatedBy    : null;
             $this->createdAt    = isset($data->createdAt)    ? $data->createdAt    : null;
@@ -108,6 +110,22 @@ class Category extends DocsModel {
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+      $this->description = $description;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+      return $this->description;
     }
 
     /**
