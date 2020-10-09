@@ -1,27 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         bootstrap="./tests/bootstrap.php"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
-         beStrictAboutTestsThatDoNotTestAnything="false">
-    <testsuites>
-        <testsuite name="HelpScout Docs Api Test Suite">
-            <directory>./tests/HelpScoutDocs/</directory>
-        </testsuite>
-    </testsuites>
-    <filter>
-        <whitelist>
-            <directory suffix=".php">src/HelpScoutDocs/</directory>
-            <exclude>
-                <directory suffix=".php">src/HelpScoutDocs/Models/</directory>
-                <file>src/HelpScoutDocs/ResourceCollection.php</file>
-                <file>src/HelpScoutDocs/ApiException.php</file>
-            </exclude>
-        </whitelist>
-    </filter>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" backupStaticAttributes="false" bootstrap="./tests/bootstrap.php" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false" beStrictAboutTestsThatDoNotTestAnything="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <coverage>
+    <include>
+      <directory suffix=".php">src/HelpScoutDocs/</directory>
+    </include>
+    <exclude>
+      <directory suffix=".php">src/HelpScoutDocs/Models/</directory>
+      <file>src/HelpScoutDocs/ResourceCollection.php</file>
+      <file>src/HelpScoutDocs/ApiException.php</file>
+    </exclude>
+  </coverage>
+  <testsuites>
+    <testsuite name="HelpScout Docs Api Test Suite">
+      <directory>./tests/HelpScoutDocs/</directory>
+    </testsuite>
+  </testsuites>
 </phpunit>
