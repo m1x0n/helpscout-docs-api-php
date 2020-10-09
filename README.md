@@ -12,8 +12,14 @@ Requirements
 
 Installation
 --------------------
+This will install latest `2.*` version:
 ```
 composer require m1x0n/helpscout-docs-api-php
+```
+
+Previous versions for `"php":">= 5.5"` are also available and could be installed in following way:
+```
+composer require m1x0n/helpscout-docs-api-php:^1
 ```
 
 Example Usage:
