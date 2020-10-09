@@ -1,3 +1,7 @@
+### 2.0
+**Breaking change**: Now package requires **php 7.3+**
+* Updated Guzzle and PHPUnit
+
 ### 1.2
 * Code restructuring
 

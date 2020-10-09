@@ -11,7 +11,7 @@ class SitesTest extends TestCase
     /**
      * @test
      */
-    public function should_return_sites_collection()
+    public function should_return_sites_collection(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/sites/sites.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -24,13 +24,13 @@ class SitesTest extends TestCase
     /**
      * @test
      */
-    public function should_create_site_and_respond_with_new_instance()
+    public function should_create_site_and_respond_with_new_instance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/sites/site.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
         $site = new Site();
-        $site->setSubDomain(uniqid("Subdomain" ));
+        $site->setSubDomain(uniqid("Subdomain"));
         $site->setTitle(uniqid("Site Title "));
 
         $created = $apiClient->createSite($site, true);
@@ -41,13 +41,13 @@ class SitesTest extends TestCase
     /**
      * @test
      */
-    public function should_create_site_and_assign_id()
+    public function should_create_site_and_assign_id(): void
     {
         $responseMock = $this->createResponseMock(200, null);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $site = new Site();
-        $site->setSubDomain(uniqid("Subdomain" ));
+        $site->setSubDomain(uniqid("Subdomain"));
         $site->setTitle(uniqid("Site Title "));
 
         $created = $apiClient->createSite($site, false);
@@ -58,10 +58,11 @@ class SitesTest extends TestCase
 
     /**
      * @test
-     * @expectedException \HelpScoutDocs\ApiException
      */
-    public function should_throw_an_exception_if_malformed_site_provided()
+    public function should_throw_an_exception_if_malformed_site_provided(): void
     {
+        $this->expectException(\HelpScoutDocs\ApiException::class);
+
         $responseMock = $this->createResponseMock(400, null);
         $apiClient = $this->createTestApiClient($responseMock);
 
@@ -72,7 +73,7 @@ class SitesTest extends TestCase
     /**
      * @test
      */
-    public function should_return_site_by_provided_id()
+    public function should_return_site_by_provided_id(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/sites/site.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -84,11 +85,12 @@ class SitesTest extends TestCase
 
     /**
      * @test
-     * @expectedException \HelpScoutDocs\ApiException
-     * @expectedExceptionCode 404
      */
-    public function should_throw_an_exception_if_invalid_site_id_provided()
+    public function should_throw_an_exception_if_invalid_site_id_provided(): void
     {
+        $this->expectException(\HelpScoutDocs\ApiException::class);
+        $this->expectExceptionCode(404);
+
         $responseMock = $this->createResponseMock(404, null);
         $apiClient = $this->createTestApiClient($responseMock);
 
@@ -98,7 +100,7 @@ class SitesTest extends TestCase
     /**
      * @test
      */
-    public function should_update_existing_site_and_respond_with_updated_instance()
+    public function should_update_existing_site_and_respond_with_updated_instance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/sites/site.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -115,7 +117,7 @@ class SitesTest extends TestCase
     /**
      * @test
      */
-    public function should_update_existing_site_and_respond_without_instance()
+    public function should_update_existing_site_and_respond_without_instance(): void
     {
         $responseMock = $this->createResponseMock(200, null);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -133,7 +135,7 @@ class SitesTest extends TestCase
     /**
      * @test
      */
-    public function should_delete_existing_site()
+    public function should_delete_existing_site(): void
     {
         $responseMock = $this->createResponseMock(200, null);
         $apiClient = $this->createTestApiClient($responseMock);

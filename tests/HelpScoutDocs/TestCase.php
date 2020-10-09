@@ -9,13 +9,13 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use HelpScoutDocs\DocsApiClient;
 
-class TestCase extends \PHPUnit_Framework_TestCase
+class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * @param MockHandler $mockHandler
      * @return DocsApiClient
      */
-    public function createTestApiClient(MockHandler $mockHandler)
+    public function createTestApiClient(MockHandler $mockHandler): DocsApiClient
     {
         $httpClientMock = new Client(['handler' => $mockHandler]);
         $apiClient = new DocsApiClient();
@@ -30,7 +30,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
      * @param null|string $fixtureFile
      * @return MockHandler
      */
-    public function createResponseMock($expectedCode, $fixtureFile = null)
+    public function createResponseMock($expectedCode, $fixtureFile = null): MockHandler
     {
         if ($expectedCode >= 400 || $expectedCode >= 500) {
             $response = new Response();
@@ -44,7 +44,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
             if (!empty($fixtureFile)) {
                 $fixture = file_get_contents($fixtureFile);
-                $responseMock = $responseMock->withBody(\GuzzleHttp\Psr7\stream_for($fixture));
+                $responseMock = $responseMock->withBody(\GuzzleHttp\Psr7\Utils::streamFor($fixture));
             }
         }
 

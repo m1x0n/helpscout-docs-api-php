@@ -7,7 +7,7 @@ use HelpScoutDocs\Tests\TestCase;
 
 class LastResponseTest extends TestCase
 {
-    public function test_last_response_should_be_stored()
+    public function test_last_response_should_be_stored(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../fixtures/articles/articles.json');
         $apiClient = $this->createTestApiClient($responseMock);

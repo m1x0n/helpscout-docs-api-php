@@ -11,7 +11,7 @@ class CategoriesTest extends TestCase
     /**
      * @test
      */
-    public function should_return_categories_collection()
+    public function should_return_categories_collection(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/categories/categories.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -24,7 +24,7 @@ class CategoriesTest extends TestCase
     /**
      * @test
      */
-    public function should_return_category_by_id_or_number()
+    public function should_return_category_by_id_or_number(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/categories/category.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -36,10 +36,11 @@ class CategoriesTest extends TestCase
 
     /**
      * @test
-     * @expectedException \HelpScoutDocs\ApiException
      */
-    public function should_throw_an_exception_if_non_existing_id_or_number_provided()
+    public function should_throw_an_exception_if_non_existing_id_or_number_provided(): void
     {
+        $this->expectException(\HelpScoutDocs\ApiException::class);
+
         $responseMock = $this->createResponseMock(404, null);
         $apiClient = $this->createTestApiClient($responseMock);
 
@@ -49,7 +50,7 @@ class CategoriesTest extends TestCase
     /**
      * @test
      */
-    public function should_create_category_and_respond_with_new_instance()
+    public function should_create_category_and_respond_with_new_instance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/categories/category.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -66,7 +67,7 @@ class CategoriesTest extends TestCase
     /**
      * @test
      */
-    public function should_create_category_and_assign_id()
+    public function should_create_category_and_assign_id(): void
     {
         $responseMock = $this->createResponseMock(200, null);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -83,11 +84,12 @@ class CategoriesTest extends TestCase
 
     /**
      * @test
-     * @expectedException \HelpScoutDocs\ApiException
-     * @expectedExceptionCode 400
      */
-    public function should_throw_an_exception_if_malformed_category_provided()
+    public function should_throw_an_exception_if_malformed_category_provided(): void
     {
+        $this->expectException(\HelpScoutDocs\ApiException::class);
+        $this->expectExceptionCode(400);
+
         $responseMock = $this->createResponseMock(400, null);
         $apiClient = $this->createTestApiClient($responseMock);
 
@@ -98,7 +100,7 @@ class CategoriesTest extends TestCase
     /**
      * @test
      */
-    public function should_update_category_and_respond_with_new_instance()
+    public function should_update_category_and_respond_with_new_instance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/categories/category.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -116,7 +118,7 @@ class CategoriesTest extends TestCase
     /**
      * @test
      */
-    public function should_update_category_and_respond_without_new_instance()
+    public function should_update_category_and_respond_without_new_instance(): void
     {
         $responseMock = $this->createResponseMock(200, null);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -135,7 +137,7 @@ class CategoriesTest extends TestCase
     /**
      * @test
      */
-    public function should_delete_category()
+    public function should_delete_category(): void
     {
         $responseMock = $this->createResponseMock(200, null);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -146,16 +148,16 @@ class CategoriesTest extends TestCase
     /**
      * @test
      */
-    public function should_reorder_categories()
+    public function should_reorder_categories(): void
     {
         $responseMock = $this->createResponseMock(200, null);
         $apiClient = $this->createTestApiClient($responseMock);
-        
+
         $apiClient->updateCategoryOrder(uniqid(), [
             'categories' => [
-                ['id' => uniqid(), 'order' => 1 ],
-                ['id' => uniqid(), 'order' => 2 ],
-                ['id' => uniqid(), 'order' => 3 ],
+                ['id' => uniqid(), 'order' => 1],
+                ['id' => uniqid(), 'order' => 2],
+                ['id' => uniqid(), 'order' => 3],
             ]
         ]);
     }

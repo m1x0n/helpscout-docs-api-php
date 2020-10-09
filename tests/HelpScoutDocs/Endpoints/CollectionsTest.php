@@ -11,7 +11,7 @@ class CollectionsTest extends TestCase
     /**
      * @test
      */
-    public function should_return_collections_collection()
+    public function should_return_collections_collection(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/collections/collections.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -24,7 +24,7 @@ class CollectionsTest extends TestCase
     /**
      * @test
      */
-    public function should_return_collection_by_given_exiting_id_or_number()
+    public function should_return_collection_by_given_exiting_id_or_number(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/collections/collection.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -36,10 +36,11 @@ class CollectionsTest extends TestCase
 
     /**
      * @test
-     * @expectedException \HelpScoutDocs\ApiException
      */
-    public function should_throw_an_exception_for_non_existing_id_or_number()
+    public function should_throw_an_exception_for_non_existing_id_or_number(): void
     {
+        $this->expectException(\HelpScoutDocs\ApiException::class);
+
         $responseMock = $this->createResponseMock(404, null);
         $apiClient = $this->createTestApiClient($responseMock);
 
@@ -49,7 +50,7 @@ class CollectionsTest extends TestCase
     /**
      * @test
      */
-    public function should_create_collection_and_respond_with_entity()
+    public function should_create_collection_and_respond_with_entity(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/collections/collection.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -67,7 +68,7 @@ class CollectionsTest extends TestCase
     /**
      * @test
      */
-    public function should_create_collection_and_assign_id()
+    public function should_create_collection_and_assign_id(): void
     {
         $responseMock = $this->createResponseMock(200, null);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -86,7 +87,7 @@ class CollectionsTest extends TestCase
     /**
      * @test
      */
-    public function should_update_collection_and_respond_with_entity()
+    public function should_update_collection_and_respond_with_entity(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/collections/collection.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -102,7 +103,7 @@ class CollectionsTest extends TestCase
     /**
      * @test
      */
-    public function should_update_collection_and_respond_without_entity()
+    public function should_update_collection_and_respond_without_entity(): void
     {
         $responseMock = $this->createResponseMock(200, null);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -119,7 +120,7 @@ class CollectionsTest extends TestCase
     /**
      * @test
      */
-    public function should_delete_collection()
+    public function should_delete_collection(): void
     {
         $responseMock = $this->createResponseMock(200, null);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -129,11 +130,12 @@ class CollectionsTest extends TestCase
 
     /**
      * @test
-     * @expectedException \HelpScoutDocs\ApiException
-     * @expectedExceptionCode 400
      */
-    public function should_throw_an_exception_on_malformed_collection_create_attempt()
+    public function should_throw_an_exception_on_malformed_collection_create_attempt(): void
     {
+        $this->expectException(\HelpScoutDocs\ApiException::class);
+        $this->expectExceptionCode(400);
+
         $responseMock = $this->createResponseMock(400, null);
         $apiClient = $this->createTestApiClient($responseMock);
 
