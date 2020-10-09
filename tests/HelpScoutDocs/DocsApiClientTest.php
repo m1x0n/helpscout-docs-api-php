@@ -4,7 +4,7 @@ namespace HelpScoutDocs\Tests;
 
 use HelpScoutDocs\DocsApiClient;
 
-class DocsApiClientTest extends \PHPUnit_Framework_TestCase
+class DocsApiClientTest extends TestCase
 {
     /**
      * @var DocsApiClient
@@ -17,7 +17,7 @@ class DocsApiClientTest extends \PHPUnit_Framework_TestCase
 
         $this->apiClient = new DocsApiClient();
     }
-    
+
     /**
      * @test
      * @expectedException \HelpScoutDocs\ApiException

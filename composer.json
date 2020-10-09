@@ -2,7 +2,13 @@
     "name": "m1x0n/helpscout-docs-api-php",
     "type": "library",
     "description": "API client for the Help Scout Docs API",
-    "keywords": ["api", "api-client", "docs", "docs-api", "helpscout"],
+    "keywords": [
+        "api",
+        "api-client",
+        "docs",
+        "docs-api",
+        "helpscout"
+    ],
     "homepage": "http://www.helpscout.net",
     "license": "MIT",
     "scripts": {
@@ -25,10 +31,10 @@
         "email": "mmorozovm@gmail.com",
         "source": "https://github.com/m1x0n/helpscout-docs-api-php"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
-        "php": ">=5.5.0",
-        "guzzlehttp/guzzle": "^6.2"
+        "php": ">=7.2.0",
+        "guzzlehttp/guzzle": "^7.0.1"
     },
     "autoload": {
         "psr-4": {
@@ -36,7 +42,7 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.8"
+        "phpunit/phpunit": "^6"
     },
     "autoload-dev": {
         "psr-4": {
