@@ -11,7 +11,7 @@ class DocsApiClientTest extends TestCase
      */
     private $apiClient;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -20,11 +20,12 @@ class DocsApiClientTest extends TestCase
 
     /**
      * @test
-     * @expectedException \HelpScoutDocs\ApiException
-     * @expectedExceptionMessage Invalid API Key
      */
-    public function should_throw_an_exception_if_no_api_key_provided()
+    public function should_throw_an_exception_if_no_api_key_provided(): void
     {
+        $this->expectException(\HelpScoutDocs\ApiException::class);
+        $this->expectExceptionMessage("Invalid API Key");
+
         $this->apiClient->getSites();
     }
 }
