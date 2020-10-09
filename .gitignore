@@ -2,3 +2,4 @@
 vendor/
 .phpunit.result.cache
 .vscode
+composer.lock
