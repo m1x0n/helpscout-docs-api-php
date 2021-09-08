@@ -1,4 +1,4 @@
-helpscout-docs-api-php [![Build Status](https://travis-ci.org/m1x0n/helpscout-docs-api-php.svg?branch=master)](https://travis-ci.org/m1x0n/helpscout-docs-api-php)
+helpscout-docs-api-php ![example workflow](https://github.com/m1x0n/helpscout-docs-api-php/actions/workflows/main.yaml/badge.svg)
 ======================
 
 PHP Wrapper for the Help Scout Docs API.
