@@ -21,7 +21,7 @@ class ArticleRef extends DocsModel
     private ?int $createdBy = null;
     private ?int $updatedBy = null;
     private ?string $createdAt = null;
-    private ?string $updatedAt= null;
+    private ?string $updatedAt = null;
     private ?string $lastPublishedAt = null;
 
     public function __construct(stdClass $data = null)

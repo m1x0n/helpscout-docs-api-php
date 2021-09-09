@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HelpScoutDocs;
@@ -9,7 +10,8 @@ use Countable;
 use SeekableIterator;
 use stdClass;
 
-class ResourceCollection implements ArrayAccess, SeekableIterator, Countable {
+class ResourceCollection implements ArrayAccess, SeekableIterator, Countable
+{
     private int $page  = 0;
     private int $pages = 0;
     private int $count = 0;
@@ -28,7 +30,7 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable {
             if ($items) {
                 $this->items = new ArrayIterator();
 
-                foreach($items as $index => $item) {
+                foreach ($items as $index => $item) {
                     $this->items->append(new $itemType($item));
                     unset($items[$index]);
                 }

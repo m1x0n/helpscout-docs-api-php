@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HelpScoutDocs\Api;
@@ -79,7 +80,8 @@ class Collection extends AbstractApi
 
         $collectionData = (array)$response;
         $collectionData = reset($collectionData);
-        return new Models\Collection($collectionData);;
+        return new Models\Collection($collectionData);
+        ;
     }
 
     public function remove(string $collectionId): void

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HelpScoutDocs\Tests;
@@ -16,7 +17,7 @@ class DocsApiClientTest extends TestCase
         $this->apiClient = new DocsApiClient('');
     }
 
-    public function test_should_throw_an_exception_if_no_api_key_provided(): void
+    public function testShouldThrowAnExceptionIfNoApiKeyProvided(): void
     {
         $this->expectException(ApiException::class);
         $this->expectExceptionMessage("Invalid API Key");

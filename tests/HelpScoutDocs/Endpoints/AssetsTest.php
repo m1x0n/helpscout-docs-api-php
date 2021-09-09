@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HelpScoutDocs\Tests\Endpoints;
@@ -11,7 +12,7 @@ use RuntimeException;
 
 class AssetsTest extends TestCase
 {
-    public function test_should_create_article_asset(): void
+    public function testShouldCreateArticleAsset(): void
     {
         $articleAsset = new ArticleAsset();
         $articleAsset->setArticleId(uniqid('', true));
@@ -27,7 +28,7 @@ class AssetsTest extends TestCase
         $this->assertNotEmpty($created->getFileLink());
     }
 
-    public function test_should_throw_an_exception_about_null_article_asset_file(): void
+    public function testShouldThrowAnExceptionAboutNullArticleAssetFile(): void
     {
         $this->expectException(RuntimeException::class);
 
@@ -39,7 +40,7 @@ class AssetsTest extends TestCase
         $apiClient->createArticleAsset($articleAsset);
     }
 
-    public function test_should_throw_an_exception_about_article_asset_file(): void
+    public function testShouldThrowAnExceptionAboutArticleAssetFile(): void
     {
         $this->expectException(ApiException::class);
 
@@ -52,7 +53,7 @@ class AssetsTest extends TestCase
         $apiClient->createArticleAsset($articleAsset);
     }
 
-    public function test_should_throw_an_exception_about_missing_article_id(): void
+    public function testShouldThrowAnExceptionAboutMissingArticleId(): void
     {
         $this->expectException(ApiException::class);
 
@@ -60,13 +61,13 @@ class AssetsTest extends TestCase
         $articleAsset->setAssetType(ArticleAsset::ARTICLE_ASSET_IMAGE);
         $articleAsset->setFile(__DIR__ . '/../../fixtures/assets/octocat.png');
 
-        $responseMock = $this->createResponseMock(201, null);
+        $responseMock = $this->createResponseMock(201);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $apiClient->createArticleAsset($articleAsset);
     }
 
-    public function test_should_throw_an_exception_about_missing_article_asset_type(): void
+    public function testShouldThrowAnExceptionAboutMissingArticleAssetType(): void
     {
         $this->expectException(ApiException::class);
 
@@ -80,7 +81,7 @@ class AssetsTest extends TestCase
         $apiClient->createArticleAsset($articleAsset);
     }
 
-    public function test_should_create_settings_asset(): void
+    public function testShouldCreateSettingsAsset(): void
     {
         $settingsAsset = new SettingsAsset();
         $settingsAsset->setSiteId(uniqid('', true));
@@ -96,7 +97,7 @@ class AssetsTest extends TestCase
         $this->assertNotEmpty($created->getFileLink());
     }
 
-    public function test_should_throw_an_exception_about_null_settings_asset_file(): void
+    public function testShouldThrowAnExceptionAboutNullSettingsAssetFile(): void
     {
         $this->expectException(RuntimeException::class);
 
@@ -108,7 +109,7 @@ class AssetsTest extends TestCase
         $apiClient->createSettingsAsset($settingsAsset);
     }
 
-    public function test_should_throw_an_exception_about_settings_asset_file(): void
+    public function testShouldThrowAnExceptionAboutSettingsAssetFile(): void
     {
         $this->expectException(ApiException::class);
 
@@ -121,7 +122,7 @@ class AssetsTest extends TestCase
         $apiClient->createSettingsAsset($settingsAsset);
     }
 
-    public function test_should_throw_an_exception_about_missing_settings_asset_type(): void
+    public function testShouldThrowAnExceptionAboutMissingSettingsAssetType(): void
     {
         $this->expectException(ApiException::class);
 
@@ -135,7 +136,7 @@ class AssetsTest extends TestCase
         $apiClient->createSettingsAsset($settingsAsset);
     }
 
-    public function test_should_throw_an_exception_about_missing_site_id(): void
+    public function testShouldThrowAnExceptionAboutMissingSiteId(): void
     {
         $this->expectException(ApiException::class);
 
@@ -149,7 +150,7 @@ class AssetsTest extends TestCase
         $apiClient->createSettingsAsset($settingsAsset);
     }
 
-    public function test_should_throw_an_exception_if_malformed_asset_provided(): void
+    public function testShouldThrowAnExceptionIfMalformedAssetProvided(): void
     {
         $this->expectException(ApiException::class);
         $this->expectExceptionCode(400);
@@ -165,7 +166,7 @@ class AssetsTest extends TestCase
         $apiClient->createArticleAsset($articleAsset);
     }
 
-    public function test_should_throw_an_exception_if_api_key_is_invalid(): void
+    public function testShouldThrowAnExceptioniIfApiKeyIsInvalid(): void
     {
         $this->expectException(ApiException::class);
 

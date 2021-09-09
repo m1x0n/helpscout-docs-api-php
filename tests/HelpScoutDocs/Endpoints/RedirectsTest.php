@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HelpScoutDocs\Tests\Endpoints;
@@ -10,16 +11,16 @@ use HelpScoutDocs\Tests\TestCase;
 
 class RedirectsTest extends TestCase
 {
-    public function test_should_return_redirects_collection(): void
+    public function testShouldReturnRedirectsCollection(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/redirects/redirects.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $redirects = $apiClient->getRedirects(uniqid());
+        $redirects = $apiClient->getRedirects(uniqid('', true));
         $this->assertInstanceOf(ResourceCollection::class, $redirects);
     }
 
-    public function test_should_create_redirect_and_respond_with_new_instance(): void
+    public function testShouldCreateRedirectAndRespondWithNewInstance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/redirects/redirect.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -33,7 +34,7 @@ class RedirectsTest extends TestCase
         $this->assertInstanceOf(Redirect::class, $created);
     }
 
-    public function test_should_create_redirect(): void
+    public function testShouldCreateRedirect(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/redirects/redirect.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -46,7 +47,7 @@ class RedirectsTest extends TestCase
         $apiClient->createRedirect($redirect);
     }
 
-    public function test_should_return_redirect_by_provided_id(): void
+    public function testShouldReturnRedirectByProvidedId(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/redirects/redirect.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -55,7 +56,7 @@ class RedirectsTest extends TestCase
         $this->assertInstanceOf(Redirect::class, $redirect);
     }
 
-    public function test_should_update_existing_redirect_and_respond_with_updated_instance(): void
+    public function testShouldUpdateExistingRedirectAndRespondWithUpdatedInstance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/redirects/redirect.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -69,7 +70,7 @@ class RedirectsTest extends TestCase
         $this->assertInstanceOf(Redirect::class, $updated);
     }
 
-    public function test_should_update_existing_redirect_and_respond_without_instance(): void
+    public function testShouldUpdateExistingRedirectAndRespondWithoutInstance(): void
     {
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -82,7 +83,7 @@ class RedirectsTest extends TestCase
         $apiClient->updateRedirect($redirect);
     }
 
-    public function test_should_delete_existing_redirect(): void
+    public function testShouldDeleteExistingRedirect(): void
     {
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -90,7 +91,7 @@ class RedirectsTest extends TestCase
         $apiClient->deleteRedirect(uniqid('', true));
     }
 
-    public function test_should_find_redirected_url_by_provided_url_and_siteId(): void
+    public function testShouldFindRedirectedUrlByProvidedUrlAndSiteId(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/redirects/redirected_url.json');
         $apiClient = $this->createTestApiClient($responseMock);

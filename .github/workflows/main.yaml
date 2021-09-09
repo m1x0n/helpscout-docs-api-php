@@ -32,5 +32,8 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist
 
+      - name: Run phpcs
+        run: vendor/bin/phpcs src tests --standard=PSR12
+
       - name: Run phpunit
         run: vendor/bin/phpunit

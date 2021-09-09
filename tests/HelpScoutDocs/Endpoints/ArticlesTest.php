@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HelpScoutDocs\Tests\Endpoints;
@@ -12,7 +13,7 @@ use HelpScoutDocs\Tests\TestCase;
 
 class ArticlesTest extends TestCase
 {
-    public function test_should_return_articles_collection(): void
+    public function testShouldReturnArticlesCollection(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/articles/articles.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -22,7 +23,7 @@ class ArticlesTest extends TestCase
         $this->assertInstanceOf(ResourceCollection::class, $articles);
     }
 
-    public function test_should_throw_an_exception_on_invalid_file(): void
+    public function testShouldThrowAnExceptionOnInvalidFile(): void
     {
         $this->expectException(ApiException::class);
 
@@ -35,7 +36,7 @@ class ArticlesTest extends TestCase
         $apiClient->uploadArticle($article);
     }
 
-    public function test_should_throw_an_exception_when_no_file_provided(): void
+    public function testShouldThrowAnExceptionWhenNoFileProvided(): void
     {
         $this->expectException(\RuntimeException::class);
 
@@ -47,7 +48,7 @@ class ArticlesTest extends TestCase
         $apiClient->uploadArticle($article);
     }
 
-    public function test_should_upload_an_article(): void
+    public function testShouldUploadAnArticle(): void
     {
         $responseMock = $this->createResponseMock(201);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -60,7 +61,7 @@ class ArticlesTest extends TestCase
         $apiClient->uploadArticle($article);
     }
 
-    public function test_should_upload_an_article_and_respond_with_article_instance(): void
+    public function testShouldUploadAnArticleAndRespondWithArticleInstance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/articles/uploaded.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -74,8 +75,8 @@ class ArticlesTest extends TestCase
 
         $this->assertInstanceOf(Article::class, $uploaded);
     }
-    
-    public function test_should_return_an_article_by_provided_id_or_number(): void
+
+    public function testShouldReturnAnArticleByProvidedIdOrNumber(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/articles/article.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -84,8 +85,8 @@ class ArticlesTest extends TestCase
 
         $this->assertInstanceOf(Article::class, $article);
     }
-    
-    public function test_should_throw_an_exception_if_invalid_article_id_or_number_provided(): void
+
+    public function testShouldThrowAnExceptionIfInvalidArticleIdOrNumberProvided(): void
     {
         $this->expectException(ApiException::class);
         $this->expectExceptionCode(404);
@@ -96,7 +97,7 @@ class ArticlesTest extends TestCase
         $apiClient->getArticle(uniqid('', true));
     }
 
-    public function test_should_search_for_articles_by_given_query_and_return_not_empty_result(): void
+    public function testShouldSearchForArticlesByGivenQueryAndReturnNotEmptyResult(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/articles/articles.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -107,7 +108,7 @@ class ArticlesTest extends TestCase
         $this->assertCount(1, $articles);
     }
 
-    public function test_should_return_related_articles_collection(): void
+    public function testShouldReturnRelatedArticlesCollection(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/articles/articles.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -117,7 +118,7 @@ class ArticlesTest extends TestCase
         $this->assertInstanceOf(ResourceCollection::class, $related);
     }
 
-    public function test_should_return_article_revisions_collection(): void
+    public function testShouldReturnArticleRevisionsCollection(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/articles/revisions.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -127,7 +128,7 @@ class ArticlesTest extends TestCase
         $this->assertInstanceOf(ResourceCollection::class, $revisions);
     }
 
-    public function test_should_return_article_revision_by_given_id(): void
+    public function testShouldReturnArticleRevisionByGivenId(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/articles/revision.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -137,7 +138,7 @@ class ArticlesTest extends TestCase
         $this->assertInstanceOf(ArticleRevision::class, $revision);
     }
 
-    public function test_should_throw_an_exception_if_invalid_revision_id_provided(): void
+    public function testShouldThrowAnExceptionIfInvalidRevisionIdProvided(): void
     {
         $this->expectException(ApiException::class);
         $this->expectExceptionCode(404);
@@ -148,7 +149,7 @@ class ArticlesTest extends TestCase
         $apiClient->getRevision(uniqid('', true));
     }
 
-    public function test_should_create_article_and_response_with_new_instance(): void
+    public function testShouldCreateArticleAndResponseWithNewInstance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/articles/article.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -163,7 +164,7 @@ class ArticlesTest extends TestCase
         $this->assertInstanceOf(Article::class, $created);
     }
 
-    public function test_should_create_article(): void
+    public function testShouldCreateArticle(): void
     {
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -176,7 +177,7 @@ class ArticlesTest extends TestCase
         $apiClient->createArticle($article);
     }
 
-    public function test_should_throw_an_exception_if_malformed_article_provided(): void
+    public function testShouldThrowAnExceptionIfMalformedArticleProvided(): void
     {
         $this->expectException(ApiException::class);
         $this->expectExceptionCode(400);
@@ -189,7 +190,7 @@ class ArticlesTest extends TestCase
         $apiClient->createArticle($article, true);
     }
 
-    public function test_should_update_existing_article_and_respond_with_updated_instance(): void
+    public function testShouldUpdateExistingArticleAndRespondWithUpdatedInstance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/articles/article.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -205,7 +206,7 @@ class ArticlesTest extends TestCase
         $this->assertInstanceOf(Article::class, $updated);
     }
 
-    public function test_should_update_existing_article_and_respond_without_instance(): void
+    public function testShouldUpdateExistingArticleAndRespondWithoutInstance(): void
     {
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -219,31 +220,31 @@ class ArticlesTest extends TestCase
         $apiClient->updateArticle($article);
     }
 
-    public function test_should_update_existing_article_view_count(): void
+    public function testShouldUpdateExistingArticleViewCount(): void
     {
-        $responseMock = $this->createResponseMock(200, null);
+        $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $apiClient->updateViewCount(uniqid('', true), 1);
     }
 
-    public function test_should_delete_existing_article(): void
+    public function testShouldDeleteExistingArticle(): void
     {
-        $responseMock = $this->createResponseMock(200, null);
+        $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $apiClient->deleteArticle(uniqid('', true));
     }
 
-    public function test_should_save_existing_article_draft(): void
+    public function testShouldSaveExistingArticleDraft(): void
     {
-        $responseMock = $this->createResponseMock(200, null);
+        $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $apiClient->saveArticleDraft(uniqid('', true), "Draft text");
     }
 
-    public function test_should_delete_existing_article_draft(): void
+    public function testShouldDeleteExistingArticleDraft(): void
     {
         $responseMock = $this->createResponseMock(200, null);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -251,7 +252,7 @@ class ArticlesTest extends TestCase
         $apiClient->deleteArticleDraft(uniqid('', true));
     }
 
-    public function test_should_return_articles_for_category(): void
+    public function testShouldReturnArticlesForCategory(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/articles/articles.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -261,7 +262,7 @@ class ArticlesTest extends TestCase
         $this->assertInstanceOf(ResourceCollection::class, $articles);
     }
 
-    public function test_should_return_articles_for_collection(): void
+    public function testShouldReturnArticlesForCollection(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/articles/articles.json');
         $apiClient = $this->createTestApiClient($responseMock);

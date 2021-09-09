@@ -3,3 +3,9 @@ docker run --rm --interactive --tty \
 composer require rector/rector --dev
 
 ./vendor/bin/rector process src tests
+
+docker run --rm --interactive --tty \
+--volume $PWD:/app \
+composer require squizlabs/php_codesniffer --dev
+
+./vendor/bin/phpcs --standard=PSR12 src tests

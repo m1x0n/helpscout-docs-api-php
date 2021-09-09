@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HelpScoutDocs\Models;
@@ -15,7 +16,8 @@ class Article extends ArticleRef
     private ?array $categories = null;
     private ?array $related = null;
 
-    public function __construct(?stdClass $data = null) {
+    public function __construct(?stdClass $data = null)
+    {
         if ($data) {
             parent::__construct($data);
 

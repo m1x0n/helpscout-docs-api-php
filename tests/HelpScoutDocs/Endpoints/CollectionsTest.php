@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HelpScoutDocs\Tests\Endpoints;
@@ -10,7 +11,7 @@ use HelpScoutDocs\Tests\TestCase;
 
 class CollectionsTest extends TestCase
 {
-    public function test_should_return_collections_collection(): void
+    public function testShouldReturnCollectionsCollection(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/collections/collections.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -20,7 +21,7 @@ class CollectionsTest extends TestCase
         $this->assertInstanceOf(ResourceCollection::class, $collections);
     }
 
-    public function test_should_return_collection_by_given_exiting_id_or_number(): void
+    public function testShouldReturnCollectionByGivenExitingIdOrNumber(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/collections/collection.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -30,7 +31,7 @@ class CollectionsTest extends TestCase
         $this->assertInstanceOf(Collection::class, $collection);
     }
 
-    public function test_should_throw_an_exception_for_non_existing_id_or_number(): void
+    public function testShouldThrowAnExceptionForNonExistingIdOrNumber(): void
     {
         $this->expectException(ApiException::class);
 
@@ -40,7 +41,7 @@ class CollectionsTest extends TestCase
         $apiClient->getCollection(uniqid('', true));
     }
 
-    public function test_should_create_collection_and_respond_with_entity(): void
+    public function testShouldCreateCollectionAndRespondWithEntity(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/collections/collection.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -55,7 +56,7 @@ class CollectionsTest extends TestCase
         $this->assertInstanceOf(Collection::class, $created);
     }
 
-    public function test_should_create_collection(): void
+    public function testShouldCreateCollection(): void
     {
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -68,7 +69,7 @@ class CollectionsTest extends TestCase
         $apiClient->createCollection($collection, false);
     }
 
-    public function test_should_update_collection_and_respond_with_entity(): void
+    public function testShouldUpdateCollectionAndRespondWithEntity(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/collections/collection.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -81,7 +82,7 @@ class CollectionsTest extends TestCase
         $this->assertInstanceOf(Collection::class, $updated);
     }
 
-    public function test_should_update_collection_and_respond_without_entity(): void
+    public function testShouldUpdateCollectionAndRespondWithoutEntity(): void
     {
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -92,15 +93,15 @@ class CollectionsTest extends TestCase
         $apiClient->updateCollection($collection);
     }
 
-    public function test_should_delete_collection(): void
+    public function testShouldDeleteCollection(): void
     {
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $apiClient->deleteCollection(uniqid());
+        $apiClient->deleteCollection(uniqid('', true));
     }
 
-    public function test_should_throw_an_exception_on_malformed_collection_create_attempt(): void
+    public function testShouldThrowAnExceptionOnMalformedCollectionCreateAttempt(): void
     {
         $this->expectException(ApiException::class);
         $this->expectExceptionCode(400);

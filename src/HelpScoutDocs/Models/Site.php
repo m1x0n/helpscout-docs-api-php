@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HelpScoutDocs\Models;
@@ -45,7 +46,8 @@ class Site extends DocsModel
         'companyName'
     ];
 
-    public function __construct(stdClass $data = null) {
+    public function __construct(stdClass $data = null)
+    {
         if ($data) {
             $this->id             = $data->id ?? null;
             $this->status         = $data->status ?? null;
@@ -329,7 +331,7 @@ class Site extends DocsModel
     {
         return json_encode($this->getAvailableProperties(), JSON_THROW_ON_ERROR);
     }
-    
+
     /**
      * @return array<string, mixed>
      */
@@ -348,7 +350,7 @@ class Site extends DocsModel
 
         $vars = array();
 
-        foreach($properties as $prop) {
+        foreach ($properties as $prop) {
             if (!in_array($prop->name, self::$restricted, true)) {
                 $vars[$prop->name] = $this->{"get" . ucfirst($prop->name)}();
             }

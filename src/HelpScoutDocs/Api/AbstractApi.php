@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HelpScoutDocs\Api;
@@ -243,13 +244,13 @@ abstract class AbstractApi
         if ($params === []) {
             return [];
         }
-        foreach($params as $key => $val) {
+        foreach ($params as $key => $val) {
             $key = trim($key);
             if (empty($params[$key]) || !in_array($key, $accepted, true)) {
                 unset($params[$key]);
                 continue;
             }
-            switch($key) {
+            switch ($key) {
                 case 'page':
                 case 'pageSize':
                     $val = (int)$val;
@@ -303,8 +304,7 @@ abstract class AbstractApi
         string $url,
         array $params,
         string $modelClass
-    ): ResourceCollection
-    {
+    ): ResourceCollection {
         $response = $this->get($url, $params);
 
         $json = json_decode($response, false, 512, JSON_THROW_ON_ERROR);

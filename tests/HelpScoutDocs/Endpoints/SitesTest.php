@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HelpScoutDocs\Tests\Endpoints;
@@ -10,7 +11,7 @@ use HelpScoutDocs\Tests\TestCase;
 
 class SitesTest extends TestCase
 {
-    public function test_should_return_sites_collection(): void
+    public function testShouldReturnSitesCollection(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/sites/sites.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -20,7 +21,7 @@ class SitesTest extends TestCase
         $this->assertInstanceOf(ResourceCollection::class, $sites);
     }
 
-    public function test_should_create_site_and_respond_with_new_instance(): void
+    public function testShouldCreateSiteAndRespondWithNewInstance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/sites/site.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -34,7 +35,7 @@ class SitesTest extends TestCase
         $this->assertInstanceOf(Site::class, $created);
     }
 
-    public function test_should_create_site(): void
+    public function testShouldCreateSite(): void
     {
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -46,7 +47,7 @@ class SitesTest extends TestCase
         $apiClient->createSite($site);
     }
 
-    public function test_should_throw_an_exception_if_malformed_site_provided(): void
+    public function testShouldThrowAnExceptionIfMalformedSiteProvided(): void
     {
         $this->expectException(ApiException::class);
 
@@ -57,7 +58,7 @@ class SitesTest extends TestCase
         $apiClient->createSite($site);
     }
 
-    public function test_should_return_site_by_provided_id(): void
+    public function testShouldReturnSiteByProvidedId(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/sites/site.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -67,7 +68,7 @@ class SitesTest extends TestCase
         $this->assertInstanceOf(Site::class, $site);
     }
 
-    public function test_should_throw_an_exception_if_invalid_site_id_provided(): void
+    public function testShouldThrowAnExceptionIfInvalidSiteIdProvided(): void
     {
         $this->expectException(ApiException::class);
         $this->expectExceptionCode(404);
@@ -78,7 +79,7 @@ class SitesTest extends TestCase
         $apiClient->getSite(7777);
     }
 
-    public function test_should_update_existing_site_and_respond_with_updated_instance(): void
+    public function testShouldUpdateExistingSiteAndRespondWithUpdatedInstance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/sites/site.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -92,7 +93,7 @@ class SitesTest extends TestCase
         $this->assertInstanceOf(Site::class, $updated);
     }
 
-    public function test_should_update_existing_site_and_respond_without_instance(): void
+    public function testShouldUpdateExistingSiteAndRespondWithoutInstance(): void
     {
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -104,7 +105,7 @@ class SitesTest extends TestCase
         $apiClient->updateSite($site, false);
     }
 
-    public function test_should_delete_existing_site(): void
+    public function testShouldDeleteExistingSite(): void
     {
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);

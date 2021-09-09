@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HelpScoutDocs\Models;
@@ -88,12 +89,12 @@ class Category extends DocsModel
 
     public function setDescription(string $description): void
     {
-      $this->description = $description;
+        $this->description = $description;
     }
 
     public function getDescription(): ?string
     {
-      return $this->description;
+        return $this->description;
     }
 
     public function setNumber(int $number): void

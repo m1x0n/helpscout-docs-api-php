@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HelpScoutDocs\Tests\Endpoints;
@@ -10,7 +11,7 @@ use HelpScoutDocs\Tests\TestCase;
 
 class CategoriesTest extends TestCase
 {
-    public function test_should_return_categories_collection(): void
+    public function testShouldReturnCategoriesCollection(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/categories/categories.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -20,7 +21,7 @@ class CategoriesTest extends TestCase
         $this->assertInstanceOf(ResourceCollection::class, $categories);
     }
 
-    public function test_should_return_category_by_id_or_number(): void
+    public function testShouldReturnCategoryByIdOrNumber(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/categories/category.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -30,7 +31,7 @@ class CategoriesTest extends TestCase
         $this->assertInstanceOf(Category::class, $category);
     }
 
-    public function test_should_throw_an_exception_if_non_existing_id_or_number_provided(): void
+    public function testShouldThrowAnExceptionIfNonExistingIdOrNumberProvided(): void
     {
         $this->expectException(ApiException::class);
 
@@ -40,7 +41,7 @@ class CategoriesTest extends TestCase
         $apiClient->getCategory(uniqid('', true));
     }
 
-    public function test_should_create_category_and_respond_with_new_instance(): void
+    public function testShouldCreateCategoryAndRespondWithNewInstance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/categories/category.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -54,7 +55,7 @@ class CategoriesTest extends TestCase
         $this->assertInstanceOf(Category::class, $created);
     }
 
-    public function test_should_create_category(): void
+    public function testShouldCreateCategory(): void
     {
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -66,7 +67,7 @@ class CategoriesTest extends TestCase
         $apiClient->createCategory($category);
     }
 
-    public function test_should_throw_an_exception_if_malformed_category_provided(): void
+    public function testShouldThrowAnExceptionIfMalformedCategoryProvided(): void
     {
         $this->expectException(ApiException::class);
         $this->expectExceptionCode(400);
@@ -78,7 +79,7 @@ class CategoriesTest extends TestCase
         $apiClient->createCategory($category, true);
     }
 
-    public function test_should_update_category_and_respond_with_new_instance(): void
+    public function testShouldUpdateCategoryAndRespondWitNewInstance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/categories/category.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -93,7 +94,7 @@ class CategoriesTest extends TestCase
         $this->assertInstanceOf(Category::class, $updated);
     }
 
-    public function test_should_update_category_and_respond_without_new_instance(): void
+    public function testShouldUpdateCategoryAndRespondWithoutNewInstance(): void
     {
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
@@ -108,15 +109,15 @@ class CategoriesTest extends TestCase
         $this->assertInstanceOf(Category::class, $updated);
     }
 
-    public function test_should_delete_category(): void
+    public function testShouldDeleteCategory(): void
     {
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $apiClient->deleteCategory(uniqid());
+        $apiClient->deleteCategory(uniqid('', true));
     }
 
-    public function test_should_reorder_categories(): void
+    public function testShouldReorderCategories(): void
     {
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);

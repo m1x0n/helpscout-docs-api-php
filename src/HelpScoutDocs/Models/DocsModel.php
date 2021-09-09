@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HelpScoutDocs\Models;
@@ -9,7 +10,7 @@ class DocsModel
     {
         return json_encode($this->getModelProperties(), JSON_THROW_ON_ERROR);
     }
-    
+
     /**
      * @return array<string, mixed>
      */
@@ -30,10 +31,10 @@ class DocsModel
 
         $vars = array();
 
-        foreach($properties as $prop) {
+        foreach ($properties as $prop) {
             $vars[$prop->name] = $this->{"get" . ucfirst($prop->name)}();
         }
 
         return $vars;
     }
-} 
+}
