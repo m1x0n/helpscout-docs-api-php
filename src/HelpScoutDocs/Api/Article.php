@@ -297,6 +297,10 @@ class Article extends AbstractApi
                 'contents' => $uploadArticle->getCategoryId()
             ],
             [
+                'name' => 'name',
+                'contents' => $uploadArticle->getName()
+            ],
+            [
                 'name' => 'slug',
                 'contents' => $uploadArticle->getSlug()
             ],
