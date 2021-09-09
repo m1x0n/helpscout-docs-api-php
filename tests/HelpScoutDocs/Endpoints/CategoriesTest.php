@@ -76,7 +76,7 @@ class CategoriesTest extends TestCase
         $apiClient = $this->createTestApiClient($responseMock);
 
         $category = new Category();
-        $apiClient->createCategory($category, true);
+        $apiClient->createCategory($category);
     }
 
     public function testShouldUpdateCategoryAndRespondWitNewInstance(): void
@@ -104,9 +104,7 @@ class CategoriesTest extends TestCase
         $category->setId(uniqid('', true));
         $category->setName(uniqid("New Category name ", true));
 
-        $updated = $apiClient->updateCategoryAndReturnUpdated($category);
-
-        $this->assertInstanceOf(Category::class, $updated);
+        $apiClient->updateCategory($category);
     }
 
     public function testShouldDeleteCategory(): void

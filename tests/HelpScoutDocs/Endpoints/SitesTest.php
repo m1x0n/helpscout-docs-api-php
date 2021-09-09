@@ -73,7 +73,7 @@ class SitesTest extends TestCase
         $this->expectException(ApiException::class);
         $this->expectExceptionCode(404);
 
-        $responseMock = $this->createResponseMock(404, null);
+        $responseMock = $this->createResponseMock(404);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $apiClient->getSite(7777);
@@ -102,7 +102,7 @@ class SitesTest extends TestCase
         $site->setId(1337);
         $site->setTitle(uniqid("New Site Title ", true));
 
-        $apiClient->updateSite($site, false);
+        $apiClient->updateSite($site);
     }
 
     public function testShouldDeleteExistingSite(): void

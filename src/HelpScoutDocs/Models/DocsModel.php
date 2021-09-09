@@ -27,9 +27,12 @@ class DocsModel
     protected function getModelProperties(): array
     {
         $reflector = new \ReflectionClass($this);
-        $properties = [...$reflector->getProperties(), ...$reflector->getParentClass()->getProperties()];
+        $properties = [
+            ...$reflector->getProperties(),
+            ...($reflector->getParentClass() !== false ? $reflector->getParentClass()->getProperties() : [])
+        ];
 
-        $vars = array();
+        $vars = [];
 
         foreach ($properties as $prop) {
             $vars[$prop->name] = $this->{"get" . ucfirst($prop->name)}();

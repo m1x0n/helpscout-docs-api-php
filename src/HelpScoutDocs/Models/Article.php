@@ -13,7 +13,13 @@ class Article extends ArticleRef
 
     private ?string $text = null;
     private ?string $code = null;
+    /**
+     * @var array|null|string[]
+     */
     private ?array $categories = null;
+    /**
+     * @var array|null|string[]
+     */
     private ?array $related = null;
 
     public function __construct(?stdClass $data = null)
@@ -28,11 +34,17 @@ class Article extends ArticleRef
         }
     }
 
+    /**
+     * @param array|string[] $categories
+     */
     public function setCategories(array $categories): void
     {
         $this->categories = $categories;
     }
 
+    /**
+     * @return array|string[]|null
+     */
     public function getCategories(): ?array
     {
         return $this->categories;
@@ -48,11 +60,17 @@ class Article extends ArticleRef
         return $this->code;
     }
 
+    /**
+     * @param array|string[] $related
+     */
     public function setRelated(array $related): void
     {
         $this->related = $related;
     }
 
+    /**
+     * @return array|string[]|null
+     */
     public function getRelated(): ?array
     {
         return $this->related;

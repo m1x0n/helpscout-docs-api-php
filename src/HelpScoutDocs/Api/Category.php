@@ -29,13 +29,16 @@ class Category extends AbstractApi
         );
     }
 
-    public function show(string $categoryIdOrNumber)
+    public function show(string $categoryIdOrNumber): Models\Category
     {
-        return $this->getItem(
+        /** @var Models\Category $item */
+        $item = $this->getItem(
             sprintf("categories/%s", $categoryIdOrNumber),
             array(),
             Models\Category::class
         );
+
+        return $item;
     }
 
     public function createCategory(Models\Category $category): void
@@ -85,7 +88,7 @@ class Category extends AbstractApi
 
     /**
      * @param string $collectionId
-     * @param array $categories
+     * @param array<string, array> $categories
      *
      * Categories should be an associative array:
      *

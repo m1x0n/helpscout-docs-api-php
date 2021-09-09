@@ -91,7 +91,7 @@ class ArticlesTest extends TestCase
         $this->expectException(ApiException::class);
         $this->expectExceptionCode(404);
 
-        $responseMock = $this->createResponseMock(404, null);
+        $responseMock = $this->createResponseMock(404);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $apiClient->getArticle(uniqid('', true));
@@ -143,7 +143,7 @@ class ArticlesTest extends TestCase
         $this->expectException(ApiException::class);
         $this->expectExceptionCode(404);
 
-        $responseMock = $this->createResponseMock(404, null);
+        $responseMock = $this->createResponseMock(404);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $apiClient->getRevision(uniqid('', true));
@@ -182,12 +182,12 @@ class ArticlesTest extends TestCase
         $this->expectException(ApiException::class);
         $this->expectExceptionCode(400);
 
-        $responseMock = $this->createResponseMock(400, null);
+        $responseMock = $this->createResponseMock(400);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $article = new Article();
 
-        $apiClient->createArticle($article, true);
+        $apiClient->createArticle($article);
     }
 
     public function testShouldUpdateExistingArticleAndRespondWithUpdatedInstance(): void
@@ -225,7 +225,7 @@ class ArticlesTest extends TestCase
         $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $apiClient->updateViewCount(uniqid('', true), 1);
+        $apiClient->updateViewCount(uniqid('', true));
     }
 
     public function testShouldDeleteExistingArticle(): void
@@ -246,7 +246,7 @@ class ArticlesTest extends TestCase
 
     public function testShouldDeleteExistingArticleDraft(): void
     {
-        $responseMock = $this->createResponseMock(200, null);
+        $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $apiClient->deleteArticleDraft(uniqid('', true));

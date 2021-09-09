@@ -22,22 +22,28 @@ class Redirect extends AbstractApi
 
     public function show(string $redirectId): Models\Redirect
     {
-        return $this->getItem(
+        /** @var Models\Redirect $item */
+        $item = $this->getItem(
             sprintf("redirects/%s", $redirectId),
             array(),
             Models\Redirect::class
         );
+
+        return $item;
     }
 
     public function find(string $url, string $siteId): Models\RedirectedUrl
     {
         $params = ['url' => $url, 'siteId' => $siteId];
 
-        return $this->getItem(
+        /** @var Models\RedirectedUrl $item */
+        $item = $this->getItem(
             "redirects",
             $this->getParams($params),
             Models\RedirectedUrl::class
         );
+
+        return $item;
     }
 
     public function createRedirect(Models\Redirect $redirect): void

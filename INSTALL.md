@@ -14,4 +14,4 @@ docker run --rm --interactive --tty \
 --volume $PWD:/app \
 composer require phpstan/phpstan --dev --with-all-dependencies
 
-vendor/bin/phpstan analyse src tests
+vendor/bin/phpstan analyse src tests --memory-limit=-1 -l 2

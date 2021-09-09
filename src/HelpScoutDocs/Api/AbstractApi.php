@@ -24,7 +24,7 @@ abstract class AbstractApi
 
     /**
      * @param string $url
-     * @param array $params
+     * @param array<string, mixed> $params
      * @return string
      * @throws ApiException
      * @throws GuzzleException
@@ -60,8 +60,8 @@ abstract class AbstractApi
 
     /**
      * @param string $url
-     * @param array $requestBody
-     * @return array
+     * @param array<string, mixed> $requestBody
+     * @return array<int, mixed>
      * @throws ApiException
      * @throws GuzzleException
      * @throws JsonException
@@ -105,8 +105,8 @@ abstract class AbstractApi
 
     /**
      * @param string $url
-     * @param array $requestBody
-     * @return mixed
+     * @param array<string, mixed> $requestBody
+     * @return stdClass|null
      * @throws ApiException
      * @throws GuzzleException
      * @throws JsonException
@@ -185,7 +185,7 @@ abstract class AbstractApi
 
     /**
      * @param string $url
-     * @param array $multipart
+     * @param array<int, mixed> $multipart
      * @return stdClass|null
      * @throws ApiException
      * @throws GuzzleException
@@ -227,6 +227,10 @@ abstract class AbstractApi
         return json_decode($content, false, 512, JSON_THROW_ON_ERROR);
     }
 
+    /**
+     * @param array<string, mixed> $params
+     * @return array<string, mixed>
+     */
     protected function getParams(array $params = []): array
     {
         //TODO: Move to const array after PHP 5.5 support drop
@@ -274,7 +278,7 @@ abstract class AbstractApi
 
     /**
      * @param string $url
-     * @param array $params
+     * @param array<string, mixed> $params
      * @param string $modelClass
      * @return DocsModel
      * @throws ApiException
@@ -293,7 +297,7 @@ abstract class AbstractApi
 
     /**
      * @param string $url
-     * @param array $params
+     * @param array<string, mixed> $params
      * @param string $modelClass
      * @return ResourceCollection
      * @throws ApiException

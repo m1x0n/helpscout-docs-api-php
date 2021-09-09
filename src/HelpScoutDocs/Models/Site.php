@@ -37,6 +37,9 @@ class Site extends DocsModel
     private ?string $createdAt = null;
     private ?string $updatedAt = null;
 
+    /**
+     * @var array|string[]
+     */
     private static array $restricted = [
         'id',
         'createdBy',

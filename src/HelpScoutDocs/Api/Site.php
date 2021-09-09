@@ -22,11 +22,14 @@ class Site extends AbstractApi
 
     public function show(int $siteId): Models\Site
     {
-        return $this->getItem(
+        /** @var Models\Site $item */
+        $item = $this->getItem(
             sprintf("sites/%d", $siteId),
             array(),
             Models\Site::class
         );
+
+        return $item;
     }
 
     public function createSite(Models\Site $site): void

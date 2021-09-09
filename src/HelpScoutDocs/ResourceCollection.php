@@ -7,6 +7,7 @@ namespace HelpScoutDocs;
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
+use HelpScoutDocs\Models\DocsModel;
 use SeekableIterator;
 use stdClass;
 
@@ -15,6 +16,9 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable
     private int $page  = 0;
     private int $pages = 0;
     private int $count = 0;
+    /**
+     * @var ArrayIterator<int, DocsModel>
+     */
     private ArrayIterator $items;
 
     public function __construct(?stdClass $data, string $itemType)
@@ -48,6 +52,9 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable
         return $this->page > 1;
     }
 
+    /**
+     * @return ArrayIterator<int, DocsModel>
+     */
     public function getItems(): ArrayIterator
     {
         return $this->items;
@@ -69,7 +76,7 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable
     }
 
     /**
-     * @return mixed
+     * @return DocsModel|null
      */
     public function current()
     {
@@ -82,7 +89,7 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function key()
     {
@@ -100,7 +107,7 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable
     }
 
     /**
-     * @param mixed $offset
+     * @param int $offset
      */
     public function offsetExists($offset): bool
     {
@@ -108,7 +115,7 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable
     }
 
     /**
-     * @param mixed $offset
+     * @param int $offset
      * @return mixed
      */
     public function offsetGet($offset)
@@ -116,11 +123,18 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable
         return $this->items->offsetGet($offset);
     }
 
+    /**
+     * @param int $offset
+     * @param DocsModel $value
+     */
     public function offsetSet($offset, $value): void
     {
         $this->items->offsetSet($offset, $value);
     }
 
+    /**
+     * @param mixed $offset
+     */
     public function offsetUnset($offset): void
     {
         $this->items->offsetUnset($offset);
@@ -131,6 +145,9 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable
         return $this->items->count();
     }
 
+    /**
+     * @param int $offset
+     */
     public function seek($offset): void
     {
         $this->items->seek($offset);

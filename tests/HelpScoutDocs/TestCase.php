@@ -12,6 +12,8 @@ use GuzzleHttp\Psr7\Response;
 use HelpScoutDocs\DocsApiClient;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
+use function floor;
+
 abstract class TestCase extends PHPUnitTestCase
 {
     public function createTestApiClient(MockHandler $mockHandler): DocsApiClient
@@ -26,7 +28,9 @@ abstract class TestCase extends PHPUnitTestCase
 
     public function createResponseMock(int $expectedCode, ?string $fixtureFile = null): MockHandler
     {
-        if ($expectedCode >= 400 || $expectedCode >= 500) {
+        $level = (int) floor($expectedCode / 100);
+
+        if ($level === 4 || $level === 5) {
             $response = new Response();
             $response = $response->withStatus($expectedCode);
             $request = new Request('GET', '/');

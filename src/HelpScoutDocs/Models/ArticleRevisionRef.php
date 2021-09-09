@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace HelpScoutDocs\Models;
 
+use stdClass;
+
 class ArticleRevisionRef extends DocsModel
 {
     private ?string $id = null;
@@ -11,7 +13,7 @@ class ArticleRevisionRef extends DocsModel
     private ?Person $createdBy = null;
     private ?string $createdAt = null;
 
-    public function __construct($data = null)
+    public function __construct(stdClass $data = null)
     {
         if ($data) {
             $this->id        = $data->id ?? null;

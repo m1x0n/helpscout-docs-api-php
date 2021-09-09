@@ -10,6 +10,9 @@ class ArticleSearch extends DocsModel
 {
     private ?string $id = null;
     private ?string $collectionId = null;
+    /**
+     * @var array|null|string[]
+     */
     private ?array $categoryIds = null;
     private ?string $slug = null;
     private ?string $name = null;
@@ -37,11 +40,17 @@ class ArticleSearch extends DocsModel
         }
     }
 
+    /**
+     * @param array|string[] $categoryIds
+     */
     public function setCategoryIds(array $categoryIds): void
     {
         $this->categoryIds = $categoryIds;
     }
 
+    /**
+     * @return array|string[]|null
+     */
     public function getCategoryIds(): ?array
     {
         return $this->categoryIds;

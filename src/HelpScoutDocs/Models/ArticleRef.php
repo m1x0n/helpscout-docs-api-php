@@ -70,7 +70,7 @@ class ArticleRef extends DocsModel
         $this->createdBy = $createdBy;
     }
 
-    public function getCreatedBy(): ?string
+    public function getCreatedBy(): ?int
     {
         return $this->createdBy;
     }

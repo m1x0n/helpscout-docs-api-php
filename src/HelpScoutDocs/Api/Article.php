@@ -32,7 +32,7 @@ class Article extends AbstractApi
     }
 
     public function allForCategory(
-        $categoryId,
+        string $categoryId,
         int $page = 1,
         string $status = 'all',
         string $sort = 'order',
@@ -58,7 +58,7 @@ class Article extends AbstractApi
     }
 
     public function allForCollection(
-        $collectionId,
+        string $collectionId,
         int $page = 1,
         string $status = 'all',
         string $sort = 'order',
@@ -147,20 +147,26 @@ class Article extends AbstractApi
     {
         $params = ['draft' => $draft];
 
-        return $this->getItem(
+        /** @var Models\Article $item */
+        $item = $this->getItem(
             sprintf("articles/%s", $articleIdOrNumber),
             $this->getParams($params),
             Models\Article::class
         );
+
+        return $item;
     }
 
-    public function revision($revisionId): Models\ArticleRevision
+    public function revision(string $revisionId): Models\ArticleRevision
     {
-        return $this->getItem(
+        /** @var Models\ArticleRevision $item */
+        $item = $this->getItem(
             sprintf("revisions/%s", $revisionId),
             array(),
             Models\ArticleRevision::class
         );
+
+        return $item;
     }
 
     public function create(Models\Article $article, bool $reload = true): Models\Article

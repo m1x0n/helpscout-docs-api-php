@@ -66,7 +66,7 @@ class CollectionsTest extends TestCase
         $collection->setName(uniqid("Test collection ", true));
         $collection->setVisibility(Collection::COLLECTION_VISIBILITY_PUBLIC);
 
-        $apiClient->createCollection($collection, false);
+        $apiClient->createCollection($collection);
     }
 
     public function testShouldUpdateCollectionAndRespondWithEntity(): void

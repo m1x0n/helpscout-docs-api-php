@@ -33,11 +33,14 @@ class Collection extends AbstractApi
 
     public function show(string $collectionIdOrNumber): Models\Collection
     {
-        return $this->getItem(
+        /** @var Models\Collection $item */
+        $item = $this->getItem(
             sprintf("collections/%s", $collectionIdOrNumber),
-            array(),
+            [],
             Models\Collection::class
         );
+
+        return $item;
     }
 
     public function createCollection(Models\Collection $collection): void

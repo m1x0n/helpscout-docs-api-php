@@ -46,6 +46,9 @@ class DocsApiClient
     private ClientInterface $httpClient;
     private ?ResponseInterface $lastResponse = null;
 
+    /**
+     * @var array|string[]
+     */
     private array $services = [
         'articles' => Api\Article::class,
         'collections' => Api\Collection::class,
@@ -125,11 +128,16 @@ class DocsApiClient
         $this->httpClient = $httpClient;
     }
 
-    public function getHttpClient(): Client
+    public function getHttpClient(): ClientInterface
     {
         return $this->httpClient;
     }
 
+    /**
+     * @param string $name
+     * @return mixed
+     * @throws \Exception
+     */
     private function api(string $name)
     {
         if (!isset($this->services[$name])) {
@@ -139,6 +147,12 @@ class DocsApiClient
         return new $this->services[$name]($this);
     }
 
+    /**
+     * @param string $name
+     * @param mixed $arguments
+     * @return mixed
+     * @throws \Exception
+     */
     public function __call(string $name, $arguments)
     {
         try {
@@ -306,7 +320,7 @@ class DocsApiClient
 
     /**
      * @param string $collectionId
-     * @param array $categories
+     * @param array<string, array> $categories
      *
      * Categories should be an associative array:
      *

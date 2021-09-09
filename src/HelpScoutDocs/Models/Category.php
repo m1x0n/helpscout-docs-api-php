@@ -12,7 +12,7 @@ class Category extends DocsModel
     private ?int $number = 0;
     private ?string $slug = null;
     private ?string $collectionId = null;
-    private ?string $order = null;
+    private ?int $order = null;
     private ?string $name = null;
     private ?string $description = null;
     private ?int $createdBy = null;
@@ -107,12 +107,12 @@ class Category extends DocsModel
         return $this->number;
     }
 
-    public function setOrder(string $order): void
+    public function setOrder(int $order): void
     {
         $this->order = $order;
     }
 
-    public function getOrder(): ?string
+    public function getOrder(): ?int
     {
         return $this->order;
     }
