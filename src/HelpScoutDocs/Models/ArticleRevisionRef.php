@@ -1,83 +1,62 @@
 <?php
+declare(strict_types=1);
 
 namespace HelpScoutDocs\Models;
 
-class ArticleRevisionRef extends DocsModel {
+class ArticleRevisionRef extends DocsModel
+{
+    private ?string $id = null;
+    private ?string $articleId = null;
+    private ?Person $createdBy = null;
+    private ?string $createdAt = null;
 
-    private $id;
-    private $articleId;
-    private $createdBy;
-    private $createdAt;
-
-    function __construct($data = null) {
+    public function __construct($data = null) {
         if ($data) {
-            $this->id        = isset($data->id)        ? $data->id                    : null;
-            $this->articleId = isset($data->articleId) ? $data->articleId             : null;
-            $this->createdBy = isset($data->createdBy) ? new Person($data->createdBy) : null;
-            $this->createdAt = isset($data->createdAt) ? $data->createdAt             : null;
+            $this->id        = $data->id ?? null;
+            $this->articleId = $data->articleId ?? null;
+            $this->createdBy = property_exists($data, 'createdBy') && $data->createdBy !== null
+                ? new Person($data->createdBy)
+                : null;
+            $this->createdAt = $data->createdAt ?? null;
         }
     }
 
-    /**
-     * @param mixed $articleId
-     */
-    public function setArticleId($articleId)
+    public function setArticleId(string $articleId): void
     {
         $this->articleId = $articleId;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getArticleId()
+    public function getArticleId(): ?string
     {
         return $this->articleId;
     }
 
-    /**
-     * @param mixed $createdAt
-     */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(string $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): ?string
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param mixed $createdBy
-     */
-    public function setCreatedBy($createdBy)
+    public function setCreatedBy(Person $createdBy): void
     {
         $this->createdBy = $createdBy;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCreatedBy()
+    public function getCreatedBy(): ?Person
     {
         return $this->createdBy;
     }
 
-    /**
-     * @param mixed $id
-     */
-    public function setId($id)
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

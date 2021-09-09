@@ -1,35 +1,25 @@
 <?php
+declare(strict_types=1);
 
 namespace HelpScoutDocs\Api;
 
 use HelpScoutDocs\ApiException;
 use HelpScoutDocs\Models;
 use HelpScoutDocs\ResourceCollection;
+use RuntimeException;
 
 class Article extends AbstractApi
 {
-    const DEFAULT_PAGE_SIZE = 50;
+    public const DEFAULT_PAGE_SIZE = 50;
 
-    /**
-     * @param $categoryId
-     * @param int $page
-     * @param string $status
-     * @param string $sort
-     * @param string $order
-     * @param int $pageSize
-     * @return bool|ResourceCollection
-     * @throws ApiException
-     *
-     * @deprecated
-     */
     public function all(
-        $categoryId,
-        $page = 1,
-        $status = 'all',
-        $sort = 'order',
-        $order = 'asc',
-        $pageSize = self::DEFAULT_PAGE_SIZE
-    ) {
+        string $categoryId,
+        int $page = 1,
+        string $status = 'all',
+        string $sort = 'order',
+        string $order = 'asc',
+        int $pageSize = self::DEFAULT_PAGE_SIZE
+    ): ResourceCollection {
         return $this->allForCategory(
             $categoryId,
             $page,
@@ -40,24 +30,14 @@ class Article extends AbstractApi
         );
     }
 
-    /**
-     * @param $categoryId
-     * @param int $page
-     * @param string $status
-     * @param string $sort
-     * @param string $order
-     * @param int $pageSize
-     * @return ResourceCollection|mixed
-     * @throws ApiException
-     */
     public function allForCategory(
         $categoryId,
-        $page = 1,
-        $status = 'all',
-        $sort = 'order',
-        $order = 'asc',
-        $pageSize = self::DEFAULT_PAGE_SIZE
-    ) {
+        int $page = 1,
+        string $status = 'all',
+        string $sort = 'order',
+        string $order = 'asc',
+        int $pageSize = self::DEFAULT_PAGE_SIZE
+    ): ResourceCollection {
         $params = [
             'page'   => $page,
             'sort'   => $sort,
@@ -76,24 +56,14 @@ class Article extends AbstractApi
         );
     }
 
-    /**
-     * @param $collectionId
-     * @param int $page
-     * @param string $status
-     * @param string $sort
-     * @param string $order
-     * @param int $pageSize
-     * @return ResourceCollection|mixed
-     * @throws ApiException
-     */
     public function allForCollection(
         $collectionId,
-        $page = 1,
-        $status = 'all',
-        $sort = 'order',
-        $order = 'asc',
-        $pageSize = self::DEFAULT_PAGE_SIZE
-    ) {
+        int $page = 1,
+        string $status = 'all',
+        string $sort = 'order',
+        string $order = 'asc',
+        int $pageSize = self::DEFAULT_PAGE_SIZE
+    ): ResourceCollection {
         $params = [
             'page'   => $page,
             'sort'   => $sort,
@@ -112,16 +82,13 @@ class Article extends AbstractApi
         );
     }
 
-    /**
-     * @param string $query
-     * @param int $page
-     * @param string $collectionId
-     * @param string $status
-     * @param string $visibility
-     * @return bool|ResourceCollection
-     */
-    public function search($query = '*', $page = 1, $collectionId = '', $status = 'all', $visibility = 'all')
-    {
+    public function search(
+        string $query = '*',
+        int $page = 1,
+        string $collectionId = '',
+        string $status = 'all',
+        string $visibility = 'all'
+    ): ResourceCollection {
         $params = [
             'query'        => $query,
             'page'         => $page,
@@ -140,16 +107,13 @@ class Article extends AbstractApi
         );
     }
 
-    /**
-     * @param $articleId
-     * @param int $page
-     * @param string $status
-     * @param string $sort
-     * @param string $order
-     * @return bool|ResourceCollection
-     */
-    public function relatedArticles($articleId, $page = 1, $status = 'all', $sort = 'order', $order = 'desc')
-    {
+    public function relatedArticles(
+        string $articleId,
+        int $page = 1,
+        string $status = 'all',
+        string $sort = 'order',
+        string $order = 'desc'
+    ): ResourceCollection {
         $params = [
             'page'   => $page,
             'sort'   => $sort,
@@ -167,12 +131,7 @@ class Article extends AbstractApi
         );
     }
 
-    /**
-     * @param $articleId
-     * @param int $page
-     * @return bool|ResourceCollection
-     */
-    public function revisions($articleId, $page = 1)
+    public function revisions(string $articleId, int $page = 1): ResourceCollection
     {
         $params = ['page' => $page];
 
@@ -183,12 +142,7 @@ class Article extends AbstractApi
         );
     }
 
-    /**
-     * @param $articleIdOrNumber
-     * @param bool $draft
-     * @return bool|Models\Article
-     */
-    public function show($articleIdOrNumber, $draft = false)
+    public function show(string $articleIdOrNumber, bool $draft = false): Models\Article
     {
         $params = ['draft' => $draft];
 
@@ -199,11 +153,7 @@ class Article extends AbstractApi
         );
     }
 
-    /**
-     * @param $revisionId
-     * @return bool|Models\ArticleRevision
-     */
-    public function revision($revisionId)
+    public function revision($revisionId): Models\ArticleRevision
     {
         return $this->getItem(
             sprintf("revisions/%s", $revisionId),
@@ -212,13 +162,7 @@ class Article extends AbstractApi
         );
     }
 
-    /**
-     * @param Models\Article $article
-     * @param bool $reload
-     * @return bool|Models\Article
-     * @throws ApiException
-     */
-    public function create(Models\Article $article, $reload = true)
+    public function create(Models\Article $article, bool $reload = true): Models\Article
     {
         $url = "articles";
 
@@ -228,53 +172,66 @@ class Article extends AbstractApi
             $requestBody['reload'] = true;
         }
 
-        list($id, $response) = $this->post($url, $requestBody);
+        [$id, $response] = $this->post($url, $requestBody);
 
         if ($reload) {
             $articleData = (array)$response;
             $articleData = reset($articleData);
             return new Models\Article($articleData);
-        } else {
-            $article->setId($id);
-            return $article;
         }
+        $article->setId($id);
+        return $article;
     }
 
-    /**
-     * @param Models\Article $article
-     * @param bool $reload
-     * @return Models\Article
-     * @throws ApiException
-     */
-    public function update(Models\Article $article, $reload = false)
+    public function createArticle(Models\Article $article): void
+    {
+        $requestBody = $article->toArray();
+
+        $this->post("articles", $requestBody);
+    }
+
+    public function createArticleAndReturnCreated(Models\Article $article): Models\Article
+    {
+        $requestBody = $article->toArray();
+        $requestBody['reload'] = true;
+
+        [, $response] = $this->post("articles", $requestBody);
+
+        $articleData = (array)$response;
+        $articleData = reset($articleData);
+
+        return new Models\Article($articleData);
+    }
+
+    public function updateArticle(Models\Article $article): void
     {
         $url = sprintf("articles/%s", $article->getId());
 
         $requestBody = $article->toArray();
 
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
+        $this->put($url, $requestBody);
+    }
+
+    public function updateArticleAndReturnUpdated(Models\Article $article): Models\Article
+    {
+        $url = sprintf("articles/%s", $article->getId());
+
+        $requestBody = $article->toArray();
+        $requestBody['reload'] = true;
 
         $response = $this->put($url, $requestBody);
 
-        if ($reload) {
-            $articleData = (array)$response;
-            $articleData = reset($articleData);
-            return new Models\Article($articleData);
-        } else {
-            return $article;
-        }
+        $articleData = (array)$response;
+        $articleData = reset($articleData);
+        return new Models\Article($articleData);
     }
 
-    /**
-     * @param Models\UploadArticle $uploadArticle
-     * @param bool $reload
-     * @return bool|Models\Article
-     * @throws ApiException
-     */
-    public function upload(Models\UploadArticle $uploadArticle, $reload = false)
+    public function uploadArticle(Models\UploadArticle $uploadArticle): void
     {
+        if ($uploadArticle->getFile() === null) {
+            throw new RuntimeException('No file path provided for Article::uploadArticle()');
+        }
+
         if (!file_exists($uploadArticle->getFile())) {
             throw new ApiException(sprintf("Unable to locate file: %s", $uploadArticle->getFile()));
         }
@@ -290,7 +247,7 @@ class Article extends AbstractApi
             ],
             [
                 'name' => 'file',
-                'contents' => fopen($uploadArticle->getFile(), 'r')
+                'contents' => fopen($uploadArticle->getFile(), 'rb')
             ],
             [
                 'name' => 'categoryId',
@@ -305,8 +262,60 @@ class Article extends AbstractApi
                 'contents' => $uploadArticle->getType()
             ],
             [
+                'name' => 'name',
+                'contents' => $uploadArticle->getName()
+            ],
+            [
                 'name' => 'reload',
-                'contents' => $reload
+                'contents' => false
+            ]
+        ];
+
+        $this->postMultipart("articles/upload", $multipart);
+    }
+
+    public function uploadArticleAndReturnUploaded(Models\UploadArticle $uploadArticle): Models\Article
+    {
+        if ($uploadArticle->getFile() === null) {
+            throw new RuntimeException('No file path provided for Article::uploadArticleAndReturnUploaded()');
+        }
+
+        if (!file_exists($uploadArticle->getFile())) {
+            throw new ApiException(sprintf("Unable to locate file: %s", $uploadArticle->getFile()));
+        }
+
+        $multipart = [
+            [
+                'name' => 'key',
+                'contents' => $this->client->getApiKey()
+            ],
+            [
+                'name' => 'collectionId',
+                'contents' => $uploadArticle->getCollectionId()
+            ],
+            [
+                'name' => 'file',
+                'contents' => fopen($uploadArticle->getFile(), 'rb')
+            ],
+            [
+                'name' => 'categoryId',
+                'contents' => $uploadArticle->getCategoryId()
+            ],
+            [
+                'name' => 'slug',
+                'contents' => $uploadArticle->getSlug()
+            ],
+            [
+                'name' => 'type',
+                'contents' => $uploadArticle->getType()
+            ],
+            [
+                'name' => 'name',
+                'contents' => $uploadArticle->getName()
+            ],
+            [
+                'name' => 'reload',
+                'contents' => true
             ]
         ];
 
@@ -314,14 +323,10 @@ class Article extends AbstractApi
 
         $articleData = (array)$response;
 
-        return $reload ? new Models\Article(reset($articleData)) : true;
+        return new Models\Article(reset($articleData));
     }
 
-    /**
-     * @param $articleId
-     * @param int $count
-     */
-    public function updateViewCount($articleId, $count = 1)
+    public function updateViewCount(string $articleId, int $count = 1): void
     {
         $this->put(
             sprintf("articles/%s/views", $articleId),
@@ -329,19 +334,12 @@ class Article extends AbstractApi
         );
     }
 
-    /**
-     * @param $articleId
-     */
-    public function remove($articleId)
+    public function remove(string $articleId): void
     {
         $this->delete(sprintf("articles/%s", $articleId));
     }
 
-    /**
-     * @param $articleId
-     * @param $text
-     */
-    public function saveDraft($articleId, $text)
+    public function saveDraft(string $articleId, string $text): void
     {
         $this->put(
             sprintf("articles/%s/drafts", $articleId),
@@ -349,10 +347,7 @@ class Article extends AbstractApi
         );
     }
 
-    /**
-     * @param $articleId
-     */
-    public function removeDraft($articleId)
+    public function removeDraft(string $articleId): void
     {
         $this->delete(sprintf("articles/%s/drafts", $articleId));
     }

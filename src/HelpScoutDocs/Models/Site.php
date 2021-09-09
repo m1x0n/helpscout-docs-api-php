@@ -1,491 +1,355 @@
 <?php
+declare(strict_types=1);
 
 namespace HelpScoutDocs\Models;
 
-class Site extends DocsModel {
+use stdClass;
 
-    const SITE_STATUS_ACTIVE = 'active';
-    const SITE_STATUS_INACTIVE = 'inactive';
+class Site extends DocsModel
+{
+    public const SITE_STATUS_ACTIVE = 'active';
+    public const SITE_STATUS_INACTIVE = 'inactive';
 
-    private $id;
-    private $status;
-    private $subDomain;
-    private $cname;
-    private $hasPublicSite;
-    private $companyName;
-    private $title;
-    private $logoUrl;
-    private $logoWidth;
-    private $logoHeight;
-    private $favIconUrl;
-    private $touchIconUrl;
-    private $homeUrl;
-    private $homeLinkText;
-    private $bgColor;
-    private $description;
-    private $hasContactForm;
-    private $mailboxId;
-    private $contactEmail;
-    private $styleSheetUrl;
-    private $headerCode;
-    private $createdBy;
-    private $updatedBy;
-    private $createdAt;
-    private $updatedAt;
+    private ?int $id = null;
+    private ?string $status = null;
+    private ?string $subDomain = null;
+    private ?string $cname = null;
+    private bool $hasPublicSite = false;
+    private ?string $companyName = null;
+    private ?string $title = null;
+    private ?string $logoUrl = null;
+    private ?int $logoWidth = null;
+    private ?int $logoHeight = null;
+    private ?string $favIconUrl = null;
+    private ?string $touchIconUrl = null;
+    private ?string $homeUrl = null;
+    private ?string $homeLinkText = null;
+    private ?string $bgColor = null;
+    private ?string $description = null;
+    private bool $hasContactForm = false;
+    private ?int $mailboxId = null;
+    private ?string $contactEmail = null;
+    private ?string $styleSheetUrl = null;
+    private ?string $headerCode = null;
+    private ?int $createdBy = null;
+    private ?int $updatedBy = null;
+    private ?string $createdAt = null;
+    private ?string $updatedAt = null;
 
-    private static $restricted = array('id', 'createdBy', 'updatedBy', 'createdAt', 'updatedAt', 'companyName');
+    private static array $restricted = [
+        'id',
+        'createdBy',
+        'updatedBy',
+        'createdAt',
+        'updatedAt',
+        'companyName'
+    ];
 
-    function __construct($data = null) {
+    public function __construct(stdClass $data = null) {
         if ($data) {
-            $this->id             = isset($data->id)             ? $data->id             : null;
-            $this->status         = isset($data->status)         ? $data->status         : null;
-            $this->subDomain      = isset($data->subDomain)      ? $data->subDomain      : null;
-            $this->cname          = isset($data->cname)          ? $data->cname          : null;
-            $this->hasPublicSite  = isset($data->hasPublicSite)  ? $data->hasPublicSite  : null;
-            $this->companyName    = isset($data->companyName)    ? $data->companyName    : null;
-            $this->title          = isset($data->title)          ? $data->title          : null;
-            $this->logoUrl        = isset($data->logoUrl)        ? $data->logoUrl        : null;
-            $this->logoWidth      = isset($data->logoWidth)      ? $data->logoWidth      : null;
-            $this->logoHeight     = isset($data->logoHeight)     ? $data->logoHeight     : null;
-            $this->favIconUrl     = isset($data->favIconUrl)     ? $data->favIconUrl     : null;
-            $this->touchIconUrl   = isset($data->touchIconUrl)   ? $data->touchIconUrl   : null;
-            $this->homeUrl        = isset($data->homeUrl)        ? $data->homeUrl        : null;
-            $this->homeLinkText   = isset($data->homeLinkText)   ? $data->homeLinkText   : null;
-            $this->bgColor        = isset($data->bgColor)        ? $data->bgColor        : null;
-            $this->description    = isset($data->description)    ? $data->description    : null;
-            $this->hasContactForm = isset($data->hasContactForm) ? $data->hasContactForm : null;
-            $this->mailboxId      = isset($data->mailboxId)      ? $data->mailboxId      : null;
-            $this->contactEmail   = isset($data->contactEmail)   ? $data->contactEmail   : null;
-            $this->styleSheetUrl  = isset($data->styleSheetUrl)  ? $data->styleSheetUrl  : null;
-            $this->headerCode     = isset($data->headerCode)     ? $data->headerCode     : null;
-            $this->createdBy      = isset($data->createdBy)      ? $data->createdBy      : null;
-            $this->updatedBy      = isset($data->updatedBy)      ? $data->updatedBy      : null;
-            $this->createdAt      = isset($data->createdAt)      ? $data->createdAt      : null;
-            $this->createdBy      = isset($data->updatedAt)      ? $data->updatedAt      : null;
+            $this->id             = $data->id ?? null;
+            $this->status         = $data->status ?? null;
+            $this->subDomain      = $data->subDomain ?? null;
+            $this->cname          = $data->cname ?? null;
+            $this->hasPublicSite  = $data->hasPublicSite ?? false;
+            $this->companyName    = $data->companyName ?? null;
+            $this->title          = $data->title ?? null;
+            $this->logoUrl        = $data->logoUrl ?? null;
+            $this->logoWidth      = $data->logoWidth ?? null;
+            $this->logoHeight     = $data->logoHeight ?? null;
+            $this->favIconUrl     = $data->favIconUrl ?? null;
+            $this->touchIconUrl   = $data->touchIconUrl ?? null;
+            $this->homeUrl        = $data->homeUrl ?? null;
+            $this->homeLinkText   = $data->homeLinkText ?? null;
+            $this->bgColor        = $data->bgColor ?? null;
+            $this->description    = $data->description ?? null;
+            $this->hasContactForm = $data->hasContactForm ?? false;
+            $this->mailboxId      = $data->mailboxId ?? null;
+            $this->contactEmail   = $data->contactEmail ?? null;
+            $this->styleSheetUrl  = $data->styleSheetUrl ?? null;
+            $this->headerCode     = $data->headerCode ?? null;
+            $this->createdBy      = $data->createdBy ?? null;
+            $this->updatedBy      = $data->updatedBy ?? null;
+            $this->createdAt      = $data->createdAt ?? null;
+            $this->updatedAt      = $data->updatedAt ?? null;
         }
     }
 
-    /**
-     * @param mixed $bgColor
-     */
-    public function setBgColor($bgColor)
+    public function setBgColor(string $bgColor): void
     {
         $this->bgColor = $bgColor;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getBgColor()
+    public function getBgColor(): ?string
     {
         return $this->bgColor;
     }
 
-    /**
-     * @param mixed $cname
-     */
-    public function setCname($cname)
+    public function setCname(string $cname): void
     {
         $this->cname = $cname;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCname()
+    public function getCname(): ?string
     {
         return $this->cname;
     }
 
-    /**
-     * @param mixed $companyName
-     */
-    public function setCompanyName($companyName)
+    public function setCompanyName(string $companyName): void
     {
         $this->companyName = $companyName;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCompanyName()
+    public function getCompanyName(): ?string
     {
         return $this->companyName;
     }
 
-    /**
-     * @param mixed $contactEmail
-     */
-    public function setContactEmail($contactEmail)
+    public function setContactEmail(string $contactEmail): void
     {
         $this->contactEmail = $contactEmail;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getContactEmail()
+    public function getContactEmail(): ?string
     {
         return $this->contactEmail;
     }
 
-    /**
-     * @param mixed $createdAt
-     */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(string $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): ?string
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param mixed $createdBy
-     */
-    public function setCreatedBy($createdBy)
+    public function setCreatedBy(int $createdBy): void
     {
         $this->createdBy = $createdBy;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCreatedBy()
+    public function getCreatedBy(): ?int
     {
         return $this->createdBy;
     }
 
-    /**
-     * @param mixed $description
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param mixed $favIconUrl
-     */
-    public function setFavIconUrl($favIconUrl)
+    public function setFavIconUrl(string $favIconUrl): void
     {
         $this->favIconUrl = $favIconUrl;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getFavIconUrl()
+    public function getFavIconUrl(): ?string
     {
         return $this->favIconUrl;
     }
 
-    /**
-     * @param mixed $hasContactForm
-     */
-    public function setHasContactForm($hasContactForm)
+    public function setHasContactForm(bool $hasContactForm): void
     {
         $this->hasContactForm = $hasContactForm;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getHasContactForm()
+    public function getHasContactForm(): bool
     {
         return $this->hasContactForm;
     }
 
-    /**
-     * @param mixed $hasPublicSite
-     */
-    public function setHasPublicSite($hasPublicSite)
+    public function setHasPublicSite(bool $hasPublicSite): void
     {
         $this->hasPublicSite = $hasPublicSite;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getHasPublicSite()
+    public function getHasPublicSite(): bool
     {
         return $this->hasPublicSite;
     }
 
-    /**
-     * @param mixed $headerCode
-     */
-    public function setHeaderCode($headerCode)
+    public function setHeaderCode(string $headerCode): void
     {
         $this->headerCode = $headerCode;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getHeaderCode()
+    public function getHeaderCode(): ?string
     {
         return $this->headerCode;
     }
 
-    /**
-     * @param mixed $homeLinkText
-     */
-    public function setHomeLinkText($homeLinkText)
+    public function setHomeLinkText(string $homeLinkText): void
     {
         $this->homeLinkText = $homeLinkText;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getHomeLinkText()
+    public function getHomeLinkText(): ?string
     {
         return $this->homeLinkText;
     }
 
-    /**
-     * @param mixed $homeUrl
-     */
-    public function setHomeUrl($homeUrl)
+    public function setHomeUrl(string $homeUrl): void
     {
         $this->homeUrl = $homeUrl;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getHomeUrl()
+    public function getHomeUrl(): ?string
     {
         return $this->homeUrl;
     }
 
-    /**
-     * @param mixed $id
-     */
-    public function setId($id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $logoHeight
-     */
-    public function setLogoHeight($logoHeight)
+    public function setLogoHeight(int $logoHeight): void
     {
         $this->logoHeight = $logoHeight;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getLogoHeight()
+    public function getLogoHeight(): ?int
     {
         return $this->logoHeight;
     }
 
-    /**
-     * @param mixed $logoUrl
-     */
-    public function setLogoUrl($logoUrl)
+    public function setLogoUrl(string $logoUrl): void
     {
         $this->logoUrl = $logoUrl;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getLogoUrl()
+    public function getLogoUrl(): ?string
     {
         return $this->logoUrl;
     }
 
-    /**
-     * @param mixed $logoWidth
-     */
-    public function setLogoWidth($logoWidth)
+    public function setLogoWidth(int $logoWidth): void
     {
         $this->logoWidth = $logoWidth;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getLogoWidth()
+    public function getLogoWidth(): ?int
     {
         return $this->logoWidth;
     }
 
-    /**
-     * @param mixed $mailboxId
-     */
-    public function setMailboxId($mailboxId)
+    public function setMailboxId(int $mailboxId): void
     {
         $this->mailboxId = $mailboxId;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getMailboxId()
+    public function getMailboxId(): ?int
     {
         return $this->mailboxId;
     }
 
-    /**
-     * @param mixed $status
-     */
-    public function setStatus($status)
+    public function setStatus(string $status): void
     {
         $this->status = $status;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getStatus()
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    /**
-     * @param mixed $styleSheetUrl
-     */
-    public function setStyleSheetUrl($styleSheetUrl)
+    public function setStyleSheetUrl(string $styleSheetUrl): void
     {
         $this->styleSheetUrl = $styleSheetUrl;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getStyleSheetUrl()
+    public function getStyleSheetUrl(): ?string
     {
         return $this->styleSheetUrl;
     }
 
-    /**
-     * @param mixed $subDomain
-     */
-    public function setSubDomain($subDomain)
+    public function setSubDomain(string $subDomain): void
     {
         $this->subDomain = $subDomain;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getSubDomain()
+    public function getSubDomain(): ?string
     {
         return $this->subDomain;
     }
 
-    /**
-     * @param mixed $title
-     */
-    public function setTitle($title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    /**
-     * @param mixed $touchIconUrl
-     */
-    public function setTouchIconUrl($touchIconUrl)
+    public function setTouchIconUrl(string $touchIconUrl): void
     {
         $this->touchIconUrl = $touchIconUrl;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getTouchIconUrl()
+    public function getTouchIconUrl(): ?string
     {
         return $this->touchIconUrl;
     }
 
-    /**
-     * @param mixed $updatedAt
-     */
-    public function setUpdatedAt($updatedAt)
+    public function setUpdatedAt(string $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): ?string
     {
         return $this->updatedAt;
     }
 
-    /**
-     * @param mixed $updatedBy
-     */
-    public function setUpdatedBy($updatedBy)
+    public function setUpdatedBy(int $updatedBy): void
     {
         $this->updatedBy = $updatedBy;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ?int
     {
         return $this->updatedBy;
     }
 
-    public function toJson()
+    public function toJson(): string
     {
-        return json_encode($this->getAvailableProperties());
+        return json_encode($this->getAvailableProperties(), JSON_THROW_ON_ERROR);
     }
     
-    public function toArray()
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
     {
         return $this->getAvailableProperties();
     }
 
-    private function getAvailableProperties()
+    /**
+     * @return array<string, mixed>
+     */
+    private function getAvailableProperties(): array
     {
         $reflector = new \ReflectionClass($this);
-        $properties = array_filter($reflector->getProperties(), function($p) {
-            return $p->name != 'restricted';
-        });
+        $properties = array_filter($reflector->getProperties(), fn($p): bool => $p->name !== 'restricted');
 
         $vars = array();
 
         foreach($properties as $prop) {
-            if (!in_array($prop->name, self::$restricted)) {
+            if (!in_array($prop->name, self::$restricted, true)) {
                 $vars[$prop->name] = $this->{"get" . ucfirst($prop->name)}();
             }
         }

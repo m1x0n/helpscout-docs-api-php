@@ -1,113 +1,65 @@
 <?php
+declare(strict_types=1);
 
 namespace HelpScoutDocs\Models;
 
 class ArticleAsset
 {
-    const ARTICLE_ASSET_IMAGE = 'image';
-    const ARTICLE_ASSET_ATTACHMENT = 'attachment';
+    public const ARTICLE_ASSET_IMAGE = 'image';
+    public const ARTICLE_ASSET_ATTACHMENT = 'attachment';
 
-    /**
-     * @var string
-     */
-    private $articleId;
+    private ?string $articleId = null;
+    private ?string $assetType = null;
+    private ?string $file = null;
+    private ?string $fileName = null;
+    private ?string $fileLink = null;
 
-    /**
-     * @var string
-     */
-    private $assetType;
-
-    /**
-     * @var string
-     */
-    private $file;
-
-    /**
-     * @var string
-     */
-    private $fileName;
-
-    /**
-     * @var string
-     */
-    private $fileLink;
-
-    /**
-     * @return mixed
-     */
-    public function getArticleId()
+    public function getArticleId(): ?string
     {
         return $this->articleId;
     }
 
-    /**
-     * @param mixed $articleId
-     */
-    public function setArticleId($articleId)
+    public function setArticleId(string $articleId): void
     {
         $this->articleId = $articleId;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getAssetType()
+    public function getAssetType(): ?string
     {
         return $this->assetType;
     }
 
-    /**
-     * @param mixed $assetType
-     */
-    public function setAssetType($assetType)
+    public function setAssetType(string $assetType): void
     {
         $this->assetType = $assetType;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getFileName()
+    public function getFileName(): ?string
     {
         return $this->fileName;
     }
 
-    /**
-     * @param mixed $fileName
-     */
-    public function setFileName($fileName)
+    public function setFileName(string $fileName): void
     {
         $this->fileName = $fileName;
     }
 
-    /**
-     * @return string
-     */
-    public function getFile()
+    public function getFile(): ?string
     {
         return $this->file;
     }
 
-    /**
-     * @param string $file
-     */
-    public function setFile($file)
+    public function setFile(string $file): void
     {
         $this->file = $file;
     }
 
-    /**
-     * @return string
-     */
-    public function getFileLink()
+    public function getFileLink(): ?string
     {
         return $this->fileLink;
     }
 
-    /**
-     * @param string $fileLink
-     */
-    public function setFileLink($fileLink)
+    public function setFileLink(string $fileLink): void
     {
         $this->fileLink = $fileLink;
     }

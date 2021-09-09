@@ -1,9 +1,9 @@
 <?php
+declare(strict_types=1);
 
-namespace HelpScoutDocs\Test;
+namespace HelpScoutDocs\Tests;
 
 use GuzzleHttp\Psr7\Response;
-use HelpScoutDocs\Tests\TestCase;
 
 class LastResponseTest extends TestCase
 {
@@ -12,7 +12,7 @@ class LastResponseTest extends TestCase
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../fixtures/articles/articles.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $apiClient->getArticles(uniqid());
+        $apiClient->getArticles(uniqid('', true));
 
         $this->assertInstanceOf(Response::class, $apiClient->getLastResponse());
     }

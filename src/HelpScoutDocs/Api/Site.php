@@ -1,18 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace HelpScoutDocs\Api;
 
-use HelpScoutDocs\ApiException;
 use HelpScoutDocs\Models;
 use HelpScoutDocs\ResourceCollection;
 
 class Site extends AbstractApi
 {
-    /**
-     * @param int $page
-     * @return bool|ResourceCollection
-     */
-    public function all($page = 1)
+    public function all(int $page = 1): ResourceCollection
     {
         $params = ['page' => $page];
 
@@ -23,79 +19,61 @@ class Site extends AbstractApi
         );
     }
 
-    /**
-     * @param $siteId
-     * @return bool|mixed
-     */
-    public function show($siteId)
+    public function show(int $siteId): Models\Site
     {
         return $this->getItem(
-            sprintf("sites/%s", $siteId),
+            sprintf("sites/%d", $siteId),
             array(),
             Models\Site::class
         );
     }
 
-    /**
-     * @param Models\Site $site
-     * @param bool $reload
-     * @return bool|Models\Site
-     * @throws ApiException
-     */
-    public function create(Models\Site $site, $reload = false)
+    public function createSite(Models\Site $site): void
     {
-        $url = "sites";
-
         $requestBody = $site->toArray();
 
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
-
-        list($id, $response) = $this->post($url, $requestBody);
-
-        if ($reload) {
-            $siteData = (array)$response;
-            $siteData = reset($siteData);
-            return new Models\Site($siteData);
-        } else {
-            $site->setId($id);
-            return $site;
-        }
+        $this->post("sites", $requestBody);
     }
 
-    /**
-     * @param Models\Site $site
-     * @param bool $reload
-     * @return Models\Site
-     * @throws ApiException
-     */
-    public function update(Models\Site $site, $reload = true)
+    public function createSiteAndReturnCreated(Models\Site $site): Models\Site
     {
-        $url = sprintf("sites/%s", $site->getId());
+        $requestBody = $site->toArray();
+        $requestBody['reload'] = true;
+
+        [$id, $response] = $this->post("sites", $requestBody);
+
+        $siteData = (array)$response;
+        $siteData = reset($siteData);
+
+        return new Models\Site($siteData);
+    }
+
+    public function updateSite(Models\Site $site): void
+    {
+        $url = sprintf("sites/%d", $site->getId());
 
         $requestBody = $site->toArray();
 
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
+        $this->put($url, $requestBody);
+    }
+
+    public function updateSiteAndReturnUpdated(Models\Site $site): Models\Site
+    {
+        $url = sprintf("sites/%d", $site->getId());
+
+        $requestBody = $site->toArray();
+        $requestBody['reload'] = true;
 
         $response = $this->put($url, $requestBody);
 
-        if ($reload) {
-            $siteData = (array)$response;
-            $siteData = reset($siteData);
-            return new Models\Site($siteData);
-        } else {
-            return $site;
-        }
+        $siteData = (array)$response;
+        $siteData = reset($siteData);
+
+        return new Models\Site($siteData);
     }
 
-    /**
-     * @param $siteId
-     */
-    public function remove($siteId)
+    public function remove(int $siteId): void
     {
-        $this->delete(sprintf("sites/%s", $siteId));
+        $this->delete(sprintf("sites/%d", $siteId));
     }
 }

@@ -1,23 +1,20 @@
 <?php
+declare(strict_types=1);
 
 namespace HelpScoutDocs\Api;
 
-use HelpScoutDocs\ApiException;
 use HelpScoutDocs\Models;
 use HelpScoutDocs\ResourceCollection;
 
 class Collection extends AbstractApi
 {
-    /**
-     * @param int $page
-     * @param string $siteId
-     * @param string $visibility
-     * @param string $sort
-     * @param string $order
-     * @return bool|ResourceCollection
-     */
-    public function all($page = 1, $siteId = '', $visibility = 'all', $sort = 'order', $order = 'asc')
-    {
+    public function all(
+        int $page = 1,
+        string $siteId = '',
+        string $visibility = 'all',
+        string $sort = 'order',
+        string $order = 'asc'
+    ): ResourceCollection {
         $params = [
             'page'       => $page,
             'siteId'     => $siteId,
@@ -33,11 +30,7 @@ class Collection extends AbstractApi
         );
     }
 
-    /**
-     * @param $collectionIdOrNumber
-     * @return bool|Models\Collection
-     */
-    public function show($collectionIdOrNumber)
+    public function show(string $collectionIdOrNumber): Models\Collection
     {
         return $this->getItem(
             sprintf("collections/%s", $collectionIdOrNumber),
@@ -46,65 +39,50 @@ class Collection extends AbstractApi
         );
     }
 
-    /**
-     * @param Models\Collection $collection
-     * @param bool $reload
-     * @return bool|Models\Collection
-     * @throws ApiException
-     */
-    public function create(Models\Collection $collection, $reload = false)
+    public function createCollection(Models\Collection $collection): void
     {
-        $url = "collections";
-
         $requestBody = $collection->toArray();
 
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
-
-        list($id, $response) = $this->post($url, $requestBody);
-
-        if ($reload) {
-            $collectionData = (array)$response;
-            $collectionData = reset($collectionData);
-            return new Models\Collection($collectionData);
-        } else {
-            $collection->setId($id);
-            return $collection;
-        }
+        $this->post("collections", $requestBody);
     }
 
-    /**
-     * @param Models\Collection $collection
-     * @param bool $reload
-     * @return Models\Collection
-     * @throws ApiException
-     */
-    public function update(Models\Collection $collection, $reload = false)
+    public function createCollectionAndReturnCreated(Models\Collection $collection): Models\Collection
+    {
+        $requestBody = $collection->toArray();
+        $requestBody['reload'] = true;
+
+        [$id, $response] = $this->post("collections", $requestBody);
+
+        $collectionData = (array)$response;
+        $collectionData = reset($collectionData);
+        return new Models\Collection($collectionData);
+    }
+
+    public function updateCollection(Models\Collection $collection, bool $reload = false): void
     {
         $url = sprintf("collections/%s", $collection->getId());
 
         $requestBody = $collection->toArray();
 
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
+        $this->put($url, $requestBody);
+    }
+
+    public function updateCollectionAndReturnUpdated(Models\Collection $collection): Models\Collection
+    {
+        $url = sprintf("collections/%s", $collection->getId());
+
+        $requestBody = $collection->toArray();
+
+        $requestBody['reload'] = true;
 
         $response = $this->put($url, $requestBody);
 
-        if ($reload) {
-            $collectionData = (array)$response;
-            $collectionData = reset($collectionData);
-            return new Models\Collection($collectionData);
-        } else {
-            return $collection;
-        }
+        $collectionData = (array)$response;
+        $collectionData = reset($collectionData);
+        return new Models\Collection($collectionData);;
     }
 
-    /**
-     * @param $collectionId
-     */
-    public function remove($collectionId)
+    public function remove(string $collectionId): void
     {
         $this->delete(sprintf("collections/%s", $collectionId));
     }

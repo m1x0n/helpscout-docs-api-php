@@ -1,20 +1,19 @@
 <?php
+declare(strict_types=1);
 
 namespace HelpScoutDocs\Models;
 
-class DocsModel {
-
-    /**
-     * Return model properties in JSON
-     *
-     * @return string
-     */
-    public function toJson()
+class DocsModel
+{
+    public function toJson(): string
     {
-        return json_encode($this->getModelProperties());
+        return json_encode($this->getModelProperties(), JSON_THROW_ON_ERROR);
     }
     
-    public function toArray()
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
     {
         return $this->getModelProperties();
     }
@@ -22,12 +21,12 @@ class DocsModel {
     /**
      * Get access to private model properties via PHP Reflection
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    protected function getModelProperties()
+    protected function getModelProperties(): array
     {
         $reflector = new \ReflectionClass($this);
-        $properties = array_merge($reflector->getProperties(), $reflector->getParentClass()->getProperties());
+        $properties = [...$reflector->getProperties(), ...$reflector->getParentClass()->getProperties()];
 
         $vars = array();
 

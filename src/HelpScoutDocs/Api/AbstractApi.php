@@ -1,31 +1,34 @@
 <?php
+declare(strict_types=1);
 
 namespace HelpScoutDocs\Api;
 
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use HelpScoutDocs\ApiException;
 use HelpScoutDocs\DocsApiClient;
+use HelpScoutDocs\Models\DocsModel;
 use HelpScoutDocs\ResourceCollection;
+use JsonException;
+use stdClass;
 
 abstract class AbstractApi
 {
-    /**
-     * @var DocsApiClient
-     */
-    protected $client;
+    protected DocsApiClient $client;
 
-    public function __construct($client)
+    public function __construct(DocsApiClient $client)
     {
         $this->client = $client;
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @param array $params
      * @return string
      * @throws ApiException
+     * @throws GuzzleException
      */
-    protected function get($url, array $params)
+    protected function get(string $url, array $params): string
     {
         if (!$this->client->getApiKey()) {
             throw new ApiException('Invalid API Key', 401);
@@ -45,7 +48,7 @@ abstract class AbstractApi
                     'auth' => [$this->client->getApiKey(), 'X']
                 ]
             );
-        } catch(RequestException $e) {
+        } catch (RequestException $e) {
             throw $this->apiException($e);
         }
 
@@ -59,15 +62,17 @@ abstract class AbstractApi
      * @param array $requestBody
      * @return array
      * @throws ApiException
+     * @throws GuzzleException
+     * @throws JsonException
      */
-    protected function post($url, array $requestBody)
+    protected function post(string $url, array $requestBody): array
     {
         if (!$this->client->getApiKey()) {
             throw new ApiException('Invalid API Key', 401);
         }
 
         if ($this->client->isDebug()) {
-            $this->debug(json_encode($requestBody));
+            $this->debug(json_encode($requestBody, JSON_THROW_ON_ERROR));
         }
 
         try {
@@ -91,23 +96,28 @@ abstract class AbstractApi
         $content = $response->getBody()->getContents();
         $location = $response->getHeaderLine('Location');
 
-        return array(basename($location), json_decode($content));
+        return [
+            basename($location),
+            empty($content) ? null : json_decode($content, false, 512, JSON_THROW_ON_ERROR)
+        ];
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @param array $requestBody
      * @return mixed
      * @throws ApiException
+     * @throws GuzzleException
+     * @throws JsonException
      */
-    protected function put($url, array $requestBody)
+    protected function put(string $url, array $requestBody): ?stdClass
     {
         if (!$this->client->getApiKey()) {
             throw new ApiException('Invalid API Key', 401);
         }
 
         if ($this->client->isDebug()) {
-            $this->debug(json_encode($requestBody));
+            $this->debug(json_encode($requestBody, JSON_THROW_ON_ERROR));
         }
 
         try {
@@ -129,15 +139,20 @@ abstract class AbstractApi
         $this->client->setLastResponse($response);
         $content = $response->getBody()->getContents();
 
-        return json_decode($content);
+        if (empty($content)) {
+            return null;
+        }
+
+        return json_decode($content, false, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @return bool
      * @throws ApiException
+     * @throws GuzzleException
      */
-    protected function delete($url)
+    protected function delete(string $url): bool
     {
         if (!$this->client->getApiKey()) {
             throw new ApiException('Invalid API Key', 401);
@@ -168,19 +183,21 @@ abstract class AbstractApi
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @param array $multipart
-     * @return mixed
+     * @return stdClass|null
      * @throws ApiException
+     * @throws GuzzleException
+     * @throws JsonException
      */
-    protected function postMultipart($url, array $multipart)
+    protected function postMultipart(string $url, array $multipart): ?stdClass
     {
         if (!$this->client->getApiKey()) {
             throw new ApiException('Invalid API Key', 401);
         }
 
         if ($this->client->isDebug()) {
-            $this->debug(json_encode($multipart));
+            $this->debug(json_encode($multipart, JSON_THROW_ON_ERROR));
         }
 
         try {
@@ -195,21 +212,21 @@ abstract class AbstractApi
                     ]
                 ]
             );
-        } catch(RequestException $e) {
+        } catch (RequestException $e) {
             throw $this->apiException($e);
         }
 
         $this->client->setLastResponse($response);
         $content = $response->getBody()->getContents();
 
-        return json_decode($content);
+        if (empty($content)) {
+            return null;
+        }
+
+        return json_decode($content, false, 512, JSON_THROW_ON_ERROR);
     }
 
-    /**
-     * @param array $params
-     * @return array
-     */
-    protected function getParams(array $params = [])
+    protected function getParams(array $params = []): array
     {
         //TODO: Move to const array after PHP 5.5 support drop
         $accepted = [
@@ -223,7 +240,7 @@ abstract class AbstractApi
             'pageSize'
         ];
 
-        if (!$params) {
+        if ($params === []) {
             return [];
         }
         foreach($params as $key => $val) {
@@ -248,24 +265,26 @@ abstract class AbstractApi
                     break;
             }
         }
-        if ($params) {
+        if ($params !== []) {
             return $params;
         }
         return [];
     }
 
     /**
-     * @param $url
-     * @param $params
-     * @param $modelClass
-     * @return bool|mixed
+     * @param string $url
+     * @param array $params
+     * @param string $modelClass
+     * @return DocsModel
      * @throws ApiException
+     * @throws GuzzleException
+     * @throws JsonException
      */
-    protected function getItem($url, $params, $modelClass)
+    protected function getItem(string $url, array $params, string $modelClass): DocsModel
     {
         $response = $this->get($url, $params);
 
-        $json = json_decode($response);
+        $json = json_decode($response, false, 512, JSON_THROW_ON_ERROR);
         $json = reset($json);
 
         return new $modelClass($json);
@@ -275,24 +294,26 @@ abstract class AbstractApi
      * @param string $url
      * @param array $params
      * @param string $modelClass
-     * @return ResourceCollection|mixed
+     * @return ResourceCollection
      * @throws ApiException
+     * @throws GuzzleException
+     * @throws JsonException
      */
-    protected function getResourceCollection($url, $params, $modelClass)
+    protected function getResourceCollection(
+        string $url,
+        array $params,
+        string $modelClass
+    ): ResourceCollection
     {
         $response = $this->get($url, $params);
 
-        $json = json_decode($response);
+        $json = json_decode($response, false, 512, JSON_THROW_ON_ERROR);
         $json = reset($json);
 
         return new ResourceCollection($json, $modelClass);
     }
 
-    /**
-     * @param RequestException $e
-     * @return ApiException
-     */
-    protected function apiException(RequestException $e)
+    protected function apiException(RequestException $e): ApiException
     {
         $message = $e->hasResponse()
             ? $e->getResponse()->getBody()->getContents()
@@ -305,10 +326,7 @@ abstract class AbstractApi
         return new ApiException($message, $code);
     }
 
-    /**
-     * @param $message
-     */
-    protected function debug($message)
+    protected function debug(string $message): void
     {
         $text = strftime('%b %d %H:%M:%S') . ': ' . $message . PHP_EOL;
 

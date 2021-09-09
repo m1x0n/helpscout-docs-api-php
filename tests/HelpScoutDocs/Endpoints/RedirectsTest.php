@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace HelpScoutDocs\Tests\Endpoints;
 
@@ -9,10 +10,7 @@ use HelpScoutDocs\Tests\TestCase;
 
 class RedirectsTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function should_return_redirects_collection(): void
+    public function test_should_return_redirects_collection(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/redirects/redirects.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -21,108 +19,83 @@ class RedirectsTest extends TestCase
         $this->assertInstanceOf(ResourceCollection::class, $redirects);
     }
 
-    /**
-     * @test
-     */
-    public function should_create_redirect_and_respond_with_new_instance(): void
+    public function test_should_create_redirect_and_respond_with_new_instance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/redirects/redirect.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
         $redirect = new Redirect();
-        $redirect->setSiteId(uniqid());
+        $redirect->setSiteId(uniqid('', true));
         $redirect->setUrlMapping('/test/1');
-        $redirect->setRedirect('http://example.com');
+        $redirect->setRedirect('https://example.com');
 
-        $created = $apiClient->createRedirect($redirect, true);
+        $created = $apiClient->createRedirectAndReturnCreated($redirect);
         $this->assertInstanceOf(Redirect::class, $created);
     }
 
-    /**
-     * @test
-     */
-    public function should_create_redirect_and_assign_id(): void
+    public function test_should_create_redirect(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/redirects/redirect.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
         $redirect = new Redirect();
-        $redirect->setSiteId(uniqid());
+        $redirect->setSiteId(uniqid('', true));
         $redirect->setUrlMapping('/test/1');
-        $redirect->setRedirect('http://example.com');
+        $redirect->setRedirect('https://example.com');
 
-        $created = $apiClient->createRedirect($redirect);
-        $this->assertInstanceOf(Redirect::class, $created);
-        $this->assertNotEmpty($created->getId());
+        $apiClient->createRedirect($redirect);
     }
 
-    /**
-     * @test
-     */
-    public function should_return_redirect_by_provided_id(): void
+    public function test_should_return_redirect_by_provided_id(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/redirects/redirect.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $redirect = $apiClient->getRedirect(uniqid());
+        $redirect = $apiClient->getRedirect(uniqid('', true));
         $this->assertInstanceOf(Redirect::class, $redirect);
     }
 
-    /**
-     * @test
-     */
-    public function should_update_existing_redirect_and_respond_with_updated_instance(): void
+    public function test_should_update_existing_redirect_and_respond_with_updated_instance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/redirects/redirect.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
         $redirect = new Redirect();
-        $redirect->setSiteId(uniqid());
+        $redirect->setSiteId(uniqid('', true));
         $redirect->setUrlMapping('/test/1');
-        $redirect->setRedirect('http://example.com');
+        $redirect->setRedirect('https://example.com');
 
-        $updated = $apiClient->updateRedirect($redirect, true);
+        $updated = $apiClient->updateRedirectAndReturnUpdated($redirect);
         $this->assertInstanceOf(Redirect::class, $updated);
     }
 
-    /**
-     * @test
-     */
-    public function should_update_existing_redirect_and_respond_without_instance(): void
+    public function test_should_update_existing_redirect_and_respond_without_instance(): void
     {
-        $responseMock = $this->createResponseMock(200, null);
+        $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $redirect = new Redirect();
-        $redirect->setSiteId(uniqid());
+        $redirect->setSiteId(uniqid('', true));
         $redirect->setUrlMapping('/test/1');
         $redirect->setRedirect('http://example.com');
 
-        $updated = $apiClient->updateRedirect($redirect);
-        $this->assertInstanceOf(Redirect::class, $updated);
-        $this->assertSame($redirect, $updated);
+        $apiClient->updateRedirect($redirect);
     }
 
-    /**
-     * @test
-     */
-    public function should_delete_existing_redirect(): void
+    public function test_should_delete_existing_redirect(): void
     {
-        $responseMock = $this->createResponseMock(200, null);
+        $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $apiClient->deleteRedirect(uniqid());
+        $apiClient->deleteRedirect(uniqid('', true));
     }
 
-    /**
-     * @test
-     */
-    public function should_find_redirected_url_by_provided_url_and_siteId(): void
+    public function test_should_find_redirected_url_by_provided_url_and_siteId(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/redirects/redirected_url.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $redirectedUrl = $apiClient->findRedirect('http://example.com', uniqid());
+        $redirectedUrl = $apiClient->findRedirect('https://example.com', uniqid('', true));
         $this->assertInstanceOf(RedirectedUrl::class, $redirectedUrl);
     }
 }

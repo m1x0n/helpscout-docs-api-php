@@ -1,99 +1,67 @@
 <?php
+declare(strict_types=1);
 
 namespace HelpScoutDocs\Models;
 
-class Article extends ArticleRef {
-    const ARTICLE_STATUS_PUBLISHED = 'published';
-    const ARTICLE_STATUS_NOT_PUBLISHED = 'notpublished';
+use stdClass;
 
-    /**
-     * @var string
-     */
-    private $text;
+class Article extends ArticleRef
+{
+    public const ARTICLE_STATUS_PUBLISHED = 'published';
+    public const ARTICLE_STATUS_NOT_PUBLISHED = 'notpublished';
 
-    /**
-     * @var string
-     */
-    private $code;
+    private ?string $text = null;
+    private ?string $code = null;
+    private ?array $categories = null;
+    private ?array $related = null;
 
-    /**
-     * @var null|array
-     */
-    private $categories;
-
-    private $related;
-
-    function __construct($data = null) {
+    public function __construct(?stdClass $data = null) {
         if ($data) {
             parent::__construct($data);
 
-            $this->text       = isset($data->text)       ? $data->text       : null;
-            $this->code       = isset($data->code)       ? $data->code       : null;
-            $this->categories = isset($data->categories) ? $data->categories : null;
-            $this->related    = isset($data->related)    ? $data->related    : null;
+            $this->text       = $data->text ?? null;
+            $this->code       = $data->code ?? null;
+            $this->categories = $data->categories ?? null;
+            $this->related    = $data->related ?? null;
         }
     }
 
-    /**
-     * @param null $categories
-     */
-    public function setCategories($categories)
+    public function setCategories(array $categories): void
     {
         $this->categories = $categories;
     }
 
-    /**
-     * @return null
-     */
-    public function getCategories()
+    public function getCategories(): ?array
     {
         return $this->categories;
     }
 
-    /**
-     * @param null $code
-     */
-    public function setCode($code)
+    public function setCode(string $code): void
     {
         $this->code = $code;
     }
 
-    /**
-     * @return null
-     */
-    public function getCode()
+    public function getCode(): ?string
     {
         return $this->code;
     }
 
-    /**
-     * @param null $related
-     */
-    public function setRelated($related)
+    public function setRelated(array $related): void
     {
         $this->related = $related;
     }
 
-    /**
-     * @return null
-     */
-    public function getRelated()
+    public function getRelated(): ?array
     {
         return $this->related;
     }
 
-    /**
-     * @param null $text
-     */
-    public function setText($text)
+    public function setText(string $text): void
     {
         $this->text = $text;
     }
 
-    /**
-     * @return null
-     */
-    public function getText()
+    public function getText(): ?string
     {
         return $this->text;
     }

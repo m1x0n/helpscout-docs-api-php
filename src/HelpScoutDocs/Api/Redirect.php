@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace HelpScoutDocs\Api;
 
@@ -7,12 +8,7 @@ use HelpScoutDocs\ResourceCollection;
 
 class Redirect extends AbstractApi
 {
-    /**
-     * @param $siteId
-     * @param int $page
-     * @return ResourceCollection|mixed
-     */
-    public function all($siteId, $page = 1)
+    public function all(string $siteId, int $page = 1): ResourceCollection
     {
         $params = ['page' => $page];
 
@@ -23,11 +19,7 @@ class Redirect extends AbstractApi
         );
     }
 
-    /**
-     * @param $redirectId
-     * @return bool|Models\Redirect
-     */
-    public function show($redirectId)
+    public function show(string $redirectId): Models\Redirect
     {
         return $this->getItem(
             sprintf("redirects/%s", $redirectId),
@@ -36,12 +28,7 @@ class Redirect extends AbstractApi
         );
     }
 
-    /**
-     * @param $url
-     * @param $siteId
-     * @return bool|Models\RedirectedUrl
-     */
-    public function find($url, $siteId)
+    public function find(string $url, string $siteId): Models\RedirectedUrl
     {
         $params = ['url' => $url, 'siteId' => $siteId];
 
@@ -52,63 +39,50 @@ class Redirect extends AbstractApi
         );
     }
 
-    /**
-     * @param Models\Redirect $redirect
-     * @param bool $reload
-     * @return Models\Redirect
-     */
-    public function create(Models\Redirect $redirect, $reload = false)
+    public function createRedirect(Models\Redirect $redirect): void
     {
-        $url = "redirects";
-
         $requestBody = $redirect->toArray();
 
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
-
-        list($id, $response) = $this->post($url, $requestBody);
-
-        if ($reload) {
-            $redirectData = (array)$response;
-            $redirectData = reset($redirectData);
-            return new Models\Redirect($redirectData);
-        } else {
-            $redirect->setId($id);
-            return $redirect;
-        }
+        $this->post("redirects", $requestBody);
     }
 
-    /**
-     * @param Models\Redirect $redirect
-     * @param bool $reload
-     * @return Models\Redirect
-     */
-    public function update(Models\Redirect $redirect, $reload = false)
+    public function createRedirectAndReturnCreated(Models\Redirect $redirect): Models\Redirect
+    {
+        $requestBody = $redirect->toArray();
+        $requestBody['reload'] = true;
+
+        [$id, $response] = $this->post("redirects", $requestBody);
+
+        $redirectData = (array)$response;
+        $redirectData = reset($redirectData);
+
+        return new Models\Redirect($redirectData);
+    }
+
+    public function updateRedirect(Models\Redirect $redirect): void
     {
         $url = sprintf("redirect/%s", $redirect->getId());
 
         $requestBody = $redirect->toArray();
 
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
+        $this->put($url, $requestBody);
+    }
+
+    public function updateRedirectAndReturnUpdated(Models\Redirect $redirect): Models\Redirect
+    {
+        $url = sprintf("redirect/%s", $redirect->getId());
+
+        $requestBody = $redirect->toArray();
+        $requestBody['reload'] = true;
 
         $response = $this->put($url, $requestBody);
 
-        if ($reload) {
-            $redirectData = (array)$response;
-            $redirectData = reset($redirectData);
-            return new Models\Redirect($redirectData);
-        } else {
-            return $redirect;
-        }
+        $redirectData = (array)$response;
+        $redirectData = reset($redirectData);
+        return new Models\Redirect($redirectData);
     }
 
-    /**
-     * @param $redirectId
-     */
-    public function remove($redirectId)
+    public function remove(string $redirectId): void
     {
         $this->delete(sprintf("redirects/%s", $redirectId));
     }

@@ -5,8 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use HelpScoutDocs\DocsApiClient;
 
 // Initialize client
-$docsApiClient = new DocsApiClient();
-$docsApiClient->setApiKey('your-api-key');
+$docsApiClient = new DocsApiClient('your-api-key');
 
 // Get all collections
 $collections = $docsApiClient->getCollections();
