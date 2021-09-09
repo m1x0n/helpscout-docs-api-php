@@ -20,7 +20,7 @@ class Category extends DocsModel
     private ?string $createdAt = null;
     private ?string $updatedAt = null;
 
-    public function __constructs(stdClass $data = null)
+    public function __construct(stdClass $data = null)
     {
         if ($data) {
             $this->id           = $data->id ?? null;
