@@ -6,5 +6,4 @@ namespace HelpScoutDocs;
 
 class ApiException extends \Exception
 {
-
 }

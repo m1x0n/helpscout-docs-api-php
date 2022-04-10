@@ -35,7 +35,6 @@ use Psr\Http\Message\ResponseInterface;
  */
 class DocsApiClient
 {
-
     private const USER_AGENT = 'Help Scout API/Docs Php Client v1';
     public const API_URL = 'https://docsapi.helpscout.net/v1/';
 
