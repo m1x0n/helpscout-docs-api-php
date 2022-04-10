@@ -290,7 +290,6 @@ abstract class AbstractApi
         $response = $this->get($url, $params);
 
         $json = json_decode($response, false, 512, JSON_THROW_ON_ERROR);
-        $json = reset($json);
 
         return new $modelClass($json);
     }
@@ -312,7 +311,6 @@ abstract class AbstractApi
         $response = $this->get($url, $params);
 
         $json = json_decode($response, false, 512, JSON_THROW_ON_ERROR);
-        $json = reset($json);
 
         return new ResourceCollection($json, $modelClass);
     }
