@@ -1,14 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelpScoutDocs\Api;
 
 use HelpScoutDocs\ApiException;
-use HelpScoutDocs\Models;
+use HelpScoutDocs\Models\ArticleAsset;
+use HelpScoutDocs\Models\SettingsAsset;
+use RuntimeException;
 
 class Asset extends AbstractApi
 {
-    public function createArticleAsset(Models\ArticleAsset $articleAsset)
+    public function createArticleAsset(ArticleAsset $articleAsset): ArticleAsset
     {
+        if ($articleAsset->getFile() === null) {
+            throw new RuntimeException('No file path provided for Asset::createArticleAsset');
+        }
+
         if (!file_exists($articleAsset->getFile())) {
             throw new ApiException(sprintf("Unable to locate file: %s", $articleAsset->getFile()));
         }
@@ -36,19 +44,25 @@ class Asset extends AbstractApi
             ],
             [
                 'name' => 'file',
-                'contents' => fopen($articleAsset->getFile(), 'r')
+                'contents' => fopen($articleAsset->getFile(), 'rb')
             ]
         ];
 
         $uploadedAsset = $this->postMultipart('assets/article', $multipart);
 
-        $articleAsset->setFileLink($uploadedAsset->filelink);
+        if ($uploadedAsset && $uploadedAsset->filelink) {
+            $articleAsset->setFileLink($uploadedAsset->filelink);
+        }
 
         return $articleAsset;
     }
 
-    public function createSettingsAsset(Models\SettingsAsset $settingsAsset)
+    public function createSettingsAsset(SettingsAsset $settingsAsset): SettingsAsset
     {
+        if ($settingsAsset->getFile() === null) {
+            throw new RuntimeException('No file path provided for Asset::createSettingsAsset');
+        }
+
         if (!file_exists($settingsAsset->getFile())) {
             throw new ApiException(sprintf("Unable to locate file: %s", $settingsAsset->getFile()));
         }
@@ -76,13 +90,15 @@ class Asset extends AbstractApi
             ],
             [
                 'name' => 'file',
-                'contents' => fopen($settingsAsset->getFile(), 'r')
+                'contents' => fopen($settingsAsset->getFile(), 'rb')
             ]
         ];
 
         $uploadedAsset = $this->postMultipart('assets/settings', $multipart);
 
-        $settingsAsset->setFileLink($uploadedAsset->filelink);
+        if ($uploadedAsset && $uploadedAsset->filelink) {
+            $settingsAsset->setFileLink($uploadedAsset->filelink);
+        }
 
         return $settingsAsset;
     }

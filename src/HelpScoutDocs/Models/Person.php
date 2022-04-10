@@ -1,65 +1,52 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelpScoutDocs\Models;
 
-class Person extends DocsModel {
+use stdClass;
 
-    private $id;
-    private $firstName;
-    private $lastName;
+class Person extends DocsModel
+{
+    private ?int $id = null;
+    private ?string $firstName = null;
+    private ?string $lastName = null;
 
-    function __construct($data = null) {
+    public function __construct(stdClass $data = null)
+    {
         if ($data) {
-            $this->id        = isset($data->id)        ? $data->id        : null;
-            $this->firstName = isset($data->firstName) ? $data->firstName : null;
-            $this->lastName  = isset($data->lastName)  ? $data->lastName  : null;
+            $this->id        = $data->id ?? null;
+            $this->firstName = $data->firstName ?? null;
+            $this->lastName  = $data->lastName ?? null;
         }
     }
 
-    /**
-     * @param mixed $firstName
-     */
-    public function setFirstName($firstName)
+    public function setFirstName(string $firstName): void
     {
         $this->firstName = $firstName;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getFirstName()
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    /**
-     * @param mixed $id
-     */
-    public function setId($id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $lastName
-     */
-    public function setLastName($lastName)
+    public function setLastName(string $lastName): void
     {
         $this->lastName = $lastName;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getLastName()
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }

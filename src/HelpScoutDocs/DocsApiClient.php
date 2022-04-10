@@ -1,12 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelpScoutDocs;
 
 use BadMethodCallException;
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use HelpScoutDocs\Api\Article;
+use HelpScoutDocs\Models\ArticleAsset;
+use HelpScoutDocs\Models\Category;
+use HelpScoutDocs\Models\Collection;
+use HelpScoutDocs\Models\Redirect;
+use HelpScoutDocs\Models\SettingsAsset;
+use HelpScoutDocs\Models\Site;
 use InvalidArgumentException;
 use HelpScoutDocs\Models;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class DocsApiClient
@@ -23,19 +33,22 @@ use HelpScoutDocs\Models;
  * @method Api\Asset      assets()
  * @method Api\Redirect   redirects()
  */
-class DocsApiClient {
+class DocsApiClient
+{
+    private const USER_AGENT = 'Help Scout API/Docs Php Client v1';
+    public const API_URL = 'https://docsapi.helpscout.net/v1/';
 
-    const USER_AGENT = 'Help Scout API/Php Client v1';
-    const API_URL = 'https://docsapi.helpscout.net/v1/';
+    private ?string $userAgent = null;
+    private string $apiKey;
+    private bool $isDebug   = false;
+    private ?string $debugDir  = null;
+    private ClientInterface $httpClient;
+    private ?ResponseInterface $lastResponse = null;
 
-    private $userAgent = false;
-    private $apiKey    = false;
-    private $isDebug   = false;
-    private $debugDir  = false;
-    private $httpClient;
-    private $lastResponse = null;
-
-    private $services = [
+    /**
+     * @var array|string[]
+     */
+    private array $services = [
         'articles' => Api\Article::class,
         'collections' => Api\Collection::class,
         'categories' => Api\Category::class,
@@ -44,73 +57,56 @@ class DocsApiClient {
         'redirects' => Api\Redirect::class
     ];
 
-    public function __construct($apiKey = null)
+    public function __construct(string $apiKey, ?ClientInterface $httpClient = null)
     {
-        $this->httpClient = new Client();
+        $this->httpClient = $httpClient ?? new Client();
         $this->apiKey = $apiKey;
     }
 
-    /**
-    * Get the last response
-    *
-    * @return mixed
-    */
-    public function getLastResponse()
+    public function getLastResponse(): ?ResponseInterface
     {
         return $this->lastResponse;
     }
 
-    public function setLastResponse($response)
+    public function setLastResponse(ResponseInterface $response): self
     {
         $this->lastResponse = $response;
         return $this;
     }
 
-    /**
-     * Put ApiClient in debug mode or note.
-     *
-     * If in debug mode, you can optionally supply a directory
-     * in which to write debug messages.
-     * If no directory is set, debug messages are echo'ed out.
-     *
-     * @param  boolean        $bool
-     * @param  boolean|string $dir
-     * @return void
-     */
-    public function setDebug($bool, $dir = false)
+    public function setDebug(bool $bool, ?string $dir = null): void
     {
         $this->isDebug = $bool;
-        if ($dir && is_dir($dir)) {
-            $this->debugDir = $dir;
+        if (!$dir) {
+            return;
         }
+        if (!is_dir($dir)) {
+            return;
+        }
+        $this->debugDir = $dir;
     }
 
-    public function isDebug()
+    public function isDebug(): bool
     {
         return $this->isDebug;
     }
 
-    public function getDebugDir()
+    public function getDebugDir(): ?string
     {
         return $this->debugDir;
     }
 
-    /**
-     * Set the API Key to use with this request
-     *
-     * @param string $apiKey
-     */
-    public function setApiKey($apiKey)
+    public function setApiKey(string $apiKey): void
     {
         $this->apiKey = $apiKey;
     }
 
-    public function getApiKey()
+    public function getApiKey(): ?string
     {
         return $this->apiKey;
     }
 
-    public function setUserAgent($userAgent)
+    public function setUserAgent(string $userAgent): void
     {
         $userAgent = trim($userAgent);
         if (!empty($userAgent)) {
@@ -118,7 +114,7 @@ class DocsApiClient {
         }
     }
 
-    public function getUserAgent()
+    public function getUserAgent(): string
     {
         if ($this->userAgent) {
             return $this->userAgent;
@@ -126,17 +122,22 @@ class DocsApiClient {
         return self::USER_AGENT;
     }
 
-    public function setHttpClient($client)
+    public function setHttpClient(ClientInterface $httpClient): void
     {
-        $this->httpClient = $client;
+        $this->httpClient = $httpClient;
     }
 
-    public function getHttpClient()
+    public function getHttpClient(): ClientInterface
     {
         return $this->httpClient;
     }
 
-    private function api($name)
+    /**
+     * @param string $name
+     * @return mixed
+     * @throws \Exception
+     */
+    private function api(string $name)
     {
         if (!isset($this->services[$name])) {
             throw new \Exception("Invalid service {$name}");
@@ -145,230 +146,180 @@ class DocsApiClient {
         return new $this->services[$name]($this);
     }
 
-    public function __call($name, $arguments)
+    /**
+     * @param string $name
+     * @param mixed $arguments
+     * @return mixed
+     * @throws \Exception
+     */
+    public function __call(string $name, $arguments)
     {
         try {
             return $this->api($name);
         } catch (InvalidArgumentException $e) {
-            throw new BadMethodCallException(sprintf('Undefined method called: "%s"', $name));
+            throw new BadMethodCallException(
+                sprintf('Undefined method called: "%s"', $name),
+                $e->getCode(),
+                $e
+            );
         }
     }
 
-    /**
-     * @param $categoryId
-     * @param int $page
-     * @param string $status
-     * @param string $sort
-     * @param string $order
-     * @param int $pageSize
-     * @return bool|ResourceCollection
-     * @throws ApiException
-     *
-     * @deprecated
-     */
-    public function getArticles($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc', $pageSize = Article::DEFAULT_PAGE_SIZE)
-    {
+    public function getArticles(
+        string $categoryId,
+        int $page = 1,
+        string $status = 'all',
+        string $sort = 'order',
+        string $order = 'asc',
+        int $pageSize = Article::DEFAULT_PAGE_SIZE
+    ): ResourceCollection {
         return $this->articles()->all($categoryId, $page, $status, $sort, $order, $pageSize);
     }
 
-    /**
-     * @param $categoryId
-     * @param int $page
-     * @param string $status
-     * @param string $sort
-     * @param string $order
-     * @param int $pageSize
-     * @return ResourceCollection|mixed
-     * @throws ApiException
-     */
-    public function getArticlesForCategory($categoryId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc', $pageSize = Article::DEFAULT_PAGE_SIZE)
-    {
+    public function getArticlesForCategory(
+        string $categoryId,
+        int $page = 1,
+        string $status = 'all',
+        string $sort = 'order',
+        string $order = 'asc',
+        int $pageSize = Article::DEFAULT_PAGE_SIZE
+    ): ResourceCollection {
         return $this->articles()->allForCategory($categoryId, $page, $status, $sort, $order, $pageSize);
     }
 
-    /**
-     * @param $collectionId
-     * @param int $page
-     * @param string $status
-     * @param string $sort
-     * @param string $order
-     * @param int $pageSize
-     * @return ResourceCollection|mixed
-     * @throws ApiException
-     */
-    public function getArticlesForCollection($collectionId, $page = 1, $status = 'all', $sort = 'order', $order = 'asc', $pageSize = Article::DEFAULT_PAGE_SIZE)
-    {
+    public function getArticlesForCollection(
+        string $collectionId,
+        int $page = 1,
+        string $status = 'all',
+        string $sort = 'order',
+        string $order = 'asc',
+        int $pageSize = Article::DEFAULT_PAGE_SIZE
+    ): ResourceCollection {
         return $this->articles()->allForCollection($collectionId, $page, $status, $sort, $order, $pageSize);
     }
 
-    /**
-     * @param string $query
-     * @param int $page
-     * @param string $collectionId
-     * @param string $status
-     * @param string $visibility
-     * @return bool|ResourceCollection
-     */
-    public function searchArticles($query = '*', $page = 1, $collectionId = '', $status = 'all', $visibility = 'all')
-    {
+    public function searchArticles(
+        string $query = '*',
+        int $page = 1,
+        string $collectionId = '',
+        string $status = 'all',
+        string $visibility = 'all'
+    ): ResourceCollection {
         return $this->articles()->search($query, $page, $collectionId, $status, $visibility);
     }
 
-    /**
-     * @param $articleId
-     * @param int $page
-     * @param string $status
-     * @param string $sort
-     * @param string $order
-     * @return bool|ResourceCollection
-     */
-    public function getRelatedArticles($articleId, $page = 1, $status = 'all', $sort = 'order', $order = 'desc')
-    {
+    public function getRelatedArticles(
+        string $articleId,
+        int $page = 1,
+        string $status = 'all',
+        string $sort = 'order',
+        string $order = 'desc'
+    ): ResourceCollection {
         return $this->articles()->relatedArticles($articleId, $page, $status, $order, $sort);
     }
 
-    /**
-     * @param $articleId
-     * @param int $page
-     * @return bool|ResourceCollection
-     */
-    public function getRevisions($articleId, $page = 1)
+    public function getRevisions(string $articleId, int $page = 1): ResourceCollection
     {
         return $this->articles()->revisions($articleId, $page);
     }
 
-    /**
-     * @param $articleIdOrNumber
-     * @param bool $draft
-     * @return bool|Models\Article
-     */
-    public function getArticle($articleIdOrNumber, $draft = false)
+    public function getArticle(string $articleIdOrNumber, bool $draft = false): Models\Article
     {
         return $this->articles()->show($articleIdOrNumber, $draft);
     }
 
-    /**
-     * @param $revisionId
-     * @return bool|Models\ArticleRevision
-     */
-    public function getRevision($revisionId)
+    public function getRevision(string $revisionId): Models\ArticleRevision
     {
         return $this->articles()->revision($revisionId);
     }
 
-    /**
-     * @param Models\Article $article
-     * @param bool $reload
-     * @return bool|Models\Article
-     * @throws ApiException
-     */
-    public function createArticle(Models\Article $article, $reload = false)
+    public function createArticle(Models\Article $article): void
     {
-        return $this->articles()->create($article, $reload);
+        $this->articles()->createArticle($article);
     }
 
-    /**
-     * @param Models\Article $article
-     * @param bool $reload
-     * @return Models\Article
-     * @throws ApiException
-     */
-    public function updateArticle(Models\Article $article, $reload = false)
+    public function createArticleAndReturnCreated(Models\Article $article): Models\Article
     {
-        return $this->articles()->update($article, $reload);
+        return $this->articles()->createArticleAndReturnCreated($article);
     }
 
-    /**
-     * @param Models\UploadArticle $uploadArticle
-     * @param bool $reload
-     * @return bool|Models\Article
-     * @throws ApiException
-     */
-    public function uploadArticle(Models\UploadArticle $uploadArticle, $reload = false)
+    public function updateArticle(Models\Article $article): void
     {
-        return $this->articles()->upload($uploadArticle, $reload);
+        $this->articles()->updateArticle($article);
     }
 
-    /**
-     * @param $articleId
-     * @param int $count
-     */
-    public function updateViewCount($articleId, $count = 1)
+    public function updateArticleAndReturnUpdated(Models\Article $article): Models\Article
     {
-        return $this->articles()->updateViewCount($articleId, $count);
+        return $this->articles()->updateArticleAndReturnUpdated($article);
     }
 
-    /**
-     * @param $articleId
-     */
-    public function deleteArticle($articleId)
+    public function uploadArticle(Models\UploadArticle $uploadArticle): void
     {
-        return $this->articles()->remove($articleId);
+        $this->articles()->uploadArticle($uploadArticle);
     }
 
-    /**
-     * @param $articleId
-     * @param $text
-     */
-    public function saveArticleDraft($articleId, $text)
+    public function uploadArticleAndReturnUploaded(Models\UploadArticle $uploadArticle): Models\Article
+    {
+        return $this->articles()->uploadArticleAndReturnUploaded($uploadArticle);
+    }
+
+    public function updateViewCount(string $articleId, int $count = 1): void
+    {
+        $this->articles()->updateViewCount($articleId, $count);
+    }
+
+    public function deleteArticle(string $articleId): void
+    {
+        $this->articles()->remove($articleId);
+    }
+
+    public function saveArticleDraft(string $articleId, string $text): void
     {
         $this->articles()->saveDraft($articleId, $text);
     }
 
-    /**
-     * @param $articleId
-     */
-    public function deleteArticleDraft($articleId)
+    public function deleteArticleDraft(string $articleId): void
     {
         $this->articles()->removeDraft($articleId);
     }
 
-    /**
-     * @param $collectionId
-     * @param int $page
-     * @param string $sort
-     * @param string $order
-     * @return bool|ResourceCollection
-     */
-    public function getCategories($collectionId, $page = 1, $sort = 'order', $order = 'asc')
-    {
+    public function getCategories(
+        string $collectionId,
+        int $page = 1,
+        string $sort = 'order',
+        string $order = 'asc'
+    ): ResourceCollection {
         return $this->categories()->all($collectionId, $page, $sort, $order);
     }
 
-    /**
-     * @param $categoryIdOrNumber
-     * @return bool|Models\Category
-     */
-    public function getCategory($categoryIdOrNumber)
+    public function getCategory(string $categoryIdOrNumber): Category
     {
         return $this->categories()->show($categoryIdOrNumber);
     }
 
-    /**
-     * @param Models\Category $category
-     * @param bool $reload
-     * @return bool|Models\Category
-     * @throws ApiException
-     */
-    public function createCategory(Models\Category $category, $reload = false)
+    public function createCategory(Category $category): void
     {
-        return $this->categories()->create($category, $reload);
+        $this->categories()->createCategory($category);
+    }
+
+    public function createCategoryAndReturnCreated(Category $category): Category
+    {
+        return $this->categories()->createCategoryAndReturnCreated($category);
+    }
+
+    public function updateCategory(Category $category): void
+    {
+        $this->categories()->updateCategory($category);
+    }
+
+    public function updateCategoryAndReturnUpdated(Category $category): Category
+    {
+        return $this->categories()->updateCategoryAndReturnUpdated($category);
     }
 
     /**
-     * @param Models\Category $category
-     * @param bool $reload
-     * @return Models\Category
-     * @throws ApiException
-     */
-    public function updateCategory(Models\Category $category, $reload = false)
-    {
-        return $this->categories()->update($category, $reload);
-    }
-
-    /**
-     * @param $collectionId
-     * @param array $categories
+     * @param string $collectionId
+     * @param array<string, array> $categories
      *
      * Categories should be an associative array:
      *
@@ -388,195 +339,137 @@ class DocsApiClient {
      *
      * @throws ApiException
      */
-    public function updateCategoryOrder($collectionId, array $categories)
+    public function updateCategoryOrder(string $collectionId, array $categories): void
     {
         $this->categories()->updateOrder($collectionId, $categories);
     }
 
-    /**
-     * @param $categoryId
-     * @throws ApiException
-     */
-    public function deleteCategory($categoryId)
+    public function deleteCategory(string $categoryId): void
     {
         $this->categories()->remove($categoryId);
     }
 
-    /**
-     * @param int $page
-     * @param string $siteId
-     * @param string $visibility
-     * @param string $sort
-     * @param string $order
-     * @return bool|ResourceCollection
-     */
-    public function getCollections($page = 1, $siteId = '', $visibility = 'all', $sort = 'order', $order = 'asc')
-    {
+    public function getCollections(
+        int $page = 1,
+        string $siteId = '',
+        string $visibility = 'all',
+        string $sort = 'order',
+        string $order = 'asc'
+    ): ResourceCollection {
         return $this->collections()->all($page, $siteId, $visibility, $sort, $order);
     }
 
-    /**
-     * @param $collectionIdOrNumber
-     * @return bool|Models\Collection
-     */
-    public function getCollection($collectionIdOrNumber)
+    public function getCollection(string $collectionIdOrNumber): Collection
     {
         return $this->collections()->show($collectionIdOrNumber);
     }
 
-    /**
-     * @param Models\Collection $collection
-     * @param bool $reload
-     * @return bool|Models\Collection
-     * @throws ApiException
-     */
-    public function createCollection(Models\Collection $collection, $reload = false)
+    public function createCollection(Collection $collection): void
     {
-        return $this->collections()->create($collection, $reload);
+        $this->collections()->createCollection($collection);
     }
 
-    /**
-     * @param Models\Collection $collection
-     * @param bool $reload
-     * @return Models\Collection
-     * @throws ApiException
-     */
-    public function updateCollection(Models\Collection $collection, $reload = false)
+    public function createCollectionAndReturnCreated(Collection $collection): Collection
     {
-        return $this->collections()->update($collection, $reload);
+        return $this->collections()->createCollectionAndReturnCreated($collection);
     }
 
-    /**
-     * @param $collectionId
-     * @throws ApiException
-     */
-    public function deleteCollection($collectionId)
+    public function updateCollection(Collection $collection): void
+    {
+        $this->collections()->updateCollection($collection);
+    }
+
+    public function updateCollectionAndReturnUpdated(Collection $collection): Collection
+    {
+        return $this->collections()->updateCollectionAndReturnUpdated($collection);
+    }
+
+    public function deleteCollection(string $collectionId): void
     {
         $this->collections()->remove($collectionId);
     }
 
-    /**
-     * @param int $page
-     * @return bool|ResourceCollection
-     */
-    public function getSites($page = 1)
+    public function getSites(int $page = 1): ResourceCollection
     {
         return $this->sites()->all($page);
     }
 
-    /**
-     * @param $siteId
-     * @return bool|Models\Site
-     */
-    public function getSite($siteId)
+    public function getSite(int $siteId): Site
     {
         return $this->sites()->show($siteId);
     }
 
-    /**
-     * @param Models\Site $site
-     * @param bool $reload
-     * @return bool|Models\Site
-     * @throws ApiException
-     */
-    public function createSite(Models\Site $site, $reload = false)
+    public function createSite(Site $site): void
     {
-        return $this->sites()->create($site, $reload);
+        $this->sites()->createSite($site);
     }
 
-    /**
-     * @param Models\Site $site
-     * @param bool $reload
-     * @return Models\Site
-     * @throws ApiException
-     */
-    public function updateSite(Models\Site $site, $reload = false)
+    public function createSiteAndReturnCreated(Site $site): Site
     {
-        return $this->sites()->update($site, $reload);
+        return $this->sites()->createSiteAndReturnCreated($site);
     }
 
-    /**
-     * @param $siteId
-     * @throws ApiException
-     */
-    public function deleteSite($siteId)
+    public function updateSite(Site $site): void
+    {
+        $this->sites()->updateSite($site);
+    }
+
+    public function updateSiteAndReturnUpdated(Site $site): Site
+    {
+        return $this->sites()->updateSiteAndReturnUpdated($site);
+    }
+
+    public function deleteSite(int $siteId): void
     {
         $this->sites()->remove($siteId);
     }
 
-    /**
-     * @param Models\ArticleAsset $articleAsset
-     * @return Models\ArticleAsset
-     * @throws ApiException
-     */
-    public function createArticleAsset(Models\ArticleAsset $articleAsset)
+    public function createArticleAsset(ArticleAsset $articleAsset): ArticleAsset
     {
         return $this->assets()->createArticleAsset($articleAsset);
     }
 
-    /**
-     * @param Models\SettingsAsset $settingsAsset
-     * @return Models\SettingsAsset
-     * @throws ApiException
-     */
-    public function createSettingsAsset(Models\SettingsAsset $settingsAsset)
+    public function createSettingsAsset(SettingsAsset $settingsAsset): SettingsAsset
     {
         return $this->assets()->createSettingsAsset($settingsAsset);
     }
 
-    /**
-     * @param $siteId
-     * @param int $page
-     * @return ResourceCollection|mixed
-     */
-    public function getRedirects($siteId, $page = 1)
+    public function getRedirects(string $siteId, int $page = 1): ResourceCollection
     {
         return $this->redirects()->all($siteId, $page);
     }
 
-    /**
-     * @param $redirectId
-     * @return bool|Models\Redirect
-     */
-    public function getRedirect($redirectId)
+    public function getRedirect(string $redirectId): Redirect
     {
         return $this->redirects()->show($redirectId);
     }
 
-    /**
-     * @param $url
-     * @param $siteId
-     * @return bool|Models\RedirectedUrl
-     */
-    public function findRedirect($url, $siteId)
+    public function findRedirect(string $url, string $siteId): Models\RedirectedUrl
     {
         return $this->redirects()->find($url, $siteId);
     }
 
-    /**
-     * @param Models\Redirect $redirect
-     * @param bool $reload
-     * @return Models\Redirect
-     */
-    public function createRedirect(Models\Redirect $redirect, $reload = false)
+    public function createRedirect(Redirect $redirect): void
     {
-        return $this->redirects()->create($redirect, $reload);
+        $this->redirects()->createRedirect($redirect);
     }
 
-    /**
-     * @param Models\Redirect $redirect
-     * @param bool $reload
-     * @return Models\Redirect
-     */
-    public function updateRedirect(Models\Redirect $redirect, $reload = false)
+    public function createRedirectAndReturnCreated(Redirect $redirect): Redirect
     {
-        return $this->redirects()->update($redirect, $reload);
+        return $this->redirects()->createRedirectAndReturnCreated($redirect);
     }
 
-    /**
-     * @param $redirectId
-     */
-    public function deleteRedirect($redirectId)
+    public function updateRedirect(Redirect $redirect): void
+    {
+        $this->redirects()->updateRedirect($redirect);
+    }
+
+    public function updateRedirectAndReturnUpdated(Redirect $redirect): Redirect
+    {
+        return $this->redirects()->updateRedirectAndReturnUpdated($redirect);
+    }
+
+    public function deleteRedirect(string $redirectId): void
     {
         $this->redirects()->remove($redirectId);
     }

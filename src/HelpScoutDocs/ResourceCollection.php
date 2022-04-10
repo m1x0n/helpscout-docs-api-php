@@ -1,21 +1,31 @@
 <?php
+
+declare(strict_types=1);
+
 namespace HelpScoutDocs;
 
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
+use HelpScoutDocs\Models\DocsModel;
 use SeekableIterator;
+use stdClass;
 
-class ResourceCollection implements ArrayAccess, SeekableIterator, Countable {
-    
-    private $page  = 0;
-    private $pages = 0;
-    private $count = 0;
-    private $items = null;
+class ResourceCollection implements ArrayAccess, SeekableIterator, Countable
+{
+    private int $page  = 0;
+    private int $pages = 0;
+    private int $count = 0;
+    /**
+     * @var ArrayIterator<int, DocsModel>
+     */
+    private ArrayIterator $items;
 
-    public function __construct($data, $itemType)
+    public function __construct(?stdClass $data, string $itemType)
     {
-        if ($data) {
+        if (!$data) {
+            $this->items = new ArrayIterator();
+        } else {
             $this->page  = $data->page;
             $this->pages = $data->pages;
             $this->count = $data->count;
@@ -24,108 +34,88 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable {
             if ($items) {
                 $this->items = new ArrayIterator();
 
-                foreach($items as $index => $item) {
-                    $this->items->append(new $itemType($item));
+                foreach ($items as $index => $item) {
+                    $this->items->append(new $itemType((object)$item));
                     unset($items[$index]);
                 }
             }
-            unset($data);
         }
     }
 
-    /**
-     * @return boolean
-     */
-    public function hasNextPage()
+    public function hasNextPage(): bool
     {
         return $this->page < $this->pages;
     }
 
-    /**
-     * @return boolean
-     */
-    public function hasPrevPage()
+    public function hasPrevPage(): bool
     {
         return $this->page > 1;
     }
 
     /**
-     * @return array
+     * @return ArrayIterator<int, DocsModel>
      */
-    public function getItems()
+    public function getItems(): ArrayIterator
     {
         return $this->items;
     }
 
-    /**
-     * @return int
-     */
-    public function getPage()
+    public function getPage(): int
     {
         return $this->page;
     }
 
-    /**
-     * @return int
-     */
-    public function getPages()
+    public function getPages(): int
     {
         return $this->pages;
     }
 
-    /**
-     * @return int
-     */
-    public function getCount()
+    public function getCount(): int
     {
         return $this->count;
     }
 
     /**
-     * @return mixed
+     * @return DocsModel|null
      */
     public function current()
     {
         return $this->items->current();
     }
 
-    public function next()
+    public function next(): void
     {
         $this->items->next();
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function key()
     {
         return $this->items->key();
     }
 
-    /**
-     * @return bool
-     */
-    public function valid()
+    public function valid(): bool
     {
         return $this->items->valid();
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->items->rewind();
     }
 
     /**
-     * @param mixed $offset
-     * @return bool
+     * @param int $offset
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->items->offsetExists($offset);
     }
 
     /**
-     * @param mixed $offset
+     * @param int $offset
      * @return mixed
      */
     public function offsetGet($offset)
@@ -133,12 +123,19 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable {
         return $this->items->offsetGet($offset);
     }
 
-    public function offsetSet($offset, $value)
+    /**
+     * @param int $offset
+     * @param DocsModel $value
+     */
+    public function offsetSet($offset, $value): void
     {
         $this->items->offsetSet($offset, $value);
     }
 
-    public function offsetUnset($offset)
+    /**
+     * @param mixed $offset
+     */
+    public function offsetUnset($offset): void
     {
         $this->items->offsetUnset($offset);
     }
@@ -148,8 +145,11 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable {
         return $this->items->count();
     }
 
-    public function seek($position)
+    /**
+     * @param int $offset
+     */
+    public function seek($offset): void
     {
-        $this->items->seek($position);
+        $this->items->seek($offset);
     }
 }

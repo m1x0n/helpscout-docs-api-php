@@ -1,135 +1,78 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelpScoutDocs\Models;
 
 class UploadArticle extends DocsModel
 {
-    const UPLOAD_TYPE_HTML = 'html';
-    const UPLOAD_TYPE_TEXT = 'text';
-    const UPLOAD_TYPE_MARKDOWN = 'markdown';
+    public const UPLOAD_TYPE_HTML = 'html';
+    public const UPLOAD_TYPE_TEXT = 'text';
+    public const UPLOAD_TYPE_MARKDOWN = 'markdown';
 
-    /**
-     * @var string
-     */
-    private $collectionId;
+    private ?string $collectionId = null;
+    private ?string $name = null;
+    private ?string $slug = null;
+    private ?string $categoryId = null;
+    private ?string $file = null;
+    private ?string $type = null;
 
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $slug;
-
-    /**
-     * @var string
-     */
-    private $categoryId;
-
-    /**
-     * @var string
-     */
-    private $file;
-
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @return string
-     */
-    public function getCollectionId()
+    public function getCollectionId(): ?string
     {
         return $this->collectionId;
     }
 
-    /**
-     * @param string $collectionId
-     */
-    public function setCollectionId($collectionId)
+    public function setCollectionId(string $collectionId): void
     {
         $this->collectionId = $collectionId;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
-    public function getSlug()
+    public function getSlug(): ?string
     {
         return $this->slug;
     }
 
-    /**
-     * @param string $slug
-     */
-    public function setSlug($slug)
+    public function setSlug(string $slug): void
     {
         $this->slug = $slug;
     }
 
-    /**
-     * @return string
-     */
-    public function getCategoryId()
+    public function getCategoryId(): ?string
     {
         return $this->categoryId;
     }
 
-    /**
-     * @param string $categoryId
-     */
-    public function setCategoryId($categoryId)
+    public function setCategoryId(string $categoryId): void
     {
         $this->categoryId = $categoryId;
     }
 
-    /**
-     * @return string
-     */
-    public function getFile()
+    public function getFile(): ?string
     {
         return $this->file;
     }
 
-    /**
-     * @param string $file
-     */
-    public function setFile($file)
+    public function setFile(string $file): void
     {
         $this->file = $file;
     }
 
-    /**
-     * @return string
-     */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
-    public function setType($type)
+    public function setType(string $type): void
     {
         $this->type = $type;
     }

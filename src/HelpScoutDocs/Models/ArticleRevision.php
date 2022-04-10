@@ -1,30 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelpScoutDocs\Models;
 
-class ArticleRevision extends ArticleRevisionRef {
+class ArticleRevision extends ArticleRevisionRef
+{
+    private ?string $text = null;
 
-    private $text;
-
-    function __construct($data = null) {
+    public function __construct(\stdClass $data = null)
+    {
         if ($data) {
             parent::__construct($data);
-            $this->text = isset($data->text) ? $data->text : null;
+            $this->text = $data->text ?? null;
         }
     }
 
-    /**
-     * @param null $text
-     */
-    public function setText($text)
+    public function setText(string $text): void
     {
         $this->text = $text;
     }
 
-    /**
-     * @return null
-     */
-    public function getText()
+    public function getText(): ?string
     {
         return $this->text;
     }

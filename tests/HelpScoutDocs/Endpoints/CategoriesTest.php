@@ -1,163 +1,130 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelpScoutDocs\Tests\Endpoints;
 
+use HelpScoutDocs\ApiException;
 use HelpScoutDocs\Models\Category;
 use HelpScoutDocs\ResourceCollection;
 use HelpScoutDocs\Tests\TestCase;
 
 class CategoriesTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function should_return_categories_collection(): void
+    public function testShouldReturnCategoriesCollection(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/categories/categories.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $categories = $apiClient->getCategories(uniqid());
+        $categories = $apiClient->getCategories(uniqid('', true));
 
         $this->assertInstanceOf(ResourceCollection::class, $categories);
     }
 
-    /**
-     * @test
-     */
-    public function should_return_category_by_id_or_number(): void
+    public function testShouldReturnCategoryByIdOrNumber(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/categories/category.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $category = $apiClient->getCategory(uniqid());
+        $category = $apiClient->getCategory(uniqid('', true));
 
         $this->assertInstanceOf(Category::class, $category);
     }
 
-    /**
-     * @test
-     */
-    public function should_throw_an_exception_if_non_existing_id_or_number_provided(): void
+    public function testShouldThrowAnExceptionIfNonExistingIdOrNumberProvided(): void
     {
-        $this->expectException(\HelpScoutDocs\ApiException::class);
+        $this->expectException(ApiException::class);
 
-        $responseMock = $this->createResponseMock(404, null);
+        $responseMock = $this->createResponseMock(404);
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $apiClient->getCategory(uniqid());
+        $apiClient->getCategory(uniqid('', true));
     }
 
-    /**
-     * @test
-     */
-    public function should_create_category_and_respond_with_new_instance(): void
+    public function testShouldCreateCategoryAndRespondWithNewInstance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/categories/category.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
         $category = new Category();
-        $category->setCollectionId(uniqid());
-        $category->setName(uniqid("Category name "));
+        $category->setCollectionId(uniqid('', true));
+        $category->setName(uniqid("Category name ", true));
 
-        $created = $apiClient->createCategory($category, true);
+        $created = $apiClient->createCategoryAndReturnCreated($category);
 
         $this->assertInstanceOf(Category::class, $created);
     }
 
-    /**
-     * @test
-     */
-    public function should_create_category_and_assign_id(): void
+    public function testShouldCreateCategory(): void
     {
-        $responseMock = $this->createResponseMock(200, null);
+        $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $category = new Category();
-        $category->setCollectionId(uniqid());
-        $category->setName(uniqid("Category name "));
+        $category->setCollectionId(uniqid('', true));
+        $category->setName(uniqid("Category name ", true));
 
-        $created = $apiClient->createCategory($category, false);
-
-        $this->assertInstanceOf(Category::class, $created);
-        $this->assertNotEmpty($created->getId());
+        $apiClient->createCategory($category);
     }
 
-    /**
-     * @test
-     */
-    public function should_throw_an_exception_if_malformed_category_provided(): void
+    public function testShouldThrowAnExceptionIfMalformedCategoryProvided(): void
     {
-        $this->expectException(\HelpScoutDocs\ApiException::class);
+        $this->expectException(ApiException::class);
         $this->expectExceptionCode(400);
 
-        $responseMock = $this->createResponseMock(400, null);
+        $responseMock = $this->createResponseMock(400);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $category = new Category();
-        $apiClient->createCategory($category, true);
+        $apiClient->createCategory($category);
     }
 
-    /**
-     * @test
-     */
-    public function should_update_category_and_respond_with_new_instance(): void
+    public function testShouldUpdateCategoryAndRespondWitNewInstance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/categories/category.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
         $category = new Category();
-        $category->setCollectionId(uniqid());
-        $category->setId(uniqid());
-        $category->setName(uniqid("New Category name "));
+        $category->setCollectionId(uniqid('', true));
+        $category->setId(uniqid('', true));
+        $category->setName(uniqid("New Category name ", true));
 
-        $updated = $apiClient->updateCategory($category, true);
+        $updated = $apiClient->updateCategoryAndReturnUpdated($category);
 
         $this->assertInstanceOf(Category::class, $updated);
     }
 
-    /**
-     * @test
-     */
-    public function should_update_category_and_respond_without_new_instance(): void
+    public function testShouldUpdateCategoryAndRespondWithoutNewInstance(): void
     {
-        $responseMock = $this->createResponseMock(200, null);
+        $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $category = new Category();
-        $category->setCollectionId(uniqid());
-        $category->setId(uniqid());
-        $category->setName(uniqid("New Category name "));
+        $category->setCollectionId(uniqid('', true));
+        $category->setId(uniqid('', true));
+        $category->setName(uniqid("New Category name ", true));
 
-        $updated = $apiClient->updateCategory($category, false);
-
-        $this->assertInstanceOf(Category::class, $updated);
-        $this->assertSame($updated, $category);
+        $apiClient->updateCategory($category);
     }
 
-    /**
-     * @test
-     */
-    public function should_delete_category(): void
+    public function testShouldDeleteCategory(): void
     {
-        $responseMock = $this->createResponseMock(200, null);
+        $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $apiClient->deleteCategory(uniqid());
+        $apiClient->deleteCategory(uniqid('', true));
     }
 
-    /**
-     * @test
-     */
-    public function should_reorder_categories(): void
+    public function testShouldReorderCategories(): void
     {
-        $responseMock = $this->createResponseMock(200, null);
+        $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $apiClient->updateCategoryOrder(uniqid(), [
+        $apiClient->updateCategoryOrder(uniqid('', true), [
             'categories' => [
-                ['id' => uniqid(), 'order' => 1],
-                ['id' => uniqid(), 'order' => 2],
-                ['id' => uniqid(), 'order' => 3],
+                ['id' => uniqid('', true), 'order' => 1],
+                ['id' => uniqid('', true), 'order' => 2],
+                ['id' => uniqid('', true), 'order' => 3],
             ]
         ]);
     }

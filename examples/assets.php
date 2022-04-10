@@ -6,8 +6,7 @@ use HelpScoutDocs\Models\SettingsAsset;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$docsClient = new DocsApiClient();
-$docsClient->setApiKey('API_KEY');
+$docsClient = new DocsApiClient('my_key');
 
 // Create article asset
 $articleAsset = new ArticleAsset();

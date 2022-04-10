@@ -1,20 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelpScoutDocs\Models;
 
-class DocsModel {
+class DocsModel
+{
+    public function toJson(): string
+    {
+        return json_encode($this->getModelProperties(), JSON_THROW_ON_ERROR);
+    }
 
     /**
-     * Return model properties in JSON
-     *
-     * @return string
+     * @return array<string, mixed>
      */
-    public function toJson()
-    {
-        return json_encode($this->getModelProperties());
-    }
-    
-    public function toArray()
+    public function toArray(): array
     {
         return $this->getModelProperties();
     }
@@ -22,19 +22,22 @@ class DocsModel {
     /**
      * Get access to private model properties via PHP Reflection
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    protected function getModelProperties()
+    protected function getModelProperties(): array
     {
         $reflector = new \ReflectionClass($this);
-        $properties = array_merge($reflector->getProperties(), $reflector->getParentClass()->getProperties());
+        $properties = [
+            ...$reflector->getProperties(),
+            ...($reflector->getParentClass() !== false ? $reflector->getParentClass()->getProperties() : [])
+        ];
 
-        $vars = array();
+        $vars = [];
 
-        foreach($properties as $prop) {
+        foreach ($properties as $prop) {
             $vars[$prop->name] = $this->{"get" . ucfirst($prop->name)}();
         }
 
         return $vars;
     }
-} 
+}

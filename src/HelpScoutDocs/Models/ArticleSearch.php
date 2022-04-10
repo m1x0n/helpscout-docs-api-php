@@ -1,209 +1,158 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelpScoutDocs\Models;
 
-class ArticleSearch extends DocsModel {
+use stdClass;
 
-    private $id;
-    private $collectionId;
-    private $categoryIds;
-    private $slug;
-    private $name;
-    private $preview;
-    private $url;
-    private $docsUrl;
-    private $number;
-    private $status;
-    private $visibility;
+class ArticleSearch extends DocsModel
+{
+    private ?string $id = null;
+    private ?string $collectionId = null;
+    /**
+     * @var array|null|string[]
+     */
+    private ?array $categoryIds = null;
+    private ?string $slug = null;
+    private ?string $name = null;
+    private ?string $preview = null;
+    private ?string $url;
+    private ?string $docsUrl;
+    private ?int $number = 0;
+    private ?string $status = null;
+    private ?string $visibility = null;
 
-    function __construct($data = null) {
+    public function __construct(stdClass $data = null)
+    {
         if ($data) {
-            $this->id           = isset($data->id)           ? $data->id           : null;
-            $this->collectionId = isset($data->collectionId) ? $data->collectionId : null;
-            $this->categoryIds  = isset($data->categoryIds)  ? $data->categoryIds  : null;
-            $this->slug         = isset($data->slug)         ? $data->slug         : null;
-            $this->name         = isset($data->name)         ? $data->name         : null;
-            $this->preview      = isset($data->preview)      ? $data->preview      : null;
-            $this->url          = isset($data->url)          ? $data->url          : null;
-            $this->docsUrl      = isset($data->docsUrl)      ? $data->docsUrl      : null;
-            $this->number       = isset($data->number)       ? $data->number       : null;
-            $this->status       = isset($data->status)       ? $data->status       : null;
-            $this->visibility   = isset($data->visibility)   ? $data->visibility   : null;
+            $this->id           = $data->id ?? null;
+            $this->collectionId = $data->collectionId ?? null;
+            $this->categoryIds  = $data->categoryIds ?? null;
+            $this->slug         = $data->slug ?? null;
+            $this->name         = $data->name ?? null;
+            $this->preview      = $data->preview ?? null;
+            $this->url          = $data->url ?? null;
+            $this->docsUrl      = $data->docsUrl ?? null;
+            $this->number       = $data->number ?? null;
+            $this->status       = $data->status ?? null;
+            $this->visibility   = $data->visibility ?? null;
         }
     }
 
     /**
-     * @param mixed $categoryIds
+     * @param array|string[] $categoryIds
      */
-    public function setCategoryIds($categoryIds)
+    public function setCategoryIds(array $categoryIds): void
     {
         $this->categoryIds = $categoryIds;
     }
 
     /**
-     * @return mixed
+     * @return array|string[]|null
      */
-    public function getCategoryIds()
+    public function getCategoryIds(): ?array
     {
         return $this->categoryIds;
     }
 
-    /**
-     * @param mixed $collectionId
-     */
-    public function setCollectionId($collectionId)
+    public function setCollectionId(string $collectionId): void
     {
         $this->collectionId = $collectionId;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCollectionId()
+    public function getCollectionId(): ?string
     {
         return $this->collectionId;
     }
 
-    /**
-     * @param mixed $docsUrl
-     */
-    public function setDocsUrl($docsUrl)
+    public function setDocsUrl(string $docsUrl): void
     {
         $this->docsUrl = $docsUrl;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDocsUrl()
+    public function getDocsUrl(): ?string
     {
         return $this->docsUrl;
     }
 
-    /**
-     * @param mixed $id
-     */
-    public function setId($id)
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $name
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * @param mixed $number
-     */
-    public function setNumber($number)
+
+    public function setNumber(int $number): void
     {
         $this->number = $number;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getNumber()
+    public function getNumber(): int
     {
         return $this->number;
     }
 
-    /**
-     * @param mixed $preview
-     */
-    public function setPreview($preview)
+    public function setPreview(string $preview): void
     {
         $this->preview = $preview;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getPreview()
+    public function getPreview(): ?string
     {
         return $this->preview;
     }
 
-    /**
-     * @param mixed $slug
-     */
-    public function setSlug($slug)
+    public function setSlug(string $slug): void
     {
         $this->slug = $slug;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getSlug()
+    public function getSlug(): string
     {
         return $this->slug;
     }
 
-    /**
-     * @param mixed $status
-     */
-    public function setStatus($status)
+    public function setStatus(string $status): void
     {
         $this->status = $status;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getStatus()
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    /**
-     * @param mixed $url
-     */
-    public function setUrl($url)
+    public function setUrl(string $url): void
     {
         $this->url = $url;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }
 
-    /**
-     * @param mixed $visibility
-     */
-    public function setVisibility($visibility)
+    public function setVisibility(string $visibility): void
     {
         $this->visibility = $visibility;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getVisibility()
+    public function getVisibility(): ?string
     {
         return $this->visibility;
     }

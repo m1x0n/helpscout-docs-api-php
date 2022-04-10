@@ -1,284 +1,198 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelpScoutDocs\Models;
 
-class ArticleRef extends DocsModel {
+use stdClass;
 
-    private $id;
-    private $number;
-    private $collectionId;
-    private $slug;
-    private $status;
-    private $hasDraft;
-    private $name;
-    private $publicUrl;
-    private $popularity;
-    private $viewCount;
-    private $createdBy;
-    private $updatedBy;
-    private $createdAt;
-    private $updatedAt;
-    private $lastPublishedAt;
+class ArticleRef extends DocsModel
+{
+    private ?string $id = null;
+    private int $number = 0;
+    private ?string $collectionId = null;
+    private ?string $slug = null;
+    private ?string $status = null;
+    private bool $hasDraft = false;
+    private ?string $name = null;
+    private ?string $publicUrl = null;
+    private float $popularity = 0;
+    private int $viewCount = 0;
+    private ?int $createdBy = null;
+    private ?int $updatedBy = null;
+    private ?string $createdAt = null;
+    private ?string $updatedAt = null;
+    private ?string $lastPublishedAt = null;
 
-    function __construct($data = null) {
+    public function __construct(stdClass $data = null)
+    {
         if ($data) {
-            $this->id              = isset($data->id)              ? $data->id              : null;
-            $this->number          = isset($data->number)          ? $data->number          : null;
-            $this->getCollectionId = isset($data->collectionId)    ? $data->collectionId    : null;
-            $this->slug            = isset($data->slug)            ? $data->slug            : null;
-            $this->status          = isset($data->status)          ? $data->status          : null;
-            $this->hasDraft        = isset($data->hasDraft)        ? $data->hasDraft        : null;
-            $this->name            = isset($data->name)            ? $data->name            : null;
-            $this->publicUrl       = isset($data->publicUrl)       ? $data->publicUrl       : null;
-            $this->popularity      = isset($data->popularity)      ? $data->popularity      : null;
-            $this->viewCount       = isset($data->viewCount)       ? $data->viewCount       : null;
-            $this->createdBy       = isset($data->createdBy)       ? $data->createdBy       : null;
-            $this->updatedBy       = isset($data->updatedBy)       ? $data->updatedBy       : null;
-            $this->createdAt       = isset($data->createdAt)       ? $data->createdAt       : null;
-            $this->createdBy       = isset($data->updatedAt)       ? $data->updatedAt       : null;
-            $this->lastPublishedAt = isset($data->lastPublishedAt) ? $data->lastPublishedAt : null;
+            $this->id = $data->id ?? null;
+            $this->number = $data->number ?? 0;
+            $this->collectionId = $data->collectionId ?? null;
+            $this->slug = $data->slug ?? null;
+            $this->status = $data->status ?? null;
+            $this->hasDraft = $data->hasDraft ?? false;
+            $this->name = $data->name ?? null;
+            $this->publicUrl = $data->publicUrl ?? null;
+            $this->popularity = $data->popularity ?? 0;
+            $this->viewCount = $data->viewCount ?? 0;
+            $this->createdBy = $data->createdBy ?? null;
+            $this->updatedBy = $data->updatedBy ?? null;
+            $this->createdAt = $data->createdAt ?? null;
+            $this->createdBy = $data->updatedAt ?? null;
+            $this->lastPublishedAt = $data->lastPublishedAt ?? null;
         }
     }
 
-    /**
-     * @param mixed $collectionId
-     */
-    public function setCollectionId($collectionId)
+    public function setCollectionId(string $collectionId): void
     {
         $this->collectionId = $collectionId;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCollectionId()
+    public function getCollectionId(): ?string
     {
         return $this->collectionId;
     }
 
-    /**
-     * @param mixed $createdAt
-     */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(string $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): ?string
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param mixed $createdBy
-     */
-    public function setCreatedBy($createdBy)
+    public function setCreatedBy(int $createdBy): void
     {
         $this->createdBy = $createdBy;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCreatedBy()
+    public function getCreatedBy(): ?int
     {
         return $this->createdBy;
     }
 
-    /**
-     * @param mixed $hasDraft
-     */
-    public function setHasDraft($hasDraft)
+    public function setHasDraft(bool $hasDraft): void
     {
         $this->hasDraft = $hasDraft;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getHasDraft()
+    public function getHasDraft(): bool
     {
         return $this->hasDraft;
     }
 
-    /**
-     * @param mixed $id
-     */
-    public function setId($id)
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $lastPublishedAt
-     */
-    public function setLastPublishedAt($lastPublishedAt)
+    public function setLastPublishedAt(string $lastPublishedAt): void
     {
         $this->lastPublishedAt = $lastPublishedAt;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getLastPublishedAt()
+    public function getLastPublishedAt(): ?string
     {
         return $this->lastPublishedAt;
     }
 
-    /**
-     * @param mixed $name
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * @param mixed $number
-     */
-    public function setNumber($number)
+    public function setNumber(int $number): void
     {
         $this->number = $number;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getNumber()
+    public function getNumber(): int
     {
         return $this->number;
     }
 
-    /**
-     * @param mixed $popularity
-     */
-    public function setPopularity($popularity)
+    public function setPopularity(float $popularity): void
     {
         $this->popularity = $popularity;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getPopularity()
+    public function getPopularity(): float
     {
         return $this->popularity;
     }
 
-    /**
-     * @param mixed $publicUrl
-     */
-    public function setPublicUrl($publicUrl)
+    public function setPublicUrl(string $publicUrl): void
     {
         $this->publicUrl = $publicUrl;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getPublicUrl()
+
+    public function getPublicUrl(): ?string
     {
         return $this->publicUrl;
     }
 
-    /**
-     * @param mixed $slug
-     */
-    public function setSlug($slug)
+    public function setSlug(string $slug): void
     {
         $this->slug = $slug;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getSlug()
+    public function getSlug(): ?string
     {
         return $this->slug;
     }
 
-    /**
-     * @param mixed $status
-     */
-    public function setStatus($status)
+    public function setStatus(string $status): void
     {
         $this->status = $status;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getStatus()
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    /**
-     * @param mixed $updatedAt
-     */
-    public function setUpdatedAt($updatedAt)
+    public function setUpdatedAt(string $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): ?string
     {
         return $this->updatedAt;
     }
 
-    /**
-     * @param mixed $updatedBy
-     */
-    public function setUpdatedBy($updatedBy)
+    public function setUpdatedBy(int $updatedBy): void
     {
         $this->updatedBy = $updatedBy;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ?int
     {
         return $this->updatedBy;
     }
 
-    /**
-     * @param mixed $viewCount
-     */
-    public function setViewCount($viewCount)
+    public function setViewCount(int $viewCount): void
     {
         $this->viewCount = $viewCount;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getViewCount()
+    public function getViewCount(): ?int
     {
         return $this->viewCount;
     }
-
-
 }

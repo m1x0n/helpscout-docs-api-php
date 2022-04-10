@@ -1,17 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelpScoutDocs\Tests\Endpoints;
 
+use HelpScoutDocs\ApiException;
 use HelpScoutDocs\Models\Site;
 use HelpScoutDocs\ResourceCollection;
 use HelpScoutDocs\Tests\TestCase;
 
 class SitesTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function should_return_sites_collection(): void
+    public function testShouldReturnSitesCollection(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/sites/sites.json');
         $apiClient = $this->createTestApiClient($responseMock);
@@ -21,125 +21,95 @@ class SitesTest extends TestCase
         $this->assertInstanceOf(ResourceCollection::class, $sites);
     }
 
-    /**
-     * @test
-     */
-    public function should_create_site_and_respond_with_new_instance(): void
+    public function testShouldCreateSiteAndRespondWithNewInstance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/sites/site.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
         $site = new Site();
-        $site->setSubDomain(uniqid("Subdomain"));
-        $site->setTitle(uniqid("Site Title "));
+        $site->setSubDomain(uniqid("Subdomain", true));
+        $site->setTitle(uniqid("Site Title ", true));
 
-        $created = $apiClient->createSite($site, true);
+        $created = $apiClient->createSiteAndReturnCreated($site);
 
         $this->assertInstanceOf(Site::class, $created);
     }
 
-    /**
-     * @test
-     */
-    public function should_create_site_and_assign_id(): void
+    public function testShouldCreateSite(): void
     {
-        $responseMock = $this->createResponseMock(200, null);
+        $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $site = new Site();
-        $site->setSubDomain(uniqid("Subdomain"));
-        $site->setTitle(uniqid("Site Title "));
+        $site->setSubDomain(uniqid("Subdomain", true));
+        $site->setTitle(uniqid("Site Title ", true));
 
-        $created = $apiClient->createSite($site, false);
-
-        $this->assertInstanceOf(Site::class, $created);
-        $this->assertNotEmpty($created->getId());
+        $apiClient->createSite($site);
     }
 
-    /**
-     * @test
-     */
-    public function should_throw_an_exception_if_malformed_site_provided(): void
+    public function testShouldThrowAnExceptionIfMalformedSiteProvided(): void
     {
-        $this->expectException(\HelpScoutDocs\ApiException::class);
+        $this->expectException(ApiException::class);
 
-        $responseMock = $this->createResponseMock(400, null);
+        $responseMock = $this->createResponseMock(400);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $site = new Site();
-        $apiClient->createSite($site, true);
+        $apiClient->createSite($site);
     }
 
-    /**
-     * @test
-     */
-    public function should_return_site_by_provided_id(): void
+    public function testShouldReturnSiteByProvidedId(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/sites/site.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $site = $apiClient->getSite(uniqid());
+        $site = $apiClient->getSite(1337);
 
         $this->assertInstanceOf(Site::class, $site);
     }
 
-    /**
-     * @test
-     */
-    public function should_throw_an_exception_if_invalid_site_id_provided(): void
+    public function testShouldThrowAnExceptionIfInvalidSiteIdProvided(): void
     {
-        $this->expectException(\HelpScoutDocs\ApiException::class);
+        $this->expectException(ApiException::class);
         $this->expectExceptionCode(404);
 
-        $responseMock = $this->createResponseMock(404, null);
+        $responseMock = $this->createResponseMock(404);
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $apiClient->getSite(uniqid());
+        $apiClient->getSite(7777);
     }
 
-    /**
-     * @test
-     */
-    public function should_update_existing_site_and_respond_with_updated_instance(): void
+    public function testShouldUpdateExistingSiteAndRespondWithUpdatedInstance(): void
     {
         $responseMock = $this->createResponseMock(200, __DIR__ . '/../../fixtures/sites/site.json');
         $apiClient = $this->createTestApiClient($responseMock);
 
         $site = new Site();
-        $site->setId(uniqid());
-        $site->setTitle(uniqid("New Site Title "));
+        $site->setId(1990);
+        $site->setTitle(uniqid("New Site Title ", true));
 
-        $updated = $apiClient->updateSite($site, true);
+        $updated = $apiClient->updateSiteAndReturnUpdated($site);
 
         $this->assertInstanceOf(Site::class, $updated);
     }
 
-    /**
-     * @test
-     */
-    public function should_update_existing_site_and_respond_without_instance(): void
+    public function testShouldUpdateExistingSiteAndRespondWithoutInstance(): void
     {
-        $responseMock = $this->createResponseMock(200, null);
+        $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
         $site = new Site();
-        $site->setId(uniqid());
-        $site->setTitle(uniqid("New Site Title "));
+        $site->setId(1337);
+        $site->setTitle(uniqid("New Site Title ", true));
 
-        $updated = $apiClient->updateSite($site, false);
-
-        $this->assertInstanceOf(Site::class, $updated);
-        $this->assertSame($site, $updated);
+        $apiClient->updateSite($site);
     }
 
-    /**
-     * @test
-     */
-    public function should_delete_existing_site(): void
+    public function testShouldDeleteExistingSite(): void
     {
-        $responseMock = $this->createResponseMock(200, null);
+        $responseMock = $this->createResponseMock(200);
         $apiClient = $this->createTestApiClient($responseMock);
 
-        $apiClient->deleteSite(uniqid());
+        $apiClient->deleteSite(1337);
     }
 }

@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['7.3', '7.4']
+        php-versions: ['7.4', '8.0']
     name: PHP ${{ matrix.php-versions }}
     steps:
       - name: Checkout
@@ -31,6 +31,12 @@ jobs:
 
       - name: Install dependencies
         run: composer install --prefer-dist
+
+      - name: Run phpcs
+        run: vendor/bin/phpcs src tests --standard=PSR12
+
+      - name: Run phpstan
+        run: vendor/bin/phpstan analyse
 
       - name: Run phpunit
         run: vendor/bin/phpunit

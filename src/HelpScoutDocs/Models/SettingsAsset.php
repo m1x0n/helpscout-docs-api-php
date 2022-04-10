@@ -1,93 +1,56 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelpScoutDocs\Models;
 
 class SettingsAsset
 {
-    const SETTINGS_ASSET_LOGO = 'logo';
-    const SETTINGS_ASSET_FAVICON = 'favicon';
-    const SETTINGS_ASSET_TOUCHICON = 'touchicon';
+    public const SETTINGS_ASSET_LOGO = 'logo';
+    public const SETTINGS_ASSET_FAVICON = 'favicon';
+    public const SETTINGS_ASSET_TOUCHICON = 'touchicon';
 
-    /**
-     * @var string
-     */
-    private $assetType;
+    private ?string $assetType = null;
+    private ?string $siteId = null;
+    private ?string $file = null;
+    private ?string $fileLink = null;
 
-    /**
-     * @var string
-     */
-    private $siteId;
-
-    /**
-     * @var string
-     */
-    private $file;
-    
-    /**
-     * @var
-     */
-    private $fileLink;
-
-    /**
-     * @return string
-     */
-    public function getAssetType()
+    public function getAssetType(): ?string
     {
         return $this->assetType;
     }
 
-    /**
-     * @param string $assetType
-     */
-    public function setAssetType($assetType)
+    public function setAssetType(string $assetType): void
     {
         $this->assetType = $assetType;
     }
 
-    /**
-     * @return string
-     */
-    public function getFile()
+    public function getFile(): ?string
     {
         return $this->file;
     }
 
-    /**
-     * @param string $file
-     */
-    public function setFile($file)
+    public function setFile(string $file): void
     {
         $this->file = $file;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getFileLink()
+    public function getFileLink(): ?string
     {
         return $this->fileLink;
     }
 
-    /**
-     * @param mixed $fileLink
-     */
-    public function setFileLink($fileLink)
+    public function setFileLink(string $fileLink): void
     {
         $this->fileLink = $fileLink;
     }
 
-    /**
-     * @return string
-     */
-    public function getSiteId()
+    public function getSiteId(): ?string
     {
         return $this->siteId;
     }
 
-    /**
-     * @param string $siteId
-     */
-    public function setSiteId($siteId)
+    public function setSiteId(string $siteId): void
     {
         $this->siteId = $siteId;
     }

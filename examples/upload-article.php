@@ -5,12 +5,12 @@ use HelpScoutDocs\Models\UploadArticle;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$docsClient = new DocsApiClient();
+$docsClient = new DocsApiClient('your-api-key');
 $docsClient->setApiKey('API_KEY');
 
 $upload = new UploadArticle();
 $upload->setCollectionId('COLLECTION_ID');
-$upload->setName(uniqid('Uploaded Article '));
+$upload->setName(uniqid('Uploaded Article ', true));
 $upload->setFile('REAL_PATH_TO_FILE');
 
-$article = $docsClient->uploadArticle($upload, true);
+$article = $docsClient->uploadArticleAndReturnUploaded($upload);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelpScoutDocs\Api;
 
 use HelpScoutDocs\ApiException;
@@ -8,15 +10,12 @@ use HelpScoutDocs\ResourceCollection;
 
 class Category extends AbstractApi
 {
-    /**
-     * @param $collectionId
-     * @param int $page
-     * @param string $sort
-     * @param string $order
-     * @return bool|ResourceCollection
-     */
-    public function all($collectionId, $page = 1, $sort = 'order', $order = 'asc')
-    {
+    public function all(
+        string $collectionId,
+        int $page = 1,
+        string $sort = 'order',
+        string $order = 'asc'
+    ): ResourceCollection {
         $params = [
             'page'  => $page,
             'sort'  => $sort,
@@ -30,77 +29,66 @@ class Category extends AbstractApi
         );
     }
 
-    /**
-     * @param $categoryIdOrNumber
-     * @return bool|Models\Category
-     */
-    public function show($categoryIdOrNumber)
+    public function show(string $categoryIdOrNumber): Models\Category
     {
-        return $this->getItem(
+        /** @var Models\Category $item */
+        $item = $this->getItem(
             sprintf("categories/%s", $categoryIdOrNumber),
             array(),
             Models\Category::class
         );
+
+        return $item;
     }
 
-    /**
-     * @param Models\Category $category
-     * @param bool $reload
-     * @return bool|Models\Category
-     * @throws ApiException
-     */
-    public function create(Models\Category $category, $reload = false)
+    public function createCategory(Models\Category $category): void
     {
-        $url = "categories";
-
         $requestBody = $category->toArray();
 
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
-
-        list($id, $response) = $this->post($url, $requestBody);
-
-        if ($reload) {
-            $categoryData = (array)$response;
-            $categoryData = reset($categoryData);
-            return new Models\Category($categoryData);
-        } else {
-            $category->setId($id);
-            return $category;
-        }
+        $this->post("categories", $requestBody);
     }
 
-    /**
-     * @param Models\Category $category
-     * @param bool $reload
-     * @return Models\Category
-     * @throws ApiException
-     */
-    public function update(Models\Category $category, $reload = false)
+    public function createCategoryAndReturnCreated(Models\Category $category): Models\Category
+    {
+        $requestBody = $category->toArray();
+
+        $requestBody['reload'] = true;
+
+        [$id, $response] = $this->post("categories", $requestBody);
+
+        $categoryData = (array)$response;
+        $categoryData = reset($categoryData);
+
+        return new Models\Category($categoryData);
+    }
+
+    public function updateCategory(Models\Category $category): void
     {
         $url = sprintf("categories/%s", $category->getId());
 
         $requestBody = $category->toArray();
 
-        if ($reload) {
-            $requestBody['reload'] = true;
-        }
+        $this->put($url, $requestBody);
+    }
+
+    public function updateCategoryAndReturnUpdated(Models\Category $category): Models\Category
+    {
+        $url = sprintf("categories/%s", $category->getId());
+
+        $requestBody = $category->toArray();
+        $requestBody['reload'] = true;
 
         $response = $this->put($url, $requestBody);
 
-        if ($reload) {
-            $categoryData = (array)$response;
-            $categoryData = reset($categoryData);
-            return new Models\Category($categoryData);
-        } else {
-            return $category;
-        }
+        $categoryData = (array)$response;
+        $categoryData = reset($categoryData);
+
+        return new Models\Category($categoryData);
     }
 
     /**
-     * @param $collectionId
-     * @param array $categories
+     * @param string $collectionId
+     * @param array<string, array> $categories
      *
      * Categories should be an associative array:
      *
@@ -120,7 +108,7 @@ class Category extends AbstractApi
      *
      * @throws ApiException
      */
-    public function updateOrder($collectionId, array $categories)
+    public function updateOrder(string $collectionId, array $categories): void
     {
         $this->put(
             sprintf("collections/%s/categories", $collectionId),
@@ -128,10 +116,7 @@ class Category extends AbstractApi
         );
     }
 
-    /**
-     * @param $categoryId
-     */
-    public function remove($categoryId)
+    public function remove(string $categoryId): void
     {
         $this->delete(sprintf("categories/%s", $categoryId));
     }

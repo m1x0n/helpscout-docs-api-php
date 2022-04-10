@@ -1,215 +1,153 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelpScoutDocs\Models;
+
+use stdClass;
 
 class Redirect extends DocsModel
 {
-    const REDIRECT_TYPE_ARTICLE = 'article';
-    const REDIRECT_TYPE_CATEGORY = 'category';
-    const REDIRECT_TYPE_COLLECTION = 'collection';
-    const REDIRECT_TYPE_CUSTOM = 'custom';
+    public const REDIRECT_TYPE_ARTICLE = 'article';
+    public const REDIRECT_TYPE_CATEGORY = 'category';
+    public const REDIRECT_TYPE_COLLECTION = 'collection';
+    public const REDIRECT_TYPE_CUSTOM = 'custom';
 
-    private $id;
-    private $siteId;
-    private $urlMapping;
-    private $type;
-    private $documentId;
-    private $anchor;
-    private $redirect;
-    private $createdBy;
-    private $updatedBy;
-    private $createdAt;
-    private $updatedAt;
+    private ?string $id = null;
+    private ?string $siteId = null;
+    private ?string $urlMapping = null;
+    private ?string $type = null;
+    private ?string $documentId = null;
+    private ?string $anchor = null;
+    private ?string $redirect = null;
+    private ?int $createdBy = null;
+    private ?int $updatedBy = null;
+    private ?string $createdAt = null;
+    private ?string $updatedAt = null;
 
-    public function __construct($data = null)
+    public function __construct(stdClass $data = null)
     {
         if ($data) {
-            $this->id = isset($data->id) ? $data->id : null;
-            $this->siteId = isset($data->siteId) ? $data->siteId : null;
-            $this->urlMapping = isset($data->urlMapping) ? $data->urlMapping : null;
-            $this->type = isset($data->type) ? $data->type : null;
-            $this->documentId = isset($data->documentId) ? $data->documentId : null;
-            $this->anchor = isset($data->anchor) ? $data->anchor : null;
-            $this->redirect = isset($data->redirect) ? $data->redirect : null;
-            $this->createdBy = isset($data->createdBy) ? $data->createdBy : null;
-            $this->updatedBy = isset($data->updatedBy) ? $data->updatedBy : null;
-            $this->createdAt = isset($data->createdAt) ? $data->createdAt : null;
-            $this->createdBy = isset($data->updatedAt) ? $data->updatedAt : null;
+            $this->id = $data->id ?? null;
+            $this->siteId = $data->siteId ?? null;
+            $this->urlMapping = $data->urlMapping ?? null;
+            $this->type = $data->type ?? null;
+            $this->documentId = $data->documentId ?? null;
+            $this->anchor = $data->anchor ?? null;
+            $this->redirect = $data->redirect ?? null;
+            $this->createdBy = $data->createdBy ?? null;
+            $this->updatedBy = $data->updatedBy ?? null;
+            $this->createdAt = $data->createdAt ?? null;
+            $this->createdBy = $data->updatedAt ?? null;
         }
     }
 
-    /**
-     * @return null
-     */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    /**
-     * @param null $id
-     */
-    public function setId($id)
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getSiteId()
+    public function getSiteId(): ?string
     {
         return $this->siteId;
     }
 
-    /**
-     * @param mixed $siteId
-     */
-    public function setSiteId($siteId)
+    public function setSiteId(string $siteId): void
     {
         $this->siteId = $siteId;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUrlMapping()
+    public function getUrlMapping(): ?string
     {
         return $this->urlMapping;
     }
 
-    /**
-     * @param mixed $urlMapping
-     */
-    public function setUrlMapping($urlMapping)
+    public function setUrlMapping(string $urlMapping): void
     {
         $this->urlMapping = $urlMapping;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->type;
     }
 
-    /**
-     * @param mixed $type
-     */
-    public function setType($type)
+    public function setType(string $type): void
     {
         $this->type = $type;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDocumentId()
+    public function getDocumentId(): ?string
     {
         return $this->documentId;
     }
 
-    /**
-     * @param mixed $documentId
-     */
-    public function setDocumentId($documentId)
+    public function setDocumentId(string $documentId): void
     {
         $this->documentId = $documentId;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getAnchor()
+    public function getAnchor(): ?string
     {
         return $this->anchor;
     }
 
-    /**
-     * @param mixed $anchor
-     */
-    public function setAnchor($anchor)
+    public function setAnchor(string $anchor): void
     {
         $this->anchor = $anchor;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getRedirect()
+    public function getRedirect(): ?string
     {
         return $this->redirect;
     }
 
-    /**
-     * @param mixed $redirect
-     */
-    public function setRedirect($redirect)
+    public function setRedirect(string $redirect): void
     {
         $this->redirect = $redirect;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCreatedBy()
+    public function getCreatedBy(): ?int
     {
         return $this->createdBy;
     }
 
-    /**
-     * @param mixed $createdBy
-     */
-    public function setCreatedBy($createdBy)
+    public function setCreatedBy(int $createdBy): void
     {
         $this->createdBy = $createdBy;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ?int
     {
         return $this->updatedBy;
     }
 
-    /**
-     * @param mixed $updatedBy
-     */
-    public function setUpdatedBy($updatedBy)
+    public function setUpdatedBy(int $updatedBy): void
     {
         $this->updatedBy = $updatedBy;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): ?string
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param mixed $createdAt
-     */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(string $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): ?string
     {
         return $this->updatedAt;
     }
 
-    /**
-     * @param mixed $updatedAt
-     */
-    public function setUpdatedAt($updatedAt)
+    public function setUpdatedAt(string $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }
