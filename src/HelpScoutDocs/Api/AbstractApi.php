@@ -289,7 +289,9 @@ abstract class AbstractApi
     {
         $response = $this->get($url, $params);
 
-        $json = json_decode($response, false, 512, JSON_THROW_ON_ERROR);
+        $json = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+        $json = reset($json);
+        $json = $json ? (object)$json : null;
 
         return new $modelClass($json);
     }
@@ -310,7 +312,9 @@ abstract class AbstractApi
     ): ResourceCollection {
         $response = $this->get($url, $params);
 
-        $json = json_decode($response, false, 512, JSON_THROW_ON_ERROR);
+        $json = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+        $json = reset($json);
+        $json = $json ? (object)$json : null;
 
         return new ResourceCollection($json, $modelClass);
     }

@@ -35,7 +35,7 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable
                 $this->items = new ArrayIterator();
 
                 foreach ($items as $index => $item) {
-                    $this->items->append(new $itemType($item));
+                    $this->items->append(new $itemType((object)$item));
                     unset($items[$index]);
                 }
             }

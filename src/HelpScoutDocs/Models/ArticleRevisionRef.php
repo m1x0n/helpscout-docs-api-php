@@ -19,7 +19,7 @@ class ArticleRevisionRef extends DocsModel
             $this->id        = $data->id ?? null;
             $this->articleId = $data->articleId ?? null;
             $this->createdBy = property_exists($data, 'createdBy') && $data->createdBy !== null
-                ? new Person($data->createdBy)
+                ? new Person((object)$data->createdBy)
                 : null;
             $this->createdAt = $data->createdAt ?? null;
         }
