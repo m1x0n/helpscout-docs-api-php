@@ -35,6 +35,9 @@ class ModelDeserializationTest extends TestCase
         new $className($fixture);
     }
 
+    /**
+     * @return array[]
+     */
     public function dataProvider(): array
     {
         return [
