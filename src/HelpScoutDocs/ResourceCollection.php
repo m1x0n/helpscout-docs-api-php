@@ -75,10 +75,7 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable
         return $this->count;
     }
 
-    /**
-     * @return DocsModel|null
-     */
-    public function current()
+    public function current(): mixed
     {
         return $this->items->current();
     }
@@ -88,10 +85,7 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable
         $this->items->next();
     }
 
-    /**
-     * @return int
-     */
-    public function key()
+    public function key(): int
     {
         return $this->items->key();
     }
@@ -106,49 +100,32 @@ class ResourceCollection implements ArrayAccess, SeekableIterator, Countable
         $this->items->rewind();
     }
 
-    /**
-     * @param int $offset
-     */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return $this->items->offsetExists($offset);
     }
 
-    /**
-     * @param int $offset
-     * @return mixed
-     */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->items->offsetGet($offset);
     }
 
-    /**
-     * @param int $offset
-     * @param DocsModel $value
-     */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->items->offsetSet($offset, $value);
     }
 
-    /**
-     * @param mixed $offset
-     */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         $this->items->offsetUnset($offset);
     }
 
-    public function count()
+    public function count(): int
     {
         return $this->items->count();
     }
 
-    /**
-     * @param int $offset
-     */
-    public function seek($offset): void
+    public function seek(int $offset): void
     {
         $this->items->seek($offset);
     }

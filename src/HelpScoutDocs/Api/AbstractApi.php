@@ -293,7 +293,9 @@ abstract class AbstractApi
         $json = reset($json);
         $json = $json ? (object)$json : null;
 
-        return new $modelClass($json);
+        /** @var DocsModel $model */
+        $model = new $modelClass($json);
+        return $model;
     }
 
     /**
