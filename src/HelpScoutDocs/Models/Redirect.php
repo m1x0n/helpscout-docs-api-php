@@ -32,7 +32,7 @@ class Redirect extends DocsModel
         if ($data && property_exists($data, 'redirect')) {
             $redirect = $data->redirect;
         }
-        
+
         if ($redirect) {
             $this->id = $redirect->id ?? null;
             $this->siteId = $redirect->siteId ?? null;
