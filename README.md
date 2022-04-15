@@ -55,3 +55,8 @@ Contributions
 Contributions are highly appreciated.
 
 Feel free to file an issue, send a PR, make a suggestion etc.
+
+TODO
+---------------------
+
+Use jms/serializer for deserialization

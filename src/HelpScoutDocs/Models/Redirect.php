@@ -27,18 +27,24 @@ class Redirect extends DocsModel
 
     public function __construct(stdClass $data = null)
     {
-        if ($data) {
-            $this->id = $data->id ?? null;
-            $this->siteId = $data->siteId ?? null;
-            $this->urlMapping = $data->urlMapping ?? null;
-            $this->type = $data->type ?? null;
-            $this->documentId = $data->documentId ?? null;
-            $this->anchor = $data->anchor ?? null;
-            $this->redirect = $data->redirect ?? null;
-            $this->createdBy = $data->createdBy ?? null;
-            $this->updatedBy = $data->updatedBy ?? null;
-            $this->createdAt = $data->createdAt ?? null;
-            $this->createdBy = $data->updatedAt ?? null;
+        $redirect = null;
+
+        if ($data && property_exists($data, 'redirect')) {
+            $redirect = $data->redirect;
+        }
+
+        if ($redirect) {
+            $this->id = $redirect->id ?? null;
+            $this->siteId = $redirect->siteId ?? null;
+            $this->urlMapping = $redirect->urlMapping ?? null;
+            $this->type = $redirect->type ?? null;
+            $this->documentId = $redirect->documentId ?? null;
+            $this->anchor = $redirect->anchor ?? null;
+            $this->redirect = $redirect->redirect ?? null;
+            $this->createdBy = $redirect->createdBy ?? null;
+            $this->updatedBy = $redirect->updatedBy ?? null;
+            $this->createdAt = $redirect->createdAt ?? null;
+            $this->updatedAt = $redirect->updatedAt ?? null;
         }
     }
 
