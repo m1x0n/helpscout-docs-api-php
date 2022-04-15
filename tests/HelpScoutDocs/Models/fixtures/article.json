@@ -1,0 +1,25 @@
+{
+  "id": "521632244566c845e582652d",
+  "number": 125,
+  "collectionId": "5214c77c45667acd25394b51",
+  "slug": "my-article",
+  "status": "published",
+  "hasDraft": false,
+  "name": "My Article",
+  "text": "This is the text of the article.",
+  "categories": [
+    "5214c77d45667acd25394b52"
+  ],
+  "related": [
+    "521632244566c845e582652b",
+    "521632244566c845e582652c"
+  ],
+  "publicUrl": "https://docs.helpscout.net/article/100-my-article",
+  "popularity": 4.3,
+  "viewCount": 237,
+  "createdBy": 73423,
+  "updatedBy": 73423,
+  "createdAt": "2013-08-22T15:45:40Z",
+  "updatedAt": "2013-08-22T21:40:56Z",
+  "lastPublishedAt": "2013-08-22T21:40:56Z"
+}

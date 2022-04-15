@@ -1,0 +1,18 @@
+{
+  "id": "5214c83d45667acd25394b54",
+  "number": 133,
+  "slug": "my-category",
+  "visibility": "public",
+  "collectionId": "5214c83d45667acd25394b53",
+  "order": 1,
+  "defaultSort": "custom",
+  "name": "My Category",
+  "description": "",
+  "articleCount": 21,
+  "publishedArticleCount": 19,
+  "publicUrl": "https://mysite.helpscoutdocs.com/category/133-my-category",
+  "createdBy": 73423,
+  "updatedBy": null,
+  "createdAt": "2013-08-21T14:01:33Z",
+  "updatedAt": null
+}

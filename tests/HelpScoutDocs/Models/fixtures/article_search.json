@@ -1,0 +1,15 @@
+{
+  "id": "5215163545667acd25394b5c",
+  "collectionId": "5214c77c45667acd25394b51",
+  "categoryIds": [
+    "5214c77d45667acd25394b52"
+  ],
+  "slug": "my-article",
+  "name": "My Article",
+  "preview": "This is my article.",
+  "url": "https://docs.helpscout.net/article/14-my-article",
+  "docsUrl": "/docs/5214c77c45667acd25394b51/article/5215163545667acd25394b5c",
+  "number": 14,
+  "status": "published",
+  "visibility": "public"
+}

@@ -1,0 +1,17 @@
+{
+  "id": "5214c83d45667acd25394b53",
+  "siteId": "52404efc4566740003092640",
+  "number": 33,
+  "slug": "my-collection",
+  "visibility": "public",
+  "order": 1,
+  "name": "My Collection",
+  "description": "Description of my collection",
+  "publicUrl": "https://my-docs.helpscoutdocs.com/collection/1-test",
+  "articleCount": 3,
+  "publishedArticleCount": 1,
+  "createdBy": 73423,
+  "updatedBy": 73423,
+  "createdAt": "2013-08-21T14:01:33Z",
+  "updatedAt": "2013-08-21T14:01:33Z"
+}
