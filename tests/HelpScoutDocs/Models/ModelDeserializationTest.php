@@ -44,7 +44,7 @@ class ModelDeserializationTest extends TestCase
             'Article' => [Article::class, $this->loadFixture('article')],
             'ArticleRef' => [ArticleRef::class, $this->loadFixture('article_ref')],
             'ArticleRevision' => [ArticleRevision::class, $this->loadFixture('article_revision')],
-            'ArticleRevisionRef' => [ArticleRevisionRef::class, $this->loadFixture('article_revision_Ref')],
+            'ArticleRevisionRef' => [ArticleRevisionRef::class, $this->loadFixture('article_revision_ref')],
             'ArticleSearch' => [ArticleSearch::class, $this->loadFixture('article_search')],
             'Category' => [Category::class, $this->loadFixture('category')],
             'Collection' => [Collection::class, $this->loadFixture('collection')],
