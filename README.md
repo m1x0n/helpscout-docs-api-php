@@ -8,11 +8,11 @@ Inspired and followed by original [https://github.com/helpscout/helpscout-api-ph
 
 Requirements
 ---------------------
-* PHP >= 7.4.0
+* PHP >= 8
 
 Installation
 --------------------
-This will install latest `3.*` version:
+This will install latest `4.*` version:
 ```
 composer require m1x0n/helpscout-docs-api-php
 ```
@@ -22,6 +22,7 @@ Package version | PHP version
 `1.*`  | `>= 5.5`
 `2.*`  | `>= 7.3`
 `3.*`  | `>= 7.4`
+`4.*`  | `>= 8`
 
 
 Previous versions are also available and could be installed in following way:
