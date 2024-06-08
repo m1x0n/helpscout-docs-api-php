@@ -22,6 +22,11 @@ class Article extends ArticleRef
      */
     private ?array $related = null;
 
+     /**
+     * @var null|array|string[]
+     */
+    private ?array $keywords = null;
+
     public function __construct(?stdClass $data = null)
     {
         if ($data) {
@@ -31,6 +36,7 @@ class Article extends ArticleRef
             $this->code       = $data->code ?? null;
             $this->categories = $data->categories ?? null;
             $this->related    = $data->related ?? null;
+            $this->keywords   = $data->keywords ?? null;
         }
     }
 
@@ -84,5 +90,21 @@ class Article extends ArticleRef
     public function getText(): ?string
     {
         return $this->text;
+    }
+
+    /**
+     * @param array|string[] $keywords
+     */
+    public function setKeywords(?array $keywords): void
+    {
+        $this->keywords = $keywords;
+    }
+
+    /**
+     * @return array|string[]|null
+     */
+    public function getKeywords(): ?array
+    {
+        return $this->keywords;
     }
 }
