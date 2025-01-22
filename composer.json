@@ -23,12 +23,10 @@
         },
         {
             "name": "m1x0n",
-            "email": "mmorozovm@gmail.com",
             "role": "Developer"
         }
     ],
     "support": {
-        "email": "mmorozovm@gmail.com",
         "source": "https://github.com/m1x0n/helpscout-docs-api-php"
     },
     "minimum-stability": "stable",

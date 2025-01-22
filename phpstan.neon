@@ -3,5 +3,5 @@ parameters:
 	paths:
 		- src
 		- tests
-	checkGenericClassInNonGenericObjectType: false
-	checkMissingIterableValueType: false
+	#checkGenericClassInNonGenericObjectType: false
+	#checkMissingIterableValueType: false
